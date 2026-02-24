@@ -19,7 +19,7 @@ app.use(express.static(path.join(__dirname, '../public')));
 app.set('views', path.join(__dirname, '../plantilles'));
 app.set('view engine', 'ejs');
 
-// Ruta d'inici (http://localhost:3000)
-app.get('/', (req, res) => {
-	res.sendFile(path.join(__dirname, '../public', 'index.html'));
+// Iniciar el servidor
+app.listen(PORT, () => {
+	console.log(`Servidor escoltant a http://localhost:${PORT}`);
 });
