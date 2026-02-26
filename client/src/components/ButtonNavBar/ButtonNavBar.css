@@ -1,0 +1,16 @@
+.icon {
+  height: 3rem;
+  background-color: transparent;
+}
+
+.buttonNavBar {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  margin: 0;
+  padding: 0;
+}
+
+.buttonNavBar:hover .icon {
+  filter: brightness(0.8);
+}
