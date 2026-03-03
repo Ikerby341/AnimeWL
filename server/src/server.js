@@ -11,6 +11,11 @@ const PORT = 3000;
 // Middleware per convetir JSON
 app.use(express.json());
 
+// schedule / initialize daily sync of anime data
+import syncAllAnime from './syncAnime.js';
+// optional: run at startup once
+syncAllAnime().catch(console.error);
+
 // Servir arxius estàtics des de la carpeta 'public'
 app.use(express.static(path.join(__dirname, '../public')));
 
