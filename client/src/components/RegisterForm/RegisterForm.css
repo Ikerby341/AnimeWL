@@ -1,4 +1,4 @@
-.login-form {
+.register-form {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -9,8 +9,8 @@
     max-width: 400px;
 }
 
-.login-form input[type="text"],
-.login-form input[type="password"] {
+.register-form input[type="text"],
+.register-form input[type="password"] {
     width: 95%;
     padding: 10px;
     border: none;
@@ -20,12 +20,12 @@
     font-size: larger;
 }
 
-.login-form input[type="text"]:focus,
-.login-form input[type="password"]:focus {
+.register-form input[type="text"]:focus,
+.register-form input[type="password"]:focus {
     outline: 0.125rem solid #209F36;
 }
 
-.login-form button {
+.register-form button {
     width: auto;
     padding: 15px;
     background-color: #209F36;
@@ -37,42 +37,15 @@
     font-size: 1rem;
 }
 
-.login-form button:hover {
+.register-form button:hover {
     background-color: #1A7B2C;
 }
 
-.login-button {
+.register-button {
     display: block;
     margin: 0 auto;
 }
 
-.options {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
-    margin: 0 0 20px;
-}
-
-.options .remember {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    font-size: 0.9rem;
-}
-
-.login-checkbox {
-    vertical-align: middle;
-    accent-color: #209F36;
-}
-
-.forgot-password {
-    font-size: 0.9rem;
-    color: #ccc;
-    text-decoration: underline;
-    cursor: pointer;
-}
-
-.login-form img {
+.register-form img {
     width: 25%;
 }

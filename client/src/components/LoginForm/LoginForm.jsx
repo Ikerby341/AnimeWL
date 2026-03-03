@@ -15,7 +15,7 @@ export function LoginForm() {
             <input type="checkbox" id="remember" name="remember" className="login-checkbox" />
             <label htmlFor="remember">Recuérdame</label>
           </div>
-          <label htmlFor="forgot" className="forgot-password">Contraseña olvidada?</label>
+          <label htmlFor="forgot" className="forgot-password">¿Has olvidado tu contraseña?</label>
         </div>
         <button type="submit" className="login-button">Iniciar sesión</button>
        </form>

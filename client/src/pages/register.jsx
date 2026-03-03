@@ -1,4 +1,5 @@
 import { Navbar } from '../components/NavBar/NavBar.jsx';
+import { RegisterForm } from '../components/RegisterForm/RegisterForm.jsx';
 import '../styles/register.css'
 
 export default function Register() {
@@ -8,6 +9,7 @@ export default function Register() {
             <div className="content">
                 <br />
                 <h1 className="title">REGISTRARSE</h1>
+                <RegisterForm />
             </div>   
         </div>
     )
