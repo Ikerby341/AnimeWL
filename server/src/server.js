@@ -1,7 +1,7 @@
 import express from 'express';
 import path from 'path';
 import { fileURLToPath } from 'url';
-
+import supabase from './config/db.js';
 const __filename = fileURLToPath(import.meta.url);	// Ruta d'aquest arxiu (servidor.js)
 const __dirname = path.dirname(__filename);			// Ruta de la carpeta on es troba aquest arxiu
 
@@ -18,6 +18,19 @@ app.use(express.static(path.join(__dirname, '../public')));
 //	i el motor que s'utilitzarà per generar les pàgines html
 app.set('views', path.join(__dirname, '../plantilles'));
 app.set('view engine', 'ejs');
+
+app.get('/test-db', async (req, res) => {
+	const { data, error } = await supabase
+		.from('anime')
+		.select('*')
+		.limit(1);
+
+	if (error) {
+		console.error('Supabase error:', error);
+		return res.status(500).json({ success: false, error });
+	}
+	res.json({ success: true, rows: data });
+});
 
 // Iniciar el servidor
 app.listen(PORT, () => {
