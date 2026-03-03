@@ -1,0 +1,72 @@
+.login-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 20px auto;
+    background-color: black;
+    padding: 20px;
+    border-radius: 10px;
+    max-width: 60vw;
+}
+
+.login-form input[type="text"],
+.login-form input[type="password"] {
+    width: 96%;
+    padding: 10px;
+    border: none;
+    border-radius: 0.75rem;
+    margin-bottom: 3vh;
+    margin-top: 1vh;
+    font-size: larger;
+}
+
+.login-form button {
+    width: auto;
+    padding: 10px;
+    background-color: #209F36;
+    color: white;
+    border: none;
+    border-radius: 0.75rem;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 1rem;
+}
+
+.login-form button:hover {
+    background-color: #1A7B2C;
+}
+
+.login-button {
+    display: block;
+    margin: 0 auto;
+}
+
+.options {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    margin: 0 0 20px;
+}
+
+.options .remember {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.9rem;
+}
+
+.login-checkbox {
+    vertical-align: middle;
+}
+
+.forgot-password {
+    font-size: 0.9rem;
+    color: #ccc;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.login-form img {
+    width: 8vw;
+}
