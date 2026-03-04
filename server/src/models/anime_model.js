@@ -1,4 +1,5 @@
 import supabase from '../config/db.js';
+import axios from 'axios';
 
 const KEYS_TO_COMPARE = ['titol', 'sinopsi', 'estat', 'imatge_portada', 'dataAfegit'];
 
@@ -47,7 +48,7 @@ export async function upsertAnime(record) {
         return;
     }
 
-    // compare fields to determine if update needed
+    // comparar campos para determinar si es necesario actualizar
     let changed = false;
     for (const k of KEYS_TO_COMPARE) {
         if ((existing[k] || '') !== (record[k] || '')) {
@@ -62,5 +63,121 @@ export async function upsertAnime(record) {
         } catch (err) {
             console.error('update error', err);
         }
+    }
+}
+
+async function ensureGenre(name) {
+    if (!name) return;
+    const id_genere = name.toLowerCase().replace(/\s+/g, '_');
+    const { error } = await supabase
+        .from('genere')
+        .upsert({ id_genere, nom: name }, { onConflict: 'id_genere' });
+    if (error) console.error('ensure genre error', error);
+    return id_genere;
+}
+
+export async function upsertAnimeGenres(id_anime, genreList = []) {
+    if (!id_anime) return;
+    try {
+        // eliminar enlaces existentes para poder reinser<|...|>
+        await supabase.from('anime_genere').delete().eq('id_anime', id_anime);
+        for (const g of genreList) {
+            const genId = await ensureGenre(g);
+            if (genId) {
+                const { error } = await supabase
+                    .from('anime_genere')
+                    .insert({ id_anime, id_genere: genId });
+                if (error) console.error('link anime_genere error', error);
+            }
+        }
+    } catch (err) {
+        console.error('upsertAnimeGenres error', err);
+    }
+}
+
+function parseDuration(val) {
+    if (val == null) return null;
+    if (typeof val === 'number') {
+        // el endpoint de detalle devuelve segundos; convertir a minutos
+        return Math.round(val / 60);
+    }
+    const m = val.toString().match(/(\d+)\s*min/);
+    return m ? parseInt(m[1], 10) : null;
+}
+
+function extractEpisodeNumber(ep) {
+    // preferir el campo explícito
+    if (ep.episode != null) return ep.episode;
+    // intentar extraer del URL tipo .../episode/12
+    if (ep.url) {
+        const m = ep.url.match(/episode\/(\d+)(?:$|\D)/);
+        if (m) return parseInt(m[1], 10);
+    }
+    return null;
+}
+
+// obtener información detallada de un solo episodio
+async function fetchEpisodeDetail(animeId, epId) {
+    const url = `https://api.jikan.moe/v4/anime/${animeId}/episodes/${epId}`;
+    let attempts = 0;
+    while (true) {
+        try {
+            const res = await axios.get(url);
+            return res.data.data;
+        } catch (err) {
+            if (err.response && err.response.status === 429) {
+                attempts++;
+                const delay = Math.min(1000 * 2 ** attempts, 30000);
+                console.warn(`rate limit hit on episode detail, waiting ${delay}ms`);
+                await new Promise((r) => setTimeout(r, delay));
+                continue;
+            }
+            throw err;
+        }
+    }
+}
+
+export async function upsertChapters(id_anime, episodes = []) {
+    if (!id_anime) return;
+    try {
+        // opcional: borrar capítulos existentes para el anime
+        await supabase.from('capitol').delete().eq('id_temporada', id_anime);
+        for (const ep of episodes) {
+            let num = extractEpisodeNumber(ep);
+            let duration = parseDuration(ep.duration);
+
+            // si aún no tenemos número o duración, pedir el endpoint de detalle
+            if (num == null || duration == null) {
+                try {
+                    // pequeña pausa antes de llamar al detalle para evitar límites de tasa
+                    await new Promise((r) => setTimeout(r, 2000));
+                    const det = await fetchEpisodeDetail(id_anime, ep.mal_id || num || 0);
+                    if (det) {
+                        if (num == null) {
+                            const detNum = extractEpisodeNumber(det);
+                            if (detNum != null) num = detNum;
+                        }
+                        if (duration == null && det.duration != null) {
+                            duration = parseDuration(det.duration);
+                        }
+                    }
+                } catch (err) {
+                    console.error('episode detail fetch error', err.message);
+                }
+            }
+
+            const id_capitol = `${id_anime}-${ep.mal_id || num || 'unknown'}`;
+            const rec = {
+                id_capitol,
+                id_anime: id_anime,
+                titol: ep.title || '',
+                numero: num != null ? num : 0,
+                duracio_minuts: duration || null,
+            };
+            const { error } = await supabase.from('capitol').upsert(rec, { onConflict: 'id_capitol' });
+            if (error) console.error('upsert chapter error', error, 'ep:', ep);
+        }
+    } catch (err) {
+        console.error('upsertChapters error', err);
     }
 }

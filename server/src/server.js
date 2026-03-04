@@ -8,19 +8,19 @@ const __dirname = path.dirname(__filename);			// Ruta de la carpeta on es troba 
 const app = express();
 const PORT = 3000;
 
-// Middleware per convetir JSON
+// Middleware para convertir JSON
 app.use(express.json());
 
-// schedule / initialize daily sync of anime data
-import syncAllAnime from './syncAnime.js';
-// optional: run at startup once
-syncAllAnime().catch(console.error);
+// programar / inicializar la sincronización diaria de datos de anime
+// import syncAllAnime from './controllers/syncAnime.js';
+// ejecutar una vez al iniciar el servidor
+// syncAllAnime().catch(console.error);
 
-// Servir arxius estàtics des de la carpeta 'public'
+// Servir archivos estáticos desde la carpeta 'public'
 app.use(express.static(path.join(__dirname, '../public')));
 
-// Carpeta on es troben les plantilles (arxius .ejs)
-//	i el motor que s'utilitzarà per generar les pàgines html
+// Carpeta donde se encuentran las plantillas (archivos .ejs)
+//	y el motor que se utilizará para generar las páginas html
 app.set('views', path.join(__dirname, '../plantilles'));
 app.set('view engine', 'ejs');
 
@@ -37,7 +37,7 @@ app.get('/test-db', async (req, res) => {
 	res.json({ success: true, rows: data });
 });
 
-// Iniciar el servidor
+// Iniciar el servidor (arrancar la aplicación)
 app.listen(PORT, () => {
 	console.log(`Servidor escoltant a http://localhost:${PORT}`);
 });
