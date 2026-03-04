@@ -27,6 +27,27 @@
     gap: 8px;
 }
 
+/* loading spinner */
+.loader {
+    border: 8px solid #f3f3f3;
+    border-top: 8px solid #209F36;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.loading-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem;
+}
 #anime-title {
     color: #ffffff;
     font-size: 1.8rem;

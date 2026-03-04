@@ -7,6 +7,21 @@ export function AnimeDetails({ anime }) {
     }
     const { titol, sinopsi, imatge_portada, genres = [], sinopsi_es } = anime;
 
+    // formato de géneros: primera letra en mayúscula, guiones convertidos en espacios
+    const formattedGenres = genres
+        .map((g) => g.replace(/-/g, ' '))
+        .map((g) => g.replace(/_/g, ' '))
+        .map((g) => g.charAt(0).toUpperCase() + g.slice(1));
+
+    // sinopsis con saltos de línea conservados usando <br />
+    const synopsisText = (sinopsi_es || sinopsi) || '';
+    const synopsisLines = synopsisText.split('\n').map((line, idx) => (
+        <span key={idx}>
+            {line}
+            {idx < synopsisText.split('\n').length - 1 && <br />}
+        </span>
+    ));
+
     return (
         <div className="anime-details">
             <div className="anime-column1">
@@ -19,9 +34,9 @@ export function AnimeDetails({ anime }) {
             </div>
             <div className="anime-column2">
                 <h1 id="anime-title">{titol}</h1>
-                <p id="gender">Géneros: {genres.join(', ')}</p>
+                <p id="gender">Géneros: {formattedGenres.join(', ')}</p>
                 <p id="synopsis">
-                    Sinopsis: {sinopsi_es || sinopsi}
+                    Sinopsis: {synopsisLines}
                 </p>
             </div>
         </div>

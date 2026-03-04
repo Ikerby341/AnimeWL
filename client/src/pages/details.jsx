@@ -31,8 +31,12 @@ export default function Details() {
 
   return (
     <div>
-      <Navbar directory={false} favorites={false} />
-      {loading && <p>Cargando...</p>}
+      <Navbar />
+      {loading && (
+        <div className="loading-container">
+          <div className="loader"></div>
+        </div>
+      )}
       {!loading && anime && <AnimeDetails anime={anime} />}
     </div>
   );

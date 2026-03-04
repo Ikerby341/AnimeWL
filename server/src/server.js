@@ -77,8 +77,8 @@ app.get('/api/anime/:id', async (req, res) => {
 	try {
 		let anime = await findAnimeById(id);
 		if (anime) {
-			// añadir versión traducida de sinopsis (podría cachearse en DB)
-			anime.sinopsi_es = await translateText(anime.sinopsi);
+			// translation disabled for performance testing
+			// anime.sinopsi_es = await translateText(anime.sinopsi);
 			res.json({ success: true, anime });
 			// fire‑and‑forget update
 			syncAnimeById(id).catch((e) => console.error('background sync error', e));
@@ -89,7 +89,8 @@ app.get('/api/anime/:id', async (req, res) => {
 		await syncAnimeById(id);
 		anime = await findAnimeById(id);
 		if (!anime) return res.status(404).json({ success: false, error: 'not found' });
-		anime.sinopsi_es = await translateText(anime.sinopsi);
+		// translation disabled
+		// anime.sinopsi_es = await translateText(anime.sinopsi);
 		res.json({ success: true, anime });
 	} catch (err) {
 		console.error('GET /api/anime/:id error', err);
