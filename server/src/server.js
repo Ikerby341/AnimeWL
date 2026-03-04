@@ -4,7 +4,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import axios from 'axios';
 import supabase from './config/db.js';
-import { syncAnimeById } from './controllers/syncAnime.js';
+import { syncAnimeById, syncAnimeMetadataById, mapJikanToDb } from './controllers/syncAnime.js';
 import { findAnimeById } from './models/anime_model.js';
 const __filename = fileURLToPath(import.meta.url);	// Ruta d'aquest arxiu (servidor.js)
 const __dirname = path.dirname(__filename);			// Ruta de la carpeta on es troba aquest arxiu
@@ -75,23 +75,54 @@ async function translateText(text, source = 'en', target = 'es') {
 app.get('/api/anime/:id', async (req, res) => {
 	const { id } = req.params;
 	try {
+		console.log('GET /api/anime/:id', id);
+		// always start by reading whatever is currently in the database
 		let anime = await findAnimeById(id);
+		console.log('  initial db read:', !!anime);
 		if (anime) {
-			// translation disabled for performance testing
-			// anime.sinopsi_es = await translateText(anime.sinopsi);
+			// we enforce re-read just before sending so the response comes
+			// strictly from the database, even if the `anime` variable is stale.
+			anime = await findAnimeById(id);
 			res.json({ success: true, anime });
-			// fire‑and‑forget update
+			// schedule a full update in the background
 			syncAnimeById(id).catch((e) => console.error('background sync error', e));
 			return;
 		}
 
-		// no en la BD, sincronizar primero
-		await syncAnimeById(id);
-		anime = await findAnimeById(id);
-		if (!anime) return res.status(404).json({ success: false, error: 'not found' });
-		// translation disabled
-		// anime.sinopsi_es = await translateText(anime.sinopsi);
+		// not yet stored: fetch metadata and write it, then read from DB
+		let rec;
+		try {
+			rec = await syncAnimeMetadataById(id);
+			console.log('  metadata sync rec:', rec && rec.id_anime);
+		} catch (e) {
+			console.error('metadata sync error', e);
+			// try a direct fetch from Jikan so we at least have some data
+			try {
+				const r = await axios.get(`https://api.jikan.moe/v4/anime/${id}/full`);
+				if (r.data && r.data.data) {
+					rec = mapJikanToDb(r.data.data);
+				}
+			} catch (e2) {
+				console.error('direct Jikan fetch also failed', e2.message);
+			}
+		}
+		anime = await findAnimeById(id); // attempt read from DB
+		console.log('  post-sync db read:', !!anime);
+		// if DB read fails but we do have the returned record, use it
+		if (!anime && rec) {
+			console.log('  using rec fallback');
+			anime = rec;
+		}
+		if (!anime) {
+			console.log('  final result: not found');
+			return res.status(404).json({
+				success: false,
+				error: 'not found'
+			});
+		}
 		res.json({ success: true, anime });
+		// afterwards, fetch episodes without delaying the response
+		syncAnimeById(id).catch((e) => console.error('background sync error', e));
 	} catch (err) {
 		console.error('GET /api/anime/:id error', err);
 		res.status(500).json({ success: false, error: err.message });

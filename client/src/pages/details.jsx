@@ -7,6 +7,7 @@ export default function Details() {
   const { id } = useParams();
   const [anime, setAnime] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     if (!id) return;
@@ -18,6 +19,8 @@ export default function Details() {
         const data = await r.json();
         if (data && data.anime) {
           setAnime(data.anime);
+        } else {
+          setError(data.error || 'Anime no encontrado');
         }
       } catch (err) {
         console.error('fetch anime error', err);
@@ -37,6 +40,7 @@ export default function Details() {
           <div className="loader"></div>
         </div>
       )}
+      {!loading && error && <p className="error-message">{error}</p>}
       {!loading && anime && <AnimeDetails anime={anime} />}
     </div>
   );

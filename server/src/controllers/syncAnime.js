@@ -25,7 +25,7 @@ async function fetchAnimePage(page = 1) {
 
 // convertir objeto anime de Jikan a nuestro formato de BD
 // también devolver array de géneros que se sincronizará por separado
-function mapJikanToDb(anime) {
+export function mapJikanToDb(anime) {
     return {
         id_anime: anime.mal_id.toString(),
         titol: anime.title,
@@ -68,6 +68,38 @@ async function fetchEpisodes(animeId) {
         page++;
     }
     return episodes;
+}
+
+// helper que sincroniza sólo la información básica (sin capítulos)
+export async function syncAnimeMetadataById(idAnime) {
+    if (!idAnime) return;
+    const url = `https://api.jikan.moe/v4/anime/${idAnime}/full`;
+    let attempts = 0;
+    let data;
+    while (true) {
+        try {
+            const res = await axios.get(url);
+            data = res.data.data;
+            break;
+        } catch (err) {
+            if (err.response && err.response.status === 429) {
+                attempts++;
+                const delay = Math.min(1000 * 2 ** attempts, 30000);
+                console.warn(`rate limit hit when fetching anime ${idAnime}, waiting ${delay}ms`);
+                await new Promise((r) => setTimeout(r, delay));
+                continue;
+            }
+            throw err;
+        }
+    }
+    if (!data) return null;
+
+    const record = mapJikanToDb(data);
+    await upsertAnime(record);
+    if (record.genres && record.genres.length > 0) {
+        await upsertAnimeGenres(record.id_anime, record.genres);
+    }
+    return record;
 }
 
 // export helper to synchronise a single anime by id
