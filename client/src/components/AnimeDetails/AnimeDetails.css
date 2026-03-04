@@ -1,0 +1,46 @@
+.anime-details {
+    display: flex;
+    flex-direction: row;
+    padding: 20px;
+    background-color: #000000;
+    border-radius: 20px;
+    margin: 2rem;
+    gap: 20px;
+    align-items: flex-start;
+}
+
+.anime-column1 {
+    flex-shrink: 0;
+}
+
+.anime-poster {
+    width: 200px;
+    object-fit: cover;
+    border-radius: 20px;
+    display: block;
+}
+
+.anime-column2 {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    gap: 8px;
+}
+
+#anime-title {
+    color: #ffffff;
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin: 0;
+}
+
+#gender {
+    font-size: 1.2rem;
+    margin: 0;
+}
+
+#synopsis {
+    font-size: 0.9rem;
+    line-height: 1.6;
+    margin: 0;
+}

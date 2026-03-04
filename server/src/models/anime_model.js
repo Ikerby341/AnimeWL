@@ -4,15 +4,26 @@ import axios from 'axios';
 const KEYS_TO_COMPARE = ['titol', 'sinopsi', 'estat', 'imatge_portada', 'dataAfegit'];
 
 export async function findAnimeById(id_anime) {
+    // aprovechamos la capacidad de PostgREST para hacer un join y
+    // traer también los géneros asociados; esto simplifica la respuesta
     const { data, error } = await supabase
         .from('anime')
-        .select('*')
+        .select(`
+            *,
+            anime_genere(id_genere)
+        `)
         .eq('id_anime', id_anime)
         .single();
     if (error && error.code !== 'PGRST116') {
         throw error;
     }
-    return data || null;
+    if (!data) return null;
+    // transformar la lista de enlaces a un array simple de strings
+    if (data.anime_genere) {
+        data.genres = data.anime_genere.map((g) => g.id_genere);
+        delete data.anime_genere;
+    }
+    return data;
 }
 
 export async function insertAnime(record) {
@@ -31,9 +42,14 @@ export async function updateAnime(id_anime, record) {
 }
 
 export async function upsertAnime(record) {
+    // the 'anime' table does not include a genres column; genres are
+    // stored in the join table. strip them off before touching the main
+    // row so we don't trigger insert errors.
+    const { genres, ...data } = record;
+
     let existing;
     try {
-        existing = await findAnimeById(record.id_anime);
+        existing = await findAnimeById(data.id_anime);
     } catch (err) {
         console.error('select anime error', err);
         return;
@@ -41,7 +57,7 @@ export async function upsertAnime(record) {
 
     if (!existing) {
         try {
-            await insertAnime(record);
+            await insertAnime(data);
         } catch (err) {
             console.error('insert error', err);
         }
@@ -51,15 +67,15 @@ export async function upsertAnime(record) {
     // comparar campos para determinar si es necesario actualizar
     let changed = false;
     for (const k of KEYS_TO_COMPARE) {
-        if ((existing[k] || '') !== (record[k] || '')) {
+        if ((existing[k] || '') !== (data[k] || '')) {
             changed = true;
             break;
         }
     }
     if (changed) {
-        record.lastUpdate = new Date().toISOString();
+        data.lastUpdate = new Date().toISOString();
         try {
-            await updateAnime(record.id_anime, record);
+            await updateAnime(data.id_anime, data);
         } catch (err) {
             console.error('update error', err);
         }

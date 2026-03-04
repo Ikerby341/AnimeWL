@@ -24,6 +24,13 @@ export default defineConfig({
     fs: {
       // permitir acceso al resto del proyecto (p. ej. ../src)
       allow: ['..']
+    },
+    // proxy para las rutas de API hacia el servidor Express
+    proxy: {
+      '/api': {
+        target: 'http://localhost:3000',
+        changeOrigin: true,
+      }
     }
   },
   build: {

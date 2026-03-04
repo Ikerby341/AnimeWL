@@ -70,6 +70,47 @@ async function fetchEpisodes(animeId) {
     return episodes;
 }
 
+// export helper to synchronise a single anime by id
+export async function syncAnimeById(idAnime) {
+    if (!idAnime) return;
+    // llamamos al endpoint de detalle de Jikan para obtener toda la información
+    const url = `https://api.jikan.moe/v4/anime/${idAnime}/full`;
+    let attempts = 0;
+    let data;
+    while (true) {
+        try {
+            const res = await axios.get(url);
+            data = res.data.data;
+            break;
+        } catch (err) {
+            if (err.response && err.response.status === 429) {
+                attempts++;
+                const delay = Math.min(1000 * 2 ** attempts, 30000);
+                console.warn(`rate limit hit when fetching anime ${idAnime}, waiting ${delay}ms`);
+                await new Promise((r) => setTimeout(r, delay));
+                continue;
+            }
+            throw err;
+        }
+    }
+    if (!data) return null;
+
+    const record = mapJikanToDb(data);
+    await upsertAnime(record);
+    if (record.genres && record.genres.length > 0) {
+        await upsertAnimeGenres(record.id_anime, record.genres);
+    }
+    try {
+        const eps = await fetchEpisodes(record.id_anime);
+        if (eps.length) {
+            await upsertChapters(record.id_anime, eps);
+        }
+    } catch (err) {
+        console.error('episode fetch error', err.message);
+    }
+    return record;
+}
+
 // función principal de sincronización
 export async function syncAllAnime() {
     console.log('Starting anime synchronization');

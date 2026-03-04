@@ -6,6 +6,7 @@ import Register from './pages/register.jsx'
 import Directory from './pages/directory.jsx'
 import Favorites from './pages/favorites.jsx'
 import Profile from './pages/profile.jsx'
+import Details from './pages/details.jsx'
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
         <Route path='/directory' element={<Directory />} />
         <Route path='/favorites' element={<Favorites />} />
         <Route path='/profile' element={<Profile />} />
+        <Route path='/details/:id' element={<Details />} />
       </Routes>
     </>
   )

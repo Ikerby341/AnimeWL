@@ -31,3 +31,47 @@
   display: flex;
   align-items: center;
 }
+
+/* búsqueda en vivo */
+.search-container {
+  position: relative;
+}
+
+.search-results {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background-color: white;
+  color: black;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border: 1px solid #ccc;
+  max-height: 20rem;
+  overflow-y: auto;
+  z-index: 1000;
+}
+
+.search-results li {
+  display: flex;
+  align-items: center;
+  padding: 0.5rem;
+  cursor: pointer;
+}
+
+.search-results li:hover {
+  background-color: #f0f0f0;
+}
+
+.result-thumb {
+  width: 40px;
+  height: 56px;
+  object-fit: cover;
+  margin-right: 0.5rem;
+}
+
+.result-title {
+  flex: 1;
+  font-size: 0.9rem;
+}
