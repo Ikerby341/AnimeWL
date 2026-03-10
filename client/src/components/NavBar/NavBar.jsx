@@ -32,7 +32,7 @@ export function Navbar({ searchBar = true, directory = true, favorites = true, p
     }
     const timer = setTimeout(async () => {
       try {
-        const res = await fetch(`https://api.jikan.moe/v4/anime?q=${encodeURIComponent(query)}&limit=5`);
+        const res = await fetch(`https://api.jikan.moe/v4/anime?q=${encodeURIComponent(query)}&sfw&limit=10`);
         const data = await res.json();
         setResults(data.data || []);
         setShowDropdown(true);

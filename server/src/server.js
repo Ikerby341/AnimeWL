@@ -5,7 +5,7 @@ import { fileURLToPath } from 'url';
 import axios from 'axios';
 import supabase from './config/db.js';
 import { syncAnimeById, syncAnimeMetadataById, mapJikanToDb } from './controllers/syncAnime.js';
-import { findAnimeById } from './models/anime_model.js';
+import { findAnimeById, listAnimes } from './models/anime_model.js';
 const __filename = fileURLToPath(import.meta.url);	// Ruta d'aquest arxiu (servidor.js)
 const __dirname = path.dirname(__filename);			// Ruta de la carpeta on es troba aquest arxiu
 
@@ -68,6 +68,17 @@ async function translateText(text, source = 'en', target = 'es') {
 	}
 	return translated;
 }
+
+// endpoint que devuelve todos los animes almacenados
+app.get('/api/anime', async (req, res) => {
+	try {
+		const anime = await listAnimes();
+		res.json({ success: true, anime });
+	} catch (err) {
+		console.error('GET /api/anime error', err);
+		res.status(500).json({ success: false, error: err.message });
+	}
+});
 
 // devolver un anime de la BBDD; si existe devolvemos inmediatamente
 // y lanzamos la sincronización en segundo plano. solo esperamos si

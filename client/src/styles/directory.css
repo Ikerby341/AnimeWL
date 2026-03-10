@@ -2,3 +2,15 @@
     margin-left: 6vw;
     margin-right: 6vw;
 }
+
+/* rejilla de portadas en el directorio */
+.anime-grid {
+    display: grid;
+    width: 100%;
+    grid-template-columns: repeat(6, 1fr); 
+    gap: 1rem;
+    justify-content: start;    
+    padding-left: 6vw;
+    padding-right: 6vw;
+    box-sizing: border-box;
+}

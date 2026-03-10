@@ -197,3 +197,13 @@ export async function upsertChapters(id_anime, episodes = []) {
         console.error('upsertChapters error', err);
     }
 }
+
+// retornar la lista completa de animes (sin paginar)
+export async function listAnimes() {
+    const { data, error } = await supabase.from('anime').select('*').order('lastupdate', { ascending: false });
+    if (error) {
+        console.error('listAnimes error', error);
+        throw error;
+    }
+    return data || [];
+}

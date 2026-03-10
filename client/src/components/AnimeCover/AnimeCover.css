@@ -1,0 +1,65 @@
+/* contenedor de cada portada */
+.anime-cover {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: stretch;
+    width: 11rem;
+    border-radius: 1rem;
+    overflow: hidden;
+    background-color: #000;     /* barra de título y fondo oscuro */
+}
+
+/* imagen propiamente dicha */
+.anime-cover-image {
+    width: 100%;
+    height: 15rem;
+    display: block;
+    object-fit: cover;
+}
+
+/* banda inferior con el título */
+.anime-cover-title {
+    padding: 0.5rem 0.75rem;
+    text-align: center;
+    font-size: 0.85rem;
+    color: #fff;
+    background-color: #000;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* ejemplo de contenedor padre; si quieres una rejilla uniforme */
+.anime-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1rem;
+}
+
+/* overlay hover con icono de play */
+.anime-cover {
+    position: relative;
+}
+
+.anime-cover-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(32, 159, 54, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.anime-cover:hover .anime-cover-overlay {
+    opacity: 1;
+}
+
+.anime-cover-overlay svg {
+    width: 2rem;
+    height: 2rem;
+    fill: #fff;
+}
+
