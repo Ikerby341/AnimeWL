@@ -227,9 +227,6 @@ export async function listAnimes() {
             animes.forEach((a) => {
                 const key = String(a.id_anime);
                 a.episodeCount = counts[key] || 0;
-                if (a.episodeCount === 0) {
-                    console.warn('anime has zero episodes', a.id_anime);
-                }
             });
         }
     }

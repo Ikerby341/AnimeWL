@@ -24,10 +24,10 @@ export function AnimeCover({
             <div className="anime-cover-overlay">
                 <div className="overlay-content">
                     {title && <h3 className="overlay-title">{title}</h3>}
-                    {/* mostrar siempre el número aunque sea 0; si no existe, mostrará "? capítulos" */}
-                    <p className="overlay-episodes">
-                        {typeof episodeCount === 'number' ? `${episodeCount} capítulos` : '? capítulos'}
-                    </p>
+                    {/* mostrar el número sólo si es mayor que 0 */}
+                    {typeof episodeCount === 'number' && episodeCount > 0 && (
+                        <p className="overlay-episodes">{episodeCount} capítulos</p>
+                    )}
                     {synopsis && <p className="overlay-synopsis">{synopsis}</p>}
                     {showStar && (
                         <button
