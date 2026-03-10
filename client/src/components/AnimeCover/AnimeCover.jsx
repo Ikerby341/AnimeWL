@@ -1,13 +1,44 @@
 import './AnimeCover.css';
+import { useState } from 'react';
 
-export function AnimeCover({ imageUrl, title = '', altText = 'Anime Cover', onClick }) {
+export function AnimeCover({
+    imageUrl,
+    title = '',
+    altText = 'Anime Cover',
+    synopsis = '',
+    episodeCount = null,
+    showStar = false,
+    initialFavorited = false,
+    onClick,
+}) {
+    const [favorited, setFavorited] = useState(initialFavorited);
+
+    function toggleStar(e) {
+        e.stopPropagation();
+        setFavorited((f) => !f);
+    }
+
     return (
         <div className="anime-cover" onClick={onClick} style={onClick ? { cursor: 'pointer' } : undefined}>
-            {/* overlay para hover con icono de play */}
+            {/* overlay con info cuando se hace hover */}
             <div className="anime-cover-overlay">
-                <svg viewBox="0 0 64 64" aria-hidden="true">
-                    <polygon points="24,16 24,48 48,32" />
-                </svg>
+                <div className="overlay-content">
+                    {title && <h3 className="overlay-title">{title}</h3>}
+                    {/* mostrar siempre el número aunque sea 0; si no existe, mostrará "? capítulos" */}
+                    <p className="overlay-episodes">
+                        {typeof episodeCount === 'number' ? `${episodeCount} capítulos` : '? capítulos'}
+                    </p>
+                    {synopsis && <p className="overlay-synopsis">{synopsis}</p>}
+                    {showStar && (
+                        <button
+                            className={favorited ? 'star selected' : 'star'}
+                            onClick={toggleStar}
+                            aria-label={favorited ? 'Quitar favorito' : 'Marcar favorito'}
+                        >
+                            ★
+                        </button>
+                    )}
+                </div>
             </div>
             <img src={imageUrl} alt={altText} className="anime-cover-image" />
             {title && <div className="anime-cover-title">{title}</div>}

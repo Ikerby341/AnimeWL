@@ -37,7 +37,7 @@
     gap: 1rem;
 }
 
-/* overlay hover con icono de play */
+/* overlay hover con información y estrella */
 .anime-cover {
     position: relative;
 }
@@ -51,15 +51,52 @@
     justify-content: center;
     opacity: 0;
     transition: opacity 0.2s ease;
+    padding: 0.5rem;
 }
 
 .anime-cover:hover .anime-cover-overlay {
     opacity: 1;
 }
 
-.anime-cover-overlay svg {
-    width: 2rem;
-    height: 2rem;
-    fill: #fff;
+.overlay-content {
+    color: #fff;
+    text-align: center;
+    max-height: 100%;
+    overflow: hidden;
+}
+
+.overlay-title {
+    margin: 0 0 0.25rem;
+    font-size: 1rem;
+    font-weight: bold;
+}
+
+.overlay-episodes {
+    margin: 0 0 0.25rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.overlay-synopsis {
+    font-size: 0.75rem;
+    line-height: 1.2;
+    /* allow more lines before truncating */
+    max-height: 4rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin: 0 0 0.5rem;
+}
+
+.star {
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 1.25rem;
+    cursor: pointer;
+    padding: 0;
+}
+
+.star.selected {
+    color: gold;
 }
 

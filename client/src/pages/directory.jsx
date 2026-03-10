@@ -23,7 +23,11 @@ export default function Directory() {
         const res = await fetch('/api/anime');
         if (!res.ok) throw new Error('failed to fetch');
         const body = await res.json();
-        if (!cancelled) setAnimes(body.anime || []);
+        if (!cancelled) {
+          const list = body.anime || [];
+          console.log('fetched animes', list.map(a=>({id:a.id_anime,episodeCount:a.episodeCount}))); // debug
+          setAnimes(list);
+        }
       } catch (err) {
         console.error('load animes error', err);
       } finally {
@@ -51,6 +55,9 @@ export default function Directory() {
                 key={a.id_anime || a.id}
                 imageUrl={a.imatge_portada || a.imageUrl || ''}
                 title={a.titol || a.title || '---'}
+                synopsis={a.sinopsi_es || a.sinopsi || ''}
+                episodeCount={a.episodeCount}
+                showStar={false} /* cambiar según sesión */
                 onClick={() => handleSelect(a)}
               />
             ))}
