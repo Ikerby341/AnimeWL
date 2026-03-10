@@ -1,25 +1,25 @@
 /* contenedor de cada portada */
-.anime-cover {
+.anime-carrusel-cover {
     display: inline-flex;
     flex-direction: column;
     align-items: stretch;
-    width: 11rem;
+    width: 15rem;
     border-radius: 1rem;
     overflow: hidden;
     background-color: #000;     /* barra de título y fondo oscuro */
 }
 
 /* imagen propiamente dicha */
-.anime-cover-image {
+.anime-carrusel-image {
     width: 100%;
-    height: 15rem;
+    height: 21rem;
     display: block;
     border-radius: 1rem;
     object-fit: cover;
 }
 
 /* banda inferior con el título */
-.anime-cover-title {
+.anime-carrusel-title {
     padding: 0.5rem 0.75rem;
     text-align: center;
     font-size: 0.85rem;
@@ -30,20 +30,12 @@
     text-overflow: ellipsis;
 }
 
-/* ejemplo de contenedor padre; si quieres una rejilla uniforme */
-.anime-grid {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 1rem;
-}
-
 /* overlay hover con información y estrella */
-.anime-cover {
+.anime-carrusel-cover {
     position: relative;
 }
 
-.anime-cover-overlay {
+.anime-carrusel-overlay {
     position: absolute;
     inset: 0;
     background: rgba(32, 159, 54, 0.4);
@@ -55,30 +47,30 @@
     padding: 0.5rem;
 }
 
-.anime-cover:hover .anime-cover-overlay {
+.anime-carrusel-cover:hover .anime-carrusel-overlay {
     opacity: 1;
 }
 
-.overlay-content {
+.carrusel-overlay-content {
     color: #fff;
     text-align: center;
     max-height: 100%;
     overflow: hidden;
 }
 
-.overlay-title {
+.carrusel-overlay-title {
     margin: 0 0 0.25rem;
     font-size: 1rem;
     font-weight: bold;
 }
 
-.overlay-episodes {
+.carrusel-overlay-episodes {
     margin: 0 0 0.25rem;
     font-size: 0.9rem;
     font-weight: 600;
 }
 
-.overlay-synopsis {
+.carrusel-overlay-synopsis {
     font-size: 0.75rem;
     line-height: 1.2;
     /* allow more lines before truncating */
@@ -88,16 +80,25 @@
     margin: 0 0 0.5rem;
 }
 
-.star {
-    background: none;
-    border: none;
+/* bottom bar with title/subtitle */
+.carrusel-bottom-bar {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.6);
     color: #fff;
-    font-size: 1.25rem;
-    cursor: pointer;
-    padding: 0;
+    padding: 0.5rem;
+    text-align: center;
 }
 
-.star.selected {
-    color: gold;
+.bottom-title {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 600;
 }
 
+.bottom-subtitle {
+    margin: 0;
+    font-size: 0.75rem;
+}
