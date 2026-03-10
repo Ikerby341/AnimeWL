@@ -80,6 +80,18 @@ app.get('/api/anime', async (req, res) => {
 	}
 });
 
+// endpoint que devuelve todos los animes de un género específico
+app.get('/api/anime/genre/:genreId', async (req, res) => {
+	const { genreId } = req.params;
+	try {
+		const anime = await listAnimes(genreId);
+		res.json({ success: true, anime });
+	} catch (err) {
+		console.error('GET /api/anime/genre/:genreId error', err);
+		res.status(500).json({ success: false, error: err.message });
+	}
+});
+
 // devolver un anime de la BBDD; si existe devolvemos inmediatamente
 // y lanzamos la sincronización en segundo plano. solo esperamos si
 // no está presente todavía.

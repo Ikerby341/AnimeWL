@@ -199,22 +199,32 @@ export async function upsertChapters(id_anime, episodes = []) {
 }
 
 // retornar la lista completa de animes (sin paginar), incluyendo recuento de capítulos
-export async function listAnimes() {
-    const { data: animeData, error } = await supabase.from('anime').select('*').order('lastupdate', { ascending: false });
+export async function listAnimes(genre = null) {
+    let query = supabase
+        .from('anime')
+        .select(genre ? '*, anime_genere!inner(id_genere)' : '*')
+        .order('lastupdate', { ascending: false });
+
+    if (genre) {
+        query = query.eq('anime_genere.id_genere', genre);
+    }
+
+    const { data: animeData, error } = await query;
+
     if (error) {
         console.error('listAnimes error', error);
         throw error;
     }
+
     const animes = animeData || [];
 
-    // obtener conteo de capítulos por anime en una sola consulta
     if (animes.length > 0) {
         const ids = animes.map((a) => a.id_anime);
-        // the capitol table uses id_temporada for the anime foreign key
         const { data: capRows, error: capErr } = await supabase
             .from('capitol')
             .select('id_anime')
             .in('id_anime', ids);
+
         if (capErr) {
             console.error('episode count query error', capErr);
         } else if (capRows) {
@@ -223,10 +233,8 @@ export async function listAnimes() {
                 const key = String(r.id_anime);
                 counts[key] = (counts[key] || 0) + 1;
             });
-            console.log('computed episode counts', counts);
             animes.forEach((a) => {
-                const key = String(a.id_anime);
-                a.episodeCount = counts[key] || 0;
+                a.episodeCount = counts[String(a.id_anime)] || 0;
             });
         }
     }
