@@ -3,12 +3,20 @@ import { Carrusel } from '../components/Carrusel/Carrusel.jsx';
 import '../styles/home.css';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { AnimeCover } from '../components/AnimeCover/AnimeCover.jsx'
+import { AnimeCoverInLine } from '../components/AnimeCoverInLine/AnimeCoverInLine.jsx'
 
 function Home() {
   const navigate = useNavigate();
-  const [animes, setAnimes] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [actionAnimes, setActionAnimes] = useState([]);
+  const [fantasyAnimes, setFantasyAnimes] = useState([]);
+  const [romanceAnimes, setRomanceAnimes] = useState([]);
+  const [SportsAnimes, setSportsAnimes] = useState([]);
+  const [recentAnimes, setRecentAnimes] = useState([]);
+  const [loadingRecent, setLoadingRecent] = useState(true);
+  const [loadingAction, setLoadingAction] = useState(true);
+  const [loadingFantasy, setLoadingFantasy] = useState(true);
+  const [loadingRomance, setLoadingRomance] = useState(true);
+  const [loadingSports, setLoadingSports] = useState(true);
 
   function handleSelect(anime) {
     const id = anime.id_anime || anime.id;
@@ -21,18 +29,55 @@ function Home() {
     let cancelled = false;
     async function load() {
       try {
-        const res = await fetch('/api/anime/genre/action');
+        // Fetch recent animes for carousel
+        const recentRes = await fetch('/api/anime/recent/5');
+        if (!recentRes.ok) throw new Error('failed to fetch recent animes');
+        const recentBody = await recentRes.json();
+        if (!cancelled) {
+          const recentList = recentBody.anime || [];
+          setRecentAnimes(recentList);
+          setLoadingRecent(false);
+        }
+
+        const res = await fetch('/api/anime/genre/action/7');
         if (!res.ok) throw new Error('failed to fetch');
         const body = await res.json();
         if (!cancelled) {
           const list = body.anime || [];
-          console.log('fetched animes', list.map(a=>({id:a.id_anime,episodeCount:a.episodeCount}))); // debug
-          setAnimes(list);
+          console.log('fetched animes', list.map(a=>({id:a.id_anime,episodeCount:a.episodeCount})));
+          setActionAnimes(list);
+          setLoadingAction(false);
         }
+        const res2 = await fetch('/api/anime/genre/fantasy/7');
+        if (!res2.ok) throw new Error('failed to fetch');
+        const body2 = await res2.json();
+        if (!cancelled) {
+          const list = body2.anime || [];
+          console.log('fetched animes', list.map(a=>({id:a.id_anime,episodeCount:a.episodeCount})));
+          setFantasyAnimes(list);
+          setLoadingFantasy(false);
+        }
+        const res3 = await fetch('/api/anime/genre/romance/7');
+        if (!res3.ok) throw new Error('failed to fetch');
+        const body3 = await res3.json();
+        if (!cancelled) {
+          const list = body3.anime || [];
+          console.log('fetched animes', list.map(a=>({id:a.id_anime,episodeCount:a.episodeCount})));
+          setRomanceAnimes(list);
+          setLoadingRomance(false);
+        }
+        const res4 = await fetch('/api/anime/genre/sports/7');
+        if (!res4.ok) throw new Error('failed to fetch');
+        const body4 = await res4.json();
+        if (!cancelled) {
+          const list = body4.anime || [];
+          console.log('fetched animes', list.map(a=>({id:a.id_anime,episodeCount:a.episodeCount})));
+          setSportsAnimes(list);
+          setLoadingSports(false);
+        }
+
       } catch (err) {
         console.error('load animes error', err);
-      } finally {
-        if (!cancelled) setLoading(false);
       }
     }
     load();
@@ -42,68 +87,101 @@ function Home() {
     <div>
       <Navbar />
       <div className="content">
-        <Carrusel items={[
-          {
-            imageUrl: 'https://myanimelist.net/images/anime/1491/102275.jpg',
-            title: 'Chainsaw Man',
-            subtitle: 'En emisión',
-            episodeCount: 12,
-            synopsis: 'Denji fusiona su cuerpo con su perro-demonio para convertirse en el hombre motosierra.',
+        {loadingRecent ? (
+          <div className="loading-container">
+            <div className="loader"></div>
+          </div>
+        ) : (
+          <Carrusel items={recentAnimes.map((a) => ({
+            imageUrl: a.imatge_portada || '',
+            title: a.titol || '---',
+            subtitle: a.estat || 'Reciente',
+            episodeCount: a.episodeCount || 0,
+            synopsis: a.sinopsi_es || a.sinopsi || '',
             showStar: true,
-          },
-          {
-            imageUrl: 'https://myanimelist.net/images/anime/1069/133679.jpg',
-            title: "Takopi's Original Sin",
-            subtitle: 'En emisión',
-            episodeCount: 6,
-            synopsis: 'Una historia oscura sobre la inocencia perdida y la amistad entre una criatura alienígena y una niña.',
-            showStar: true,
-          },
-          {
-            imageUrl: 'https://myanimelist.net/images/anime/1193/146084.jpg',
-            title: 'Fullmetal Alchemist',
-            subtitle: 'En emisión',
-            episodeCount: 64,
-            synopsis: 'Dos hermanos buscan la Piedra Filosofal para recuperar sus cuerpos tras un ritual alquímico fallido.',
-            showStar: true,
-          },
-          {
-            imageUrl: 'https://myanimelist.net/images/anime/10/54341.jpg',
-            title: 'Cowboy Bebop',
-            subtitle: 'Clásico',
-            episodeCount: 26,
-            synopsis: 'Un grupo de cazarrecompensas viaja por el espacio en busca de los criminales más buscados.',
-            showStar: true,
-          },
-          {
-            imageUrl: 'https://myanimelist.net/images/anime/1314/108941.jpg',
-            title: 'Evangelion 3.0+1.0',
-            subtitle: 'Película',
-            episodeCount: 1,
-            synopsis: 'La batalla final de Shinji Ikari para salvar a la humanidad y encontrar su lugar en el mundo.',
-            showStar: true,
-          },
-        ]} />
+            id_anime: a.id_anime,
+          }))} onItemClick={handleSelect} />
+        )}
+        <br />
         <h2>ACCIÓN</h2>
-        {loading ? (
+        {loadingAction ? (
                   <div className="loading-container">
                     <div className="loader"></div>
                   </div>
                 ) : (
-                  <div className="anime-grid">
-                    {animes.map((a) => (
-                      <AnimeCover
+                  <div className="anime-grid-inline">
+                    {actionAnimes.map((a) => (
+                      <AnimeCoverInLine
                         key={a.id_anime || a.id}
                         imageUrl={a.imatge_portada || a.imageUrl || ''}
                         title={a.titol || a.title || '---'}
                         synopsis={a.sinopsi_es || a.sinopsi || ''}
                         episodeCount={a.episodeCount}
-                        showStar={false} /* cambiar según sesión */
                         onClick={() => handleSelect(a)}
                       />
                     ))}
                   </div>
                 )}
+                <br />
+        <h2>ROMANCE</h2>
+        {loadingRomance ? (
+                  <div className="loading-container">
+                    <div className="loader"></div>
+                  </div>
+                ) : (
+                  <div className="anime-grid-inline">
+                    {romanceAnimes.map((a) => (
+                      <AnimeCoverInLine
+                        key={a.id_anime || a.id}
+                        imageUrl={a.imatge_portada || a.imageUrl || ''}
+                        title={a.titol || a.title || '---'}
+                        synopsis={a.sinopsi_es || a.sinopsi || ''}
+                        episodeCount={a.episodeCount}
+                        onClick={() => handleSelect(a)}
+                      />
+                    ))}
+                  </div>
+                )}
+                <br />
+        <h2>FANTASÍA</h2>
+        {loadingFantasy ? (
+                  <div className="loading-container">
+                    <div className="loader"></div>
+                  </div>
+                ) : (
+                  <div className="anime-grid-inline">
+                    {fantasyAnimes.map((a) => (
+                      <AnimeCoverInLine
+                        key={a.id_anime || a.id}
+                        imageUrl={a.imatge_portada || a.imageUrl || ''}
+                        title={a.titol || a.title || '---'}
+                        synopsis={a.sinopsi_es || a.sinopsi || ''}
+                        episodeCount={a.episodeCount}
+                        onClick={() => handleSelect(a)}
+                      />
+                    ))}
+                  </div>
+                )}
+                <br />
+          <h2>DEPORTES</h2>
+          {loadingSports ? (
+                    <div className="loading-container">
+                      <div className="loader"></div>
+                      </div>
+                      ) : (
+                        <div className="anime-grid-inline">
+                          {SportsAnimes.map((a) => (
+                            <AnimeCoverInLine
+                              key={a.id_anime || a.id}
+                              imageUrl={a.imatge_portada || a.imageUrl || ''}
+                              title={a.titol || a.title || '---'}
+                              synopsis={a.sinopsi_es || a.sinopsi || ''}
+                              episodeCount={a.episodeCount}
+                              onClick={() => handleSelect(a)}
+                            />
+                          ))}
+                        </div>
+                      )}
       </div>
     </div>
   );

@@ -80,6 +80,18 @@ app.get('/api/anime', async (req, res) => {
 	}
 });
 
+// endpoint que devuelve animes recientes con límite
+app.get('/api/anime/recent/:limit', async (req, res) => {
+	const { limit } = req.params;
+	try {
+		const anime = await listAnimes(null, parseInt(limit));
+		res.json({ success: true, anime });
+	} catch (err) {
+		console.error('GET /api/anime/recent/:limit error', err);
+		res.status(500).json({ success: false, error: err.message });
+	}
+});
+
 // endpoint que devuelve todos los animes de un género específico
 app.get('/api/anime/genre/:genreId', async (req, res) => {
 	const { genreId } = req.params;
@@ -88,6 +100,18 @@ app.get('/api/anime/genre/:genreId', async (req, res) => {
 		res.json({ success: true, anime });
 	} catch (err) {
 		console.error('GET /api/anime/genre/:genreId error', err);
+		res.status(500).json({ success: false, error: err.message });
+	}
+});
+
+// endpoint que devuelve animes con limite de un genero específico
+app.get('/api/anime/genre/:genreId/:limit', async (req, res) => {
+	const { genreId, limit } = req.params;
+	try {
+		const anime = await listAnimes(genreId, limit);
+		res.json({ success: true, anime });
+	} catch (err) {
+		console.error('GET /api/anime/genre/:genreId/:limit error', err);
 		res.status(500).json({ success: false, error: err.message });
 	}
 });

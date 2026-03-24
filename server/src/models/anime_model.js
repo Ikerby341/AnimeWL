@@ -199,11 +199,12 @@ export async function upsertChapters(id_anime, episodes = []) {
 }
 
 // retornar la lista completa de animes (sin paginar), incluyendo recuento de capítulos
-export async function listAnimes(genre = null) {
+export async function listAnimes(genre = null, limit = null) {
     let query = supabase
         .from('anime')
         .select(genre ? '*, anime_genere!inner(id_genere)' : '*')
-        .order('lastupdate', { ascending: false });
+        .order('lastupdate', { ascending: false })
+        .limit(limit || null);
 
     if (genre) {
         query = query.eq('anime_genere.id_genere', genre);

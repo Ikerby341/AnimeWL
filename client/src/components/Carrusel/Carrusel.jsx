@@ -2,7 +2,7 @@ import './Carrusel.css';
 import { useState } from "react";
 import { AnimeCarruselCard } from '../AnimeCarruselCard/AnimeCarruselCard.jsx';
 
-export function Carrusel({ items = [], images = [] }) {
+export function Carrusel({ items = [], images = [], onItemClick }) {
   const slides = items.length > 0
     ? items
     : images.map((url) => ({ imageUrl: url }));
@@ -50,6 +50,7 @@ export function Carrusel({ items = [], images = [] }) {
               style={getItemStyle(offset)}
               onClick={() => {
                 if (offset !== 0) setCurrentIndex(idx);
+                if (onItemClick) onItemClick(slide);
               }}
             >
               <AnimeCarruselCard
@@ -60,6 +61,7 @@ export function Carrusel({ items = [], images = [] }) {
                 episodeCount={slide.episodeCount || null}
                 showTitle={offset === 0}
                 altText={slide.title || 'Anime cover'}
+                onClick={onItemClick ? () => onItemClick(slide) : undefined}
               />
             </div>
           );

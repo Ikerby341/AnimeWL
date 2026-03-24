@@ -33,9 +33,11 @@
 /* ejemplo de contenedor padre; si quieres una rejilla uniforme */
 .anime-grid {
     display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
     gap: 1rem;
+    align-items: flex-start;
+    overflow-x: auto;
 }
 
 /* overlay hover con información y estrella */

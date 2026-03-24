@@ -8,3 +8,12 @@
     margin-bottom: 1vh;
     align-self: start;
 }
+
+.anime-grid-inline {
+    display: grid;
+    width: 100%;
+    grid-template-columns: repeat(7, 1fr); 
+    gap: 1rem;
+    justify-content: start;
+    box-sizing: border-box;
+}
