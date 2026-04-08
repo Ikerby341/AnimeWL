@@ -18,6 +18,10 @@ export function LoginForm() {
           <label htmlFor="forgot" className="forgot-password">¿Has olvidado tu contraseña?</label>
         </div>
         <button type="submit" className="login-button">Iniciar sesión</button>
+        <div className="register-link">
+          <p>------------------ ¿No tienes cuenta? ------------------</p>
+          <a href="/register">Regístrate aquí</a>
+        </div>
        </form>
     </div>
     )

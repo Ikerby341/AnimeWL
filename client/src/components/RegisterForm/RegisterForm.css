@@ -10,6 +10,7 @@
 }
 
 .register-form input[type="text"],
+.register-form input[type="email"],
 .register-form input[type="password"] {
     width: 95%;
     padding: 10px;
@@ -21,6 +22,7 @@
 }
 
 .register-form input[type="text"]:focus,
+.register-form input[type="email"]:focus,
 .register-form input[type="password"]:focus {
     outline: 0.125rem solid #209F36;
 }
@@ -48,4 +50,42 @@
 
 .register-form img {
     width: 25%;
+}
+
+.form-error {
+    width: 100%;
+    max-width: 360px;
+    margin: 0 auto 1rem;
+    padding: 0.9rem 1rem;
+    background-color: rgba(255, 77, 79, 0.12);
+    border: 1px solid #ff4d4f;
+    border-radius: 0.75rem;
+    color: #ffffff;
+    text-align: center;
+    font-weight: 0.9rem;
+}
+
+.form-success {
+    width: 100%;
+    max-width: 360px;
+    margin: 0 auto 1rem;
+    padding: 0.9rem 1rem;
+    background-color: rgba(33, 150, 83, 0.12);
+    border: 1px solid #27ae60;
+    border-radius: 0.75rem;
+    color: #ffffff;
+    text-align: center;
+    font-weight: 0.9rem;
+}
+
+.register-link {
+    margin-top: 20px;
+    font-size: 0.9rem;
+    text-align: center;
+    color: #ccc;
+}
+
+.register-link a {
+    color: #209F36;
+    font-weight: bold;
 }

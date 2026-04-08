@@ -73,7 +73,7 @@ export async function upsertAnime(record) {
         }
     }
     if (changed) {
-        data.lastUpdate = new Date().toISOString();
+        data.lastupdate = new Date().toISOString();
         try {
             await updateAnime(data.id_anime, data);
         } catch (err) {

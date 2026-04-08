@@ -3,9 +3,21 @@ import cors from 'cors';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import axios from 'axios';
+import { randomUUID, randomBytes, scryptSync } from 'crypto';
 import supabase from './config/db.js';
 import { syncAnimeById, syncAnimeMetadataById, mapJikanToDb } from './controllers/syncAnime.js';
 import { findAnimeById, listAnimes } from './models/anime_model.js';
+import { registerUser } from './models/users_model.js';
+
+function hashPassword(password) {
+	const salt = randomBytes(16).toString('hex');
+	const hashed = scryptSync(password, salt, 64).toString('hex');
+	return `${salt}:${hashed}`;
+}
+
+function validateEmail(email) {
+	return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
 const __filename = fileURLToPath(import.meta.url);	// Ruta d'aquest arxiu (servidor.js)
 const __dirname = path.dirname(__filename);			// Ruta de la carpeta on es troba aquest arxiu
 
@@ -186,6 +198,35 @@ app.post('/api/anime/sync/:id', async (req, res) => {
 		console.error('POST /api/anime/sync/:id error', err);
 		res.status(500).json({ success: false, error: err.message });
 	}
+});
+
+// registro de usuario
+app.post('/api/register', async (req, res) => {
+	const { nom, email, contrasenya } = req.body;
+
+	if (!nom || !email || !contrasenya) {
+		return res.status(400).json({ success: false, error: 'Faltan datos de registro.' });
+	}
+	if (!validateEmail(email)) {
+		return res.status(400).json({ success: false, error: 'El email no es válido.' });
+	}
+	if (contrasenya.length < 6) {
+		return res.status(400).json({ success: false, error: 'La contraseña debe tener al menos 6 caracteres.' });
+	}
+
+	const hashedPassword = hashPassword(contrasenya);
+	const id_usuari = randomUUID();
+
+	const { data, error } = await registerUser({ id_usuari, nom, email, contrasenya: hashedPassword });
+
+	if (error) {
+		console.error('Supabase insert error:', error.message || error);
+		const message = error.message || 'Error al registrar el usuario.';
+		const status = message.includes('duplicate') || message.includes('unique') ? 409 : 500;
+		return res.status(status).json({ success: false, error: message });
+	}
+
+	return res.status(201).json({ success: true, user: { id_usuari, nom, email } });
 });
 
 // Iniciar el servidor (arrancar la aplicación)

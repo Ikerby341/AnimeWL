@@ -92,7 +92,7 @@ export function Navbar({ searchBar = true, directory = true, favorites = true, p
         <div className="navbarDiv">
           {directory && < ButtonNavBar link="/directory" img={directoryIcon} />}
           {favorites && < ButtonNavBar link="/favorites" img={favoriteIcon} />}
-          {profile && < ButtonNavBar link="/profile" img={userIcon} paddingLeft="0.5rem" />}
+          {profile && < ButtonNavBar link="/login" img={userIcon} paddingLeft="0.5rem" />}
         </div>
       </nav>
   );
