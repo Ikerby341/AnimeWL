@@ -42,3 +42,19 @@ export async function registerUser({ id_usuari, nom, email, contrasenya }) {
 
     return { data, error };
 }
+
+export async function findUserByNom(nom) {
+    return await supabase
+        .from('usuari')
+        .select('id_usuari, nom, email, contrasenya')
+        .eq('nom', nom)
+        .maybeSingle();
+}
+
+export async function findUserByEmail(email) {
+    return await supabase
+        .from('usuari')
+        .select('id_usuari, nom, email, contrasenya')
+        .eq('email', email)
+        .maybeSingle();
+}

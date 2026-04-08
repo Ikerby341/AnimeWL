@@ -63,7 +63,7 @@ export function RegisterForm() {
       }
 
       setFormData({ username: '', email: '', password: '', confirmPassword: '' })
-      navigate('/login')
+      navigate('/login', { state: { username, password } })
     } catch (err) {
       setError(err.message)
     } finally {

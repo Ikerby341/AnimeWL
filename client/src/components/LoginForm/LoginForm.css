@@ -77,6 +77,19 @@
     width: 25%;
 }
 
+.form-error {
+    width: 100%;
+    max-width: 360px;
+    margin: 0 auto 1rem;
+    padding: 0.9rem 1rem;
+    background-color: rgba(255, 77, 79, 0.12);
+    border: 1px solid #ff4d4f;
+    border-radius: 0.75rem;
+    color: #ffffff;
+    text-align: center;
+    font-weight: 0.9rem;
+}
+
 .register-link {
     margin-top: 20px;
     font-size: 0.9rem;

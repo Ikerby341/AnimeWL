@@ -7,7 +7,7 @@ import { randomUUID, randomBytes, scryptSync } from 'crypto';
 import supabase from './config/db.js';
 import { syncAnimeById, syncAnimeMetadataById, mapJikanToDb } from './controllers/syncAnime.js';
 import { findAnimeById, listAnimes } from './models/anime_model.js';
-import { registerUser } from './models/users_model.js';
+import { registerUser, findUserByNom } from './models/users_model.js';
 
 function hashPassword(password) {
 	const salt = randomBytes(16).toString('hex');
@@ -227,6 +227,42 @@ app.post('/api/register', async (req, res) => {
 	}
 
 	return res.status(201).json({ success: true, user: { id_usuari, nom, email } });
+});
+
+app.post('/api/login', async (req, res) => {
+	const { username, password } = req.body;
+
+	if (!username || !password) {
+		return res.status(400).json({ success: false, error: 'Faltan datos de inicio de sesión.' });
+	}
+
+	const result = await findUserByNom(username);
+
+	if (result.error) {
+		console.error('Supabase login error:', result.error);
+		return res.status(500).json({ success: false, error: 'Error al iniciar sesión.' });
+	}
+
+	if (!result.data) {
+		return res.status(401).json({ success: false, error: 'Usuario o contraseña incorrectos.' });
+	}
+
+	const storedPassword = result.data.contrasenya;
+	const [salt, hashed] = storedPassword.split(':');
+	const attemptHash = scryptSync(password, salt, 64).toString('hex');
+
+	if (attemptHash !== hashed) {
+		return res.status(401).json({ success: false, error: 'Usuario o contraseña incorrectos.' });
+	}
+
+	return res.json({
+		success: true,
+		user: {
+			id_usuari: result.data.id_usuari,
+			nom: result.data.nom,
+			email: result.data.email
+		}
+	});
 });
 
 // Iniciar el servidor (arrancar la aplicación)
