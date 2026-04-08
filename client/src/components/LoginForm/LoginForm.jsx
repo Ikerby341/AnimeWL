@@ -2,16 +2,19 @@ import './LoginForm.css'
 import loginIcon from './../../assets/LogoAnimeWLCuadrado.png'
 import { useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
+import { useAuth } from '../../hooks/useAuth.js'
 
 export function LoginForm() {
   const location = useLocation()
   const navigate = useNavigate()
+  const { login } = useAuth()
   const initialState = location.state && typeof location.state === 'object'
     ? {
         username: location.state.username || '',
-        password: location.state.password || ''
+        password: location.state.password || '',
+        remember: false
       }
-    : { username: '', password: '' }
+    : { username: '', password: '', remember: false }
 
   const [formData, setFormData] = useState(initialState)
   const [error, setError] = useState('')
@@ -26,7 +29,7 @@ export function LoginForm() {
     event.preventDefault()
     setError('')
 
-    const { username, password } = formData
+    const { username, password, remember } = formData
     if (!username.trim() || !password) {
       setError('Por favor completa todos los campos.')
       return
@@ -34,16 +37,9 @@ export function LoginForm() {
 
     setLoading(true)
     try {
-      const response = await fetch('/api/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ username, password })
-      })
-      const data = await response.json()
+      const data = await login(username, password, remember)
 
-      if (!response.ok) {
+      if (!data.success) {
         throw new Error(data.error || 'Error al iniciar sesión.')
       }
 
@@ -82,7 +78,14 @@ export function LoginForm() {
 
         <div className="options">
           <div className="remember">
-            <input type="checkbox" id="remember" name="remember" className="login-checkbox" />
+            <input
+              type="checkbox"
+              id="remember"
+              name="remember"
+              checked={formData.remember}
+              onChange={handleChange}
+              className="login-checkbox"
+            />
             <label htmlFor="remember">Recuérdame</label>
           </div>
           <label htmlFor="forgot" className="forgot-password">¿Has olvidado tu contraseña?</label>

@@ -4,6 +4,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import axios from 'axios';
 import { randomUUID, randomBytes, scryptSync } from 'crypto';
+import session from 'express-session';
 import supabase from './config/db.js';
 import { syncAnimeById, syncAnimeMetadataById, mapJikanToDb } from './controllers/syncAnime.js';
 import { findAnimeById, listAnimes } from './models/anime_model.js';
@@ -27,7 +28,22 @@ const PORT = 3000;
 // Middleware para convertir JSON
 app.use(express.json());
 // permitir peticiones desde el cliente React en desarrollo
-app.use(cors());
+app.use(cors({
+	origin: ['http://localhost:5173'],
+	credentials: true
+}));
+
+// Configuración de sesiones
+app.use(session({
+	secret: process.env.SESSION_SECRET || 'tu_secreto_super_seguro',
+	resave: false,
+	saveUninitialized: false,
+	cookie: {
+		secure: false, // false para desarrollo (HTTP), true para producción (HTTPS)
+		httpOnly: true,
+		maxAge: 60 * 60 * 1000 // 1 hora por defecto
+	}
+}));
 
 // programar / inicializar la sincronización diaria de datos de anime
 // import syncAllAnime from './controllers/syncAnime.js';
@@ -230,7 +246,7 @@ app.post('/api/register', async (req, res) => {
 });
 
 app.post('/api/login', async (req, res) => {
-	const { username, password } = req.body;
+	const { username, password, remember } = req.body;
 
 	if (!username || !password) {
 		return res.status(400).json({ success: false, error: 'Faltan datos de inicio de sesión.' });
@@ -255,13 +271,41 @@ app.post('/api/login', async (req, res) => {
 		return res.status(401).json({ success: false, error: 'Usuario o contraseña incorrectos.' });
 	}
 
+	// Guardar usuario en sesión
+	req.session.user = {
+		id_usuari: result.data.id_usuari,
+		nom: result.data.nom,
+		email: result.data.email
+	};
+
+	// Si remember me está activado, extender la sesión a 30 días
+	if (remember) {
+		req.session.cookie.maxAge = 30 * 24 * 60 * 60 * 1000; // 30 días
+	}
+
 	return res.json({
 		success: true,
-		user: {
-			id_usuari: result.data.id_usuari,
-			nom: result.data.nom,
-			email: result.data.email
+		user: req.session.user
+	});
+});
+
+// Verificar sesión actual
+app.get('/api/session', (req, res) => {
+	if (req.session.user) {
+		return res.json({ success: true, user: req.session.user });
+	}
+	return res.status(401).json({ success: false, error: 'No hay sesión activa' });
+});
+
+// Logout
+app.post('/api/logout', (req, res) => {
+	req.session.destroy((err) => {
+		if (err) {
+			console.error('Error destroying session:', err);
+			return res.status(500).json({ success: false, error: 'Error al cerrar sesión' });
 		}
+		res.clearCookie('connect.sid');
+		return res.json({ success: true, message: 'Sesión cerrada correctamente' });
 	});
 });
 

@@ -5,20 +5,27 @@ import userIcon from './../../assets/usuari.png';
 import favoriteIcon from './../../assets/favorito.png';
 import directoryIcon from './../../assets/directorio.png';
 import { ButtonNavBar } from './../ButtonNavBar/ButtonNavBar';
+import { useAuth } from '../../hooks/useAuth.js';
 import './NavBar.css';
 
 export function Navbar({ searchBar = true, directory = true, favorites = true, profile = true }) {
   const [query, setQuery] = useState('');
   const [results, setResults] = useState([]);
   const [showDropdown, setShowDropdown] = useState(false);
+  const [showUserMenu, setShowUserMenu] = useState(false);
   const navigate = useNavigate();
+  const { user, logout } = useAuth();
   const wrapperRef = useRef(null);
+  const userMenuRef = useRef(null);
 
   // cerrar dropdown cuando se hace click fuera
   useEffect(() => {
     function handleClickOutside(event) {
       if (wrapperRef.current && !wrapperRef.current.contains(event.target)) {
         setShowDropdown(false);
+      }
+      if (userMenuRef.current && !userMenuRef.current.contains(event.target)) {
+        setShowUserMenu(false);
       }
     }
     document.addEventListener('mousedown', handleClickOutside);
@@ -50,6 +57,20 @@ export function Navbar({ searchBar = true, directory = true, favorites = true, p
     setShowDropdown(false);
     navigate(`/details/${anime.mal_id}`);
   }
+
+  const handleUserMenuToggle = () => {
+    setShowUserMenu(!showUserMenu);
+  };
+
+  const handleProfileClick = () => {
+    setShowUserMenu(false);
+    navigate('/profile');
+  };
+
+  const handleLogoutClick = () => {
+    setShowUserMenu(false);
+    logout();
+  };
 
   return (
       <nav className="navbar" ref={wrapperRef}>
@@ -92,7 +113,38 @@ export function Navbar({ searchBar = true, directory = true, favorites = true, p
         <div className="navbarDiv">
           {directory && < ButtonNavBar link="/directory" img={directoryIcon} />}
           {favorites && < ButtonNavBar link="/favorites" img={favoriteIcon} />}
-          {profile && < ButtonNavBar link="/login" img={userIcon} paddingLeft="0.5rem" />}
+          {profile && (
+            <div className="user-menu-container" ref={userMenuRef}>
+              <button
+                onClick={handleUserMenuToggle}
+                className="user-menu-button"
+                title={user ? `Usuario: ${user.nom}` : 'Iniciar sesión'}
+              >
+                <img src={userIcon} alt="User" className="user-icon" />
+              </button>
+              {showUserMenu && (
+                <div className="user-dropdown">
+                  {user ? (
+                    <>
+                      <div className="user-info">
+                        <span className="user-name">{user.nom}</span>
+                      </div>
+                      <button onClick={handleProfileClick} className="dropdown-item">
+                        Perfil
+                      </button>
+                      <button onClick={handleLogoutClick} className="dropdown-item logout-item">
+                        Cerrar sesión
+                      </button>
+                    </>
+                  ) : (
+                    <button onClick={() => navigate('/login')} className="dropdown-item">
+                      🔐 Iniciar sesión
+                    </button>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </nav>
   );
