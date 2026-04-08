@@ -138,7 +138,7 @@ export function Navbar({ searchBar = true, directory = true, favorites = true, p
                     </>
                   ) : (
                     <button onClick={() => navigate('/login')} className="dropdown-item">
-                      🔐 Iniciar sesión
+                      Iniciar sesión
                     </button>
                   )}
                 </div>
