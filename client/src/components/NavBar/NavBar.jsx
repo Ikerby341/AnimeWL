@@ -73,79 +73,84 @@ export function Navbar({ searchBar = true, directory = true, favorites = true, p
   };
 
   return (
-      <nav className="navbar" ref={wrapperRef}>
-        <div className="navbarDiv">
-          <Link to="/"> <img src={logo} alt="Logo" className="logo" /></Link>
-          {searchBar && (
-            <div className="search-container">
-              <input
-                type="text"
-                placeholder="Buscar anime..."
-                className="searchBar"
-                aria-label="Barra de busqueda"
-                value={query}
-                onChange={(e) => {
-                  const val = e.target.value;
-                  setQuery(val);
-                  if (val.trim() === '') {
-                    setResults([]);
-                    setShowDropdown(false);
-                  }
-                }}
-              />
-              {showDropdown && results.length > 0 && (
-                <ul className="search-results">
-                  {results.map((r) => (
-                    <li key={r.mal_id} onClick={() => handleSelect(r)}>
-                      <img
-                        src={r.images?.jpg?.image_url}
-                        alt={r.title}
-                        className="result-thumb"
-                      />
-                      <span className="result-title">{r.title}</span>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </div>
-          )}
-        </div>
-        <div className="navbarDiv">
-          {directory && < ButtonNavBar link="/directory" img={directoryIcon} />}
-          {favorites && < ButtonNavBar link="/favorites" img={favoriteIcon} />}
-          {profile && (
-            <div className="user-menu-container" ref={userMenuRef}>
-              <button
-                onClick={handleUserMenuToggle}
-                className="user-menu-button"
-                title={user ? `Usuario: ${user.nom}` : 'Iniciar sesión'}
-              >
-                <img src={userIcon} alt="User" className="user-icon" />
-              </button>
-              {showUserMenu && (
-                <div className="user-dropdown">
-                  {user ? (
-                    <>
-                      <div className="user-info">
-                        <span className="user-name">{user.nom}</span>
-                      </div>
-                      <button onClick={handleProfileClick} className="dropdown-item">
-                        Perfil
-                      </button>
-                      <button onClick={handleLogoutClick} className="dropdown-item logout-item">
-                        Cerrar sesión
-                      </button>
-                    </>
-                  ) : (
+    <nav className="navbar" ref={wrapperRef}>
+      <div className="navbarDiv">
+        <Link to="/"> <img src={logo} alt="Logo" className="logo" /></Link>
+        {searchBar && (
+          <div className="search-container">
+            <input
+              type="text"
+              placeholder="Buscar anime..."
+              className="searchBar"
+              aria-label="Barra de busqueda"
+              value={query}
+              onChange={(e) => {
+                const val = e.target.value;
+                setQuery(val);
+                if (val.trim() === '') {
+                  setResults([]);
+                  setShowDropdown(false);
+                }
+              }}
+            />
+            {showDropdown && results.length > 0 && (
+              <ul className="search-results">
+                {results.map((r) => (
+                  <li key={r.mal_id} onClick={() => handleSelect(r)}>
+                    <img
+                      src={r.images?.jpg?.image_url}
+                      alt={r.title}
+                      className="result-thumb"
+                    />
+                    <span className="result-title">{r.title}</span>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        )}
+      </div>
+      <div className="navbarDiv">
+        {directory && < ButtonNavBar link="/directory" img={directoryIcon} />}
+        {favorites && < ButtonNavBar link="/favorites" img={favoriteIcon} />}
+        {profile && (
+          <div className="user-menu-container" ref={userMenuRef}>
+            <button
+              onClick={handleUserMenuToggle}
+              className="user-menu-button"
+              title={user ? `Usuario: ${user.nom}` : 'Iniciar sesión'}
+            >
+              <img src={userIcon} alt="User" className="user-icon" />
+            </button>
+            {showUserMenu && (
+              <div className="user-dropdown">
+                {user ? (
+                  <>
+                    <div className="user-info">
+                      <span className="user-name">{user.nom}</span>
+                    </div>
+                    <button onClick={handleProfileClick} className="dropdown-item">
+                      Perfil
+                    </button>
+                    <button onClick={handleLogoutClick} className="dropdown-item logout-item">
+                      Cerrar sesión
+                    </button>
+                  </>
+                ) : (
+                  <div>
                     <button onClick={() => navigate('/login')} className="dropdown-item">
                       Iniciar sesión
                     </button>
-                  )}
-                </div>
-              )}
-            </div>
-          )}
-        </div>
-      </nav>
+                    <button onClick={() => navigate('/register')} className="dropdown-item">
+                      Registrarse
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+    </nav>
   );
 }
