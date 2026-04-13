@@ -3,6 +3,8 @@ import './ProfilePage.css';
 import userIcon from './../../assets/usuari.png';
 import { useUserInfo, useAuth } from './../../hooks/useAuth';
 
+const addAnimePlaceholder = 'data:image/svg+xml;utf8,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 120 120%22%3E%3Crect width=%22120%22 height=%22120%22 rx=%2224%22 fill=%22%23111%22/%3E%3Cpath d=%22M60 34a6 6 0 0 1 6 6v14h14a6 6 0 0 1 0 12H66v14a6 6 0 1 1-12 0V66H40a6 6 0 0 1 0-12h14V40a6 6 0 0 1 6-6z%22 fill=%22%23fff%22/%3E%3C/svg%3E';
+
 export function ProfilePage() {
     let userInfo = useUserInfo();
     const { checkSession } = useAuth();
@@ -204,20 +206,18 @@ export function ProfilePage() {
                     <div className="anime-card anime-card-clickable" onClick={() => openSearchModal('favorite')}>
                         <img
                             src={
-                                favoriteAnime?.imatge_portada ||
-                                'https://via.placeholder.com/240x320/111111/ffffff?text=Anime+favorito'
+                                favoriteAnime?.imatge_portada || addAnimePlaceholder
                             }
-                            alt={favoriteAnime?.titol || 'Anime favorito'}
+                            alt={favoriteAnime?.titol || 'Añadir anime favorito'}
                         />
                         <p>Anime favorito</p>
                     </div>
                     <div className="anime-card anime-card-clickable" onClick={() => openSearchModal('recommended')}>
                         <img
                             src={
-                                recommendedAnime?.imatge_portada ||
-                                'https://via.placeholder.com/240x320/111111/ffffff?text=Anime+recomendado'
+                                recommendedAnime?.imatge_portada || addAnimePlaceholder
                             }
-                            alt={recommendedAnime?.titol || 'Anime recomendado'}
+                            alt={recommendedAnime?.titol || 'Añadir anime recomendado'}
                         />
                         <p>Anime recomendado</p>
                     </div>
