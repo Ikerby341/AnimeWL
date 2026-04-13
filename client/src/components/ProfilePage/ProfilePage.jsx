@@ -180,7 +180,7 @@ export function ProfilePage() {
         <div className="profile-page">
             <div className='edit-pfp-container'>
                 <div className='edit-pfp-overlay'>
-                    <span className='edit-pfp-text'>Introdueix la URL de la foto de perfil</span>
+                    <span className='edit-pfp-text'>Introduce la URL de la foto de perfil</span>
                     <input type="text" className='edit-pfp-input' placeholder='URL de la foto de perfil' />
                     <button className='edit-pfp-button' onClick={canviarPfp}>Guardar</button>
                     <button className='edit-pfp-button-goback' onClick={() => {
