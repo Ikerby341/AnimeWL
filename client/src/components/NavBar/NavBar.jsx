@@ -5,8 +5,7 @@ import userIcon from './../../assets/usuari.png';
 import favoriteIcon from './../../assets/favorito.png';
 import directoryIcon from './../../assets/directorio.png';
 import { ButtonNavBar } from './../ButtonNavBar/ButtonNavBar';
-import { useAuth } from '../../hooks/useAuth.js';
-import { useUserInfo } from './../../hooks/useAuth';
+import { useAuth, useUserInfo } from '../../hooks/useAuth.js';
 import './NavBar.css';
 
 export function Navbar({ searchBar = true, directory = true, favorites = true, profile = true }) {
@@ -115,7 +114,7 @@ export function Navbar({ searchBar = true, directory = true, favorites = true, p
       </div>
       <div className="navbarDiv">
         {directory && < ButtonNavBar link="/directory" img={directoryIcon} />}
-        {favorites && < ButtonNavBar link="/favorites" img={favoriteIcon} />}
+        {userInfo && favorites && < ButtonNavBar link="/favorites" img={favoriteIcon} />}
         {profile && (
           <div className="user-menu-container" ref={userMenuRef}>
             <button
