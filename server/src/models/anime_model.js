@@ -26,6 +26,13 @@ export async function findAnimeById(id_anime) {
     return data;
 }
 
+export async function testDbConnection() {
+    return await supabase
+        .from('anime')
+        .select('*')
+        .limit(1);
+}
+
 export async function insertAnime(record) {
     const { error } = await supabase.from('anime').insert(record);
     if (error) throw error;

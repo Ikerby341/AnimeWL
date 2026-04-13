@@ -59,3 +59,12 @@ export async function findUserByEmail(email) {
         .eq('email', email)
         .maybeSingle();
 }
+
+export async function updateUserProfilePicture(id_usuari, img_url) {
+    return await supabase
+        .from('usuari')
+        .update({ img_url })
+        .eq('id_usuari', id_usuari)
+        .select()
+        .maybeSingle();
+}

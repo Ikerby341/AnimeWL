@@ -5,10 +5,9 @@ import { fileURLToPath } from 'url';
 import axios from 'axios';
 import { randomUUID, randomBytes, scryptSync } from 'crypto';
 import session from 'express-session';
-import supabase from './config/db.js';
 import { syncAnimeById, syncAnimeMetadataById, mapJikanToDb } from './controllers/syncAnime.js';
-import { findAnimeById, listAnimes } from './models/anime_model.js';
-import { registerUser, findUserByNom } from './models/users_model.js';
+import { findAnimeById, listAnimes, testDbConnection } from './models/anime_model.js';
+import { registerUser, findUserByNom, updateUserProfilePicture } from './models/users_model.js';
 
 function hashPassword(password) {
 	const salt = randomBytes(16).toString('hex');
@@ -59,10 +58,7 @@ app.set('views', path.join(__dirname, '../plantilles'));
 app.set('view engine', 'ejs');
 
 app.get('/test-db', async (req, res) => {
-	const { data, error } = await supabase
-		.from('anime')
-		.select('*')
-		.limit(1);
+	const { data, error } = await testDbConnection();
 
 	if (error) {
 		console.error('Supabase error:', error);
@@ -380,12 +376,7 @@ app.post('/api/update-profile-picture', async (req, res) => {
 		return res.status(400).json({ success: false, error: 'URL de imagen no válida' });
 	}
 	try {
-		const { data, error } = await supabase
-			.from('usuari')
-			.update({ img_url })
-			.eq('id_usuari', req.session.user.id_usuari)
-			.select()
-			.maybeSingle();
+		const { data, error } = await updateUserProfilePicture(req.session.user.id_usuari, img_url);
 
 		if (error) {
 			console.error('Error updating profile picture:', error);
