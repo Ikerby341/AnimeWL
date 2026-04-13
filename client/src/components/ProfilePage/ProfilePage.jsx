@@ -1,12 +1,19 @@
 import { useState, useEffect } from 'react';
 import './ProfilePage.css';
 import userIcon from './../../assets/usuari.png';
-import { useUserInfo } from './../../hooks/useAuth';
+import { useUserInfo, useAuth } from './../../hooks/useAuth';
 
 export function ProfilePage() {
     let userInfo = useUserInfo();
+    const { checkSession } = useAuth();
     const [favoriteAnime, setFavoriteAnime] = useState(null);
     const [recommendedAnime, setRecommendedAnime] = useState(null);
+    const [showSearchModal, setShowSearchModal] = useState(false);
+    const [searchType, setSearchType] = useState(null);
+    const [searchQuery, setSearchQuery] = useState('');
+    const [searchResults, setSearchResults] = useState([]);
+    const [searchError, setSearchError] = useState(null);
+    const [isSearching, setIsSearching] = useState(false);
 
     useEffect(() => {
         const fetchAnime = async (id, setter, label) => {
@@ -38,6 +45,80 @@ export function ProfilePage() {
         fetchAnime(userInfo?.id_anime_preferit, setFavoriteAnime, 'favorite');
         fetchAnime(userInfo?.id_anime_recomanat, setRecommendedAnime, 'recommended');
     }, [userInfo?.id_anime_preferit, userInfo?.id_anime_recomanat]);
+
+    useEffect(() => {
+        if (!showSearchModal || searchQuery.trim() === '') {
+            setSearchResults([]);
+            setSearchError(null);
+            setIsSearching(false);
+            return;
+        }
+
+        const timer = setTimeout(async () => {
+            setSearchError(null);
+            setIsSearching(true);
+            try {
+                const response = await fetch(`https://api.jikan.moe/v4/anime?q=${encodeURIComponent(searchQuery)}&sfw&limit=10`);
+                if (!response.ok) {
+                    throw new Error('Error al buscar anime');
+                }
+                const data = await response.json();
+                setSearchResults(data.data || []);
+            } catch (error) {
+                console.error('Error searching anime:', error);
+                setSearchError('No se pudieron cargar los resultados de búsqueda.');
+            } finally {
+                setIsSearching(false);
+            }
+        }, 300);
+
+        return () => clearTimeout(timer);
+    }, [searchQuery, showSearchModal]);
+
+    function openSearchModal(type) {
+        setSearchType(type);
+        setSearchQuery('');
+        setSearchResults([]);
+        setSearchError(null);
+        setShowSearchModal(true);
+    }
+
+    function closeSearchModal() {
+        setShowSearchModal(false);
+        setSearchType(null);
+        setSearchQuery('');
+        setSearchResults([]);
+        setSearchError(null);
+    }
+
+    async function handleSelectSearchResult(anime) {
+        if (!searchType) return;
+        try {
+            const response = await fetch('/api/user/anime', {
+                method: 'POST',
+                credentials: 'include',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    type: searchType,
+                    id_anime: anime.mal_id
+                })
+            });
+            const data = await response.json();
+            if (!data.success) {
+                alert('Error al actualizar el anime: ' + (data.error || 'Error desconocido'));
+                return;
+            }
+            await checkSession();
+            closeSearchModal();
+            actualitzarUserInfo();
+            window.location.reload();
+        } catch (error) {
+            console.error('Error updating favorite/recommended anime:', error);
+            alert('No se pudo actualizar el anime. Inténtalo de nuevo.');
+        }
+    }
 
     function editPfpView() {
         document.querySelector('.edit-pfp-container').style.display = 'flex';
@@ -80,18 +161,18 @@ export function ProfilePage() {
         })
             .then(response => response.json())
             .then(data => {
-                    if (data.success) {
-                        userInfo = data.user;
-                    } else {
-                        userInfo = null;
-                    }
-                })
+                if (data.success) {
+                    userInfo = data.user;
+                } else {
+                    userInfo = null;
+                }
+            })
             .catch(error => {
                 console.error('Error checking session:', error);
                 userInfo = null;
             });
     }
-    
+
 
     return (
         <div className="profile-page">
@@ -120,7 +201,7 @@ export function ProfilePage() {
                 </div>
                 <div className="profile-separator" />
                 <div className="profile-anime-list">
-                    <div className="anime-card">
+                    <div className="anime-card anime-card-clickable" onClick={() => openSearchModal('favorite')}>
                         <img
                             src={
                                 favoriteAnime?.imatge_portada ||
@@ -130,7 +211,7 @@ export function ProfilePage() {
                         />
                         <p>Anime favorito</p>
                     </div>
-                    <div className="anime-card">
+                    <div className="anime-card anime-card-clickable" onClick={() => openSearchModal('recommended')}>
                         <img
                             src={
                                 recommendedAnime?.imatge_portada ||
@@ -145,6 +226,39 @@ export function ProfilePage() {
                         <p>Actualmente viendo</p>
                     </div>
                 </div>
+                {showSearchModal && (
+                    <div className="select-anime-container">
+                        <div className="select-anime-overlay">
+                            <div className="select-anime-header">
+                                <h3>Buscar anime para {searchType === 'favorite' ? 'favorito' : 'recomendado'}</h3>
+                                <button className="close-search-button" onClick={closeSearchModal}>Cerrar</button>
+                            </div>
+                            <input
+                                className="select-anime-input"
+                                placeholder="Buscar anime..."
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                autoFocus
+                            />
+                            {isSearching && <p className="select-anime-status">Buscando...</p>}
+                            {searchError && <p className="select-anime-error">{searchError}</p>}
+                            {!isSearching && !searchError && searchQuery.trim() !== '' && searchResults.length === 0 && (
+                                <p className="select-anime-empty">No se encontraron resultados.</p>
+                            )}
+                            <ul className="select-anime-results">
+                                {searchResults.map((anime) => (
+                                    <li key={anime.mal_id} className="select-anime-result" onClick={() => handleSelectSearchResult(anime)}>
+                                        <img src={anime.images?.jpg?.image_url} alt={anime.title} />
+                                        <div className="select-anime-info">
+                                            <span className="result-title">{anime.title}</span>
+                                            <span className="result-subtitle">{anime.type} · {anime.year || 'Año desconocido'}</span>
+                                        </div>
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     );

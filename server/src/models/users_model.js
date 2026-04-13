@@ -68,3 +68,12 @@ export async function updateUserProfilePicture(id_usuari, img_url) {
         .select()
         .maybeSingle();
 }
+
+export async function updateUserAnimeChoice(id_usuari, field, id_anime) {
+    return await supabase
+        .from('usuari')
+        .update({ [field]: id_anime })
+        .eq('id_usuari', id_usuari)
+        .select()
+        .maybeSingle();
+}

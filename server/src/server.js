@@ -7,7 +7,7 @@ import { randomUUID, randomBytes, scryptSync } from 'crypto';
 import session from 'express-session';
 import { syncAnimeById, syncAnimeMetadataById, mapJikanToDb } from './controllers/syncAnime.js';
 import { findAnimeById, listAnimes, testDbConnection } from './models/anime_model.js';
-import { registerUser, findUserByNom, updateUserProfilePicture } from './models/users_model.js';
+import { registerUser, findUserByNom, updateUserProfilePicture, updateUserAnimeChoice } from './models/users_model.js';
 
 function hashPassword(password) {
 	const salt = randomBytes(16).toString('hex');
@@ -353,6 +353,35 @@ app.get('/api/check-session', async (req, res) => {
 
 
 	return res.json({ success: true, user: req.session.user });
+});
+
+app.post('/api/user/anime', async (req, res) => {
+	const { type, id_anime } = req.body;
+	if (!req.session.user) {
+		return res.status(401).json({ success: false, error: 'No hay sesión activa' });
+	}
+	if (!['favorite', 'recommended'].includes(type)) {
+		return res.status(400).json({ success: false, error: 'Tipo inválido. Usa favorite o recommended.' });
+	}
+	if (!id_anime) {
+		return res.status(400).json({ success: false, error: 'Falta el id del anime.' });
+	}
+
+	const field = type === 'favorite' ? 'id_anime_preferit' : 'id_anime_recomanat';
+	try {
+		const { data, error } = await updateUserAnimeChoice(req.session.user.id_usuari, field, id_anime);
+		if (error) {
+			console.error('Error updating user anime choice:', error);
+			return res.status(500).json({ success: false, error: 'Error al actualizar el anime del usuario' });
+		}
+		if (!data) {
+			return res.status(404).json({ success: false, error: 'Usuario no encontrado' });
+		}
+		return res.json({ success: true, user: data });
+	} catch (error) {
+		console.error('POST /api/user/anime error', error);
+		return res.status(500).json({ success: false, error: error.message });
+	}
 });
 
 // Logout
