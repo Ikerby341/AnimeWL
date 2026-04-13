@@ -369,6 +369,16 @@ app.post('/api/user/anime', async (req, res) => {
 
 	const field = type === 'favorite' ? 'id_anime_preferit' : 'id_anime_recomanat';
 	try {
+		let anime = await findAnimeById(id_anime);
+		if (!anime) {
+			console.log(`Anime ${id_anime} no encontrado en BBDD, sincronizando antes de asignar.`);
+			await syncAnimeMetadataById(id_anime);
+			anime = await findAnimeById(id_anime);
+			if (!anime) {
+				return res.status(500).json({ success: false, error: 'No se pudo sincronizar el anime seleccionado.' });
+			}
+		}
+
 		const { data, error } = await updateUserAnimeChoice(req.session.user.id_usuari, field, id_anime);
 		if (error) {
 			console.error('Error updating user anime choice:', error);
