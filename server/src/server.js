@@ -149,19 +149,24 @@ app.get('/api/anime/genre/:genreId/:limit', async (req, res) => {
 // no está presente todavía.
 app.get('/api/anime/:id', async (req, res) => {
 	const { id } = req.params;
+	const cacheOnly = req.query.cacheOnly === 'true';
 	try {
-		console.log('GET /api/anime/:id', id);
+		console.log('GET /api/anime/:id', id, 'cacheOnly=', cacheOnly);
 		// always start by reading whatever is currently in the database
 		let anime = await findAnimeById(id);
 		console.log('  initial db read:', !!anime);
 		if (anime) {
-			// we enforce re-read just before sending so the response comes
-			// strictly from the database, even if the `anime` variable is stale.
 			anime = await findAnimeById(id);
 			res.json({ success: true, anime });
-			// schedule a full update in the background
-			syncAnimeById(id).catch((e) => console.error('background sync error', e));
+			if (!cacheOnly) {
+				syncAnimeById(id).catch((e) => console.error('background sync error', e));
+			}
 			return;
+		}
+
+		if (cacheOnly) {
+			console.log('  cacheOnly requested and anime not in DB. returning 404 without sync.');
+			return res.status(404).json({ success: false, error: 'not found' });
 		}
 
 		// not yet stored: fetch metadata and write it, then read from DB
@@ -275,13 +280,11 @@ app.post('/api/login', async (req, res) => {
 	req.session.user = {
 		id_usuari: result.data.id_usuari,
 		nom: result.data.nom,
-		email: result.data.email
+		email: result.data.email,
+		id_anime_preferit: result.data.id_anime_preferit,
+		id_anime_recomanat: result.data.id_anime_recomanat
 	};
-
-	// Si remember me está activado, extender la sesión a 30 días
-	if (remember) {
-		req.session.cookie.maxAge = 30 * 24 * 60 * 60 * 1000; // 30 días
-	}
+	req.session.cookie.maxAge = 30 * 24 * 60 * 60 * 1000; // 30 días
 
 	return res.json({
 		success: true,
@@ -290,11 +293,38 @@ app.post('/api/login', async (req, res) => {
 });
 
 // Verificar sesión actual
-app.get('/api/session', (req, res) => {
-	if (req.session.user) {
-		return res.json({ success: true, user: req.session.user });
+app.get('/api/session', async (req, res) => {
+	if (!req.session.user) {
+		return res.status(401).json({ success: false, error: 'No hay sesión activa' });
 	}
-	return res.status(401).json({ success: false, error: 'No hay sesión activa' });
+
+	const sessionUser = req.session.user;
+
+	if (sessionUser.id_anime_preferit == null || sessionUser.id_anime_recomanat == null) {
+		try {
+			const result = await findUserByNom(sessionUser.nom);
+			if (result.error) {
+				console.error('Error fetching user session info:', result.error);
+				return res.status(500).json({ success: false, error: 'Error al comprobar la sesión' });
+			}
+
+			if (result.data) {
+				req.session.user = {
+					id_usuari: result.data.id_usuari,
+					nom: result.data.nom,
+					email: result.data.email,
+					id_anime_preferit: result.data.id_anime_preferit,
+					id_anime_recomanat: result.data.id_anime_recomanat
+				};
+				return res.json({ success: true, user: req.session.user });
+			}
+		} catch (error) {
+			console.error('Error fetching session user info:', error);
+			return res.status(500).json({ success: false, error: 'Error al comprobar la sesión' });
+		}
+	}
+
+	return res.json({ success: true, user: sessionUser });
 });
 
 // Logout

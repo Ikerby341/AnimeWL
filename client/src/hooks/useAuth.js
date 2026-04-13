@@ -8,3 +8,13 @@ export function useAuth() {
     }
     return context
 }
+
+export function useIsLoggedIn() {
+    const { isLoggedIn } = useAuth()
+    return isLoggedIn
+}
+
+export function useUserInfo() {
+    const { getUserInfo } = useAuth()
+    return getUserInfo()
+}

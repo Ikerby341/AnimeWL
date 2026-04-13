@@ -46,7 +46,7 @@ export async function registerUser({ id_usuari, nom, email, contrasenya }) {
 export async function findUserByNom(nom) {
     return await supabase
         .from('usuari')
-        .select('id_usuari, nom, email, contrasenya')
+        .select('id_usuari, nom, email, contrasenya, id_anime_preferit, id_anime_recomanat')
         .eq('nom', nom)
         .maybeSingle();
 }
@@ -54,7 +54,7 @@ export async function findUserByNom(nom) {
 export async function findUserByEmail(email) {
     return await supabase
         .from('usuari')
-        .select('id_usuari, nom, email, contrasenya')
+        .select('id_usuari, nom, email, contrasenya, id_anime_preferit, id_anime_recomanat')
         .eq('email', email)
         .maybeSingle();
 }

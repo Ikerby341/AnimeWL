@@ -66,12 +66,27 @@ export function AuthProvider({ children }) {
     }
   }
 
+  const getUserInfo = () => {
+    if (!user) return null
+
+    return {
+      nom: user.nom ?? '',
+      email: user.email ?? '',
+      id_anime_preferit: user.id_anime_preferit ?? null,
+      id_anime_recomanat: user.id_anime_recomanat ?? null
+    }
+  }
+
+  const isLoggedIn = Boolean(user)
+
   const value = {
     user,
     loading,
     login,
     logout,
-    checkSession
+    checkSession,
+    isLoggedIn,
+    getUserInfo
   }
 
   return (
