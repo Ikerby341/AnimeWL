@@ -282,7 +282,8 @@ app.post('/api/login', async (req, res) => {
 		nom: result.data.nom,
 		email: result.data.email,
 		id_anime_preferit: result.data.id_anime_preferit,
-		id_anime_recomanat: result.data.id_anime_recomanat
+		id_anime_recomanat: result.data.id_anime_recomanat,
+		img_url: result.data.img_url
 	};
 	req.session.cookie.maxAge = 30 * 24 * 60 * 60 * 1000; // 30 días
 
@@ -300,7 +301,7 @@ app.get('/api/session', async (req, res) => {
 
 	const sessionUser = req.session.user;
 
-	if (sessionUser.id_anime_preferit == null || sessionUser.id_anime_recomanat == null) {
+	if (sessionUser.id_anime_preferit == null || sessionUser.id_anime_recomanat == null || sessionUser.img_url == null) {
 		try {
 			const result = await findUserByNom(sessionUser.nom);
 			if (result.error) {
@@ -314,7 +315,8 @@ app.get('/api/session', async (req, res) => {
 					nom: result.data.nom,
 					email: result.data.email,
 					id_anime_preferit: result.data.id_anime_preferit,
-					id_anime_recomanat: result.data.id_anime_recomanat
+					id_anime_recomanat: result.data.id_anime_recomanat,
+					img_url: result.data.img_url
 				};
 				return res.json({ success: true, user: req.session.user });
 			}
@@ -327,6 +329,36 @@ app.get('/api/session', async (req, res) => {
 	return res.json({ success: true, user: sessionUser });
 });
 
+app.get('/api/check-session', async (req, res) => {
+	if (!req.session.user) {
+		return res.status(401).json({ success: false, error: 'No hay sesión activa' });
+	}
+	// refrescar datos de sesión desde la base de datos para asegurarnos de que tenemos la info más reciente
+	try {
+		const result = await findUserByNom(req.session.user.nom);
+		if (result.error) {
+			console.error('Error fetching session user info:', result.error);
+			return res.status(500).json({ success: false, error: 'Error al comprobar la sesión' });
+		}
+		if (result.data) {
+			req.session.user = {
+				id_usuari: result.data.id_usuari,
+				nom: result.data.nom,
+				email: result.data.email,
+				id_anime_preferit: result.data.id_anime_preferit,
+				id_anime_recomanat: result.data.id_anime_recomanat,
+				img_url: result.data.img_url
+			};
+		}
+	} catch (error) {
+		console.error('Error fetching session user info:', error);
+		return res.status(500).json({ success: false, error: 'Error al comprobar la sesión' });
+	}
+
+
+	return res.json({ success: true, user: req.session.user });
+});
+
 // Logout
 app.post('/api/logout', (req, res) => {
 	req.session.destroy((err) => {
@@ -337,6 +369,38 @@ app.post('/api/logout', (req, res) => {
 		res.clearCookie('connect.sid');
 		return res.json({ success: true, message: 'Sesión cerrada correctamente' });
 	});
+});
+
+app.post('/api/update-profile-picture', async (req, res) => {
+	const { img_url } = req.body;
+	if (!req.session.user) {
+		return res.status(401).json({ success: false, error: 'No hay sesión activa' });
+	}
+	if (!img_url || typeof img_url !== 'string' || !/^https?:\/\/.+\.(jpg|jpeg|png|gif|bmp|webp)$/i.test(img_url)) {
+		return res.status(400).json({ success: false, error: 'URL de imagen no válida' });
+	}
+	try {
+		const { data, error } = await supabase
+			.from('usuari')
+			.update({ img_url })
+			.eq('id_usuari', req.session.user.id_usuari)
+			.select()
+			.maybeSingle();
+
+		if (error) {
+			console.error('Error updating profile picture:', error);
+			return res.status(500).json({ success: false, error: 'Error al actualizar la foto de perfil' });
+		}
+
+		if (!data) {
+			return res.status(404).json({ success: false, error: 'Usuario no encontrado' });
+		}
+
+		return res.json({ success: true, user: data });
+	} catch (error) {
+		console.error('Error updating profile picture:', error);
+		return res.status(500).json({ success: false, error: 'Error al actualizar la foto de perfil' });
+	}
 });
 
 // Iniciar el servidor (arrancar la aplicación)

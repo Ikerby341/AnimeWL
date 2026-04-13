@@ -107,12 +107,13 @@
 }
 
 .user-menu-button:hover .user-icon {
-  filter: brightness(0.8) invert(1);
+  filter: brightness(0.5);
 }
 
 .user-icon {
   height: 3rem;
   background-color: transparent;
+  border-radius: 50%;
 }
 
 .user-dropdown {

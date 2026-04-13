@@ -32,7 +32,8 @@ export async function registerUser({ id_usuari, nom, email, contrasenya }) {
             email,
             contrasenya,
             id_anime_preferit: null,
-            id_anime_recomanat: null
+            id_anime_recomanat: null,
+            img_url: null
         }
     ]);
 
@@ -46,7 +47,7 @@ export async function registerUser({ id_usuari, nom, email, contrasenya }) {
 export async function findUserByNom(nom) {
     return await supabase
         .from('usuari')
-        .select('id_usuari, nom, email, contrasenya, id_anime_preferit, id_anime_recomanat')
+        .select('id_usuari, nom, email, contrasenya, id_anime_preferit, id_anime_recomanat, img_url')
         .eq('nom', nom)
         .maybeSingle();
 }
@@ -54,7 +55,7 @@ export async function findUserByNom(nom) {
 export async function findUserByEmail(email) {
     return await supabase
         .from('usuari')
-        .select('id_usuari, nom, email, contrasenya, id_anime_preferit, id_anime_recomanat')
+        .select('id_usuari, nom, email, contrasenya, id_anime_preferit, id_anime_recomanat, img_url')
         .eq('email', email)
         .maybeSingle();
 }

@@ -6,6 +6,7 @@ import favoriteIcon from './../../assets/favorito.png';
 import directoryIcon from './../../assets/directorio.png';
 import { ButtonNavBar } from './../ButtonNavBar/ButtonNavBar';
 import { useAuth } from '../../hooks/useAuth.js';
+import { useUserInfo } from './../../hooks/useAuth';
 import './NavBar.css';
 
 export function Navbar({ searchBar = true, directory = true, favorites = true, profile = true }) {
@@ -72,6 +73,8 @@ export function Navbar({ searchBar = true, directory = true, favorites = true, p
     logout();
   };
 
+  const userInfo = useUserInfo();
+
   return (
     <nav className="navbar" ref={wrapperRef}>
       <div className="navbarDiv">
@@ -120,7 +123,7 @@ export function Navbar({ searchBar = true, directory = true, favorites = true, p
               className="user-menu-button"
               title={user ? `Usuario: ${user.nom}` : 'Iniciar sesión'}
             >
-              <img src={userIcon} alt="User" className="user-icon" />
+              <img src={userInfo?.img_url || userIcon} alt="User" className="user-icon" />
             </button>
             {showUserMenu && (
               <div className="user-dropdown">
