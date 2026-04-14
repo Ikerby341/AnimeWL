@@ -61,7 +61,16 @@
     font-size: 0.9rem;
 }
 
+.options .remember label {
+    display: inline-flex;
+    align-items: center;
+    margin: 0;
+}
+
 .login-checkbox {
+    width: 18px;
+    height: 18px;
+    margin: 0;
     vertical-align: middle;
     accent-color: #209F36;
 }
