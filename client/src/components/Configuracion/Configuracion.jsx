@@ -43,6 +43,65 @@ export function Configuracion() {
             });
     }
 
+    function changePassword() {
+        const currentPassword = document.getElementById('current-password').value;
+        const newPassword = document.getElementById('password').value;
+        const confirmPassword = document.getElementById('confirm-password').value;
+
+        if (!currentPassword || !newPassword || !confirmPassword) {
+            alert('Rellena todos los campos de contraseña.');
+            return;
+        }
+        if (newPassword !== confirmPassword) {
+            alert('La nueva contraseña y la confirmación no coinciden.');
+            return;
+        }
+        if (newPassword.length < 6) {
+            alert('La nueva contraseña debe tener al menos 6 caracteres.');
+            return;
+        }
+
+        fetch('/api/user/update-password', {
+            method: 'POST',
+            credentials: 'include',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                currentPassword,
+                newPassword,
+                confirmPassword
+            })
+        })
+            .then(async response => {
+                if (response.ok) {
+                    alert('Contraseña actualizada correctamente.');
+                    document.getElementById('current-password').value = '';
+                    document.getElementById('password').value = '';
+                    document.getElementById('confirm-password').value = '';
+                    return;
+                }
+
+                let errorMessage = 'Error al actualizar la contraseña';
+                try {
+                    const data = await response.json();
+                    if (data && data.error) {
+                        errorMessage += ': ' + data.error;
+                    } else {
+                        errorMessage += ': ' + response.statusText;
+                    }
+                } catch (err) {
+                    console.error('Error parsing error response:', err);
+                    errorMessage += ': ' + response.statusText;
+                }
+                alert(errorMessage);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error al actualizar la contraseña: ' + error.message);
+            });
+    }
+
     function acualitzarDadesUsuari() {
         fetch('/api/check-session', {
             method: 'GET',
@@ -74,7 +133,7 @@ export function Configuracion() {
             <input type="password" id="current-password" name="current-password" placeholder="Contraseña actual" style={{ marginTop: '10px' }} />
             <input type="password" id="password" name="password" placeholder="Nueva contraseña" />
             <input type="password" id="confirm-password" name="confirm-password" placeholder="Confirmar nueva contraseña" />
-            <button className="change-button">Cambiar contraseña</button>
+            <button className="change-button" onClick={changePassword}>Cambiar contraseña</button>
         </div>
     );
 }

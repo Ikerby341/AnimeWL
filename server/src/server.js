@@ -7,7 +7,7 @@ import { randomUUID, randomBytes, scryptSync } from 'crypto';
 import session from 'express-session';
 import { syncAnimeById, syncAnimeMetadataById, mapJikanToDb } from './controllers/syncAnime.js';
 import { findAnimeById, listAnimes, testDbConnection } from './models/anime_model.js';
-import { registerUser, findUserByNom, updateUserProfilePicture, updateUserAnimeChoice, updateUsername } from './models/users_model.js';
+import { registerUser, findUserByNom, updateUserProfilePicture, updateUserAnimeChoice, updateUsername, updateUserPassword } from './models/users_model.js';
 
 function hashPassword(password) {
 	const salt = randomBytes(16).toString('hex');
@@ -242,6 +242,54 @@ app.get('/api/user/update-username', async (req, res) => {
 	} catch (error) {
 		console.error('Error updating username:', error);
 		return res.status(500).json({ success: false, error: 'Error al actualizar el nombre de usuario' });
+	}
+});
+
+app.post('/api/user/update-password', async (req, res) => {
+	if (!req.session.user) {
+		return res.status(401).json({ success: false, error: 'No hay sesión activa' });
+	}
+	const { currentPassword, newPassword, confirmPassword } = req.body;
+	if (!currentPassword || !newPassword || !confirmPassword) {
+		return res.status(400).json({ success: false, error: 'Faltan datos para cambiar la contraseña.' });
+	}
+	if (newPassword !== confirmPassword) {
+		return res.status(400).json({ success: false, error: 'La nueva contraseña y su confirmación no coinciden.' });
+	}
+	if (newPassword.length < 6) {
+		return res.status(400).json({ success: false, error: 'La nueva contraseña debe tener al menos 6 caracteres.' });
+	}
+	try {
+		const result = await findUserByNom(req.session.user.nom);
+		if (result.error) {
+			console.error('Error fetching session user info:', result.error);
+			return res.status(500).json({ success: false, error: 'Error al comprobar la sesión.' });
+		}
+		if (!result.data) {
+			return res.status(404).json({ success: false, error: 'Usuario no encontrado.' });
+		}
+
+		const storedPassword = result.data.contrasenya;
+		const [salt, hashed] = storedPassword.split(':');
+		const attemptHash = scryptSync(currentPassword, salt, 64).toString('hex');
+		if (attemptHash !== hashed) {
+			return res.status(400).json({ success: false, error: 'La contraseña actual es incorrecta.' });
+		}
+
+		const newHashedPassword = hashPassword(newPassword);
+		const { data, error } = await updateUserPassword(req.session.user.id_usuari, newHashedPassword);
+		if (error) {
+			console.error('Error updating password:', error);
+			return res.status(500).json({ success: false, error: 'Error al actualizar la contraseña.' });
+		}
+		if (!data) {
+			return res.status(404).json({ success: false, error: 'Usuario no encontrado.' });
+		}
+
+		return res.json({ success: true, message: 'Contraseña actualizada correctamente.' });
+	} catch (error) {
+		console.error('Error updating password:', error);
+		return res.status(500).json({ success: false, error: 'Error al actualizar la contraseña.' });
 	}
 });
 
