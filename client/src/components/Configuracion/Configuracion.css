@@ -1,0 +1,43 @@
+input {
+    width: 90%;
+    padding: 10px;
+    border-radius: 8px;
+    border: none;
+    margin-bottom: 20px;
+    font-size: 1rem;
+}
+
+input:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px #209F36;
+}
+
+.save-button {
+    background-color: #209F36;
+    color: white;
+    border-radius: 8px;
+    border: none;
+    padding: 0.5rem;
+    font-size: 1rem;
+    margin: 1%;
+}
+
+.save-button:hover {
+    background-color: #1A7B2C;
+    cursor: pointer;
+}
+
+.change-button {
+    background-color: #209F36;
+    color: white;
+    font-weight: bold;
+    border-radius: 8px;
+    border: none;
+    padding: 10px 20px;
+    font-size: 1rem;
+}
+
+.change-button:hover {
+    background-color: #1A7B2C;
+    cursor: pointer;
+}
