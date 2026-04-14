@@ -7,7 +7,7 @@ import { randomUUID, randomBytes, scryptSync } from 'crypto';
 import session from 'express-session';
 import { syncAnimeById, syncAnimeMetadataById, mapJikanToDb } from './controllers/syncAnime.js';
 import { findAnimeById, listAnimes, testDbConnection } from './models/anime_model.js';
-import { registerUser, findUserByNom, updateUserProfilePicture, updateUserAnimeChoice } from './models/users_model.js';
+import { registerUser, findUserByNom, updateUserProfilePicture, updateUserAnimeChoice, updateUsername } from './models/users_model.js';
 
 function hashPassword(password) {
 	const salt = randomBytes(16).toString('hex');
@@ -214,6 +214,34 @@ app.post('/api/anime/sync/:id', async (req, res) => {
 	} catch (err) {
 		console.error('POST /api/anime/sync/:id error', err);
 		res.status(500).json({ success: false, error: err.message });
+	}
+});
+
+app.get('/api/user/update-username', async (req, res) => {
+	if (!req.session.user) {
+		return res.status(401).json({ success: false, error: 'No hay sesión activa' });
+	}
+	const { newUsername } = req.query;
+	if (!newUsername || newUsername.trim() === '') {
+		return res.status(400).json({ success: false, error: 'El nombre de usuario no puede estar vacío' });
+	}
+	try {
+		const { data, error } = await updateUsername(req.session.user.id_usuari, newUsername.trim());
+		if (error) {
+			console.error('Error updating username:', error);
+			const errorMessage = error.message || 'Error al actualizar el nombre de usuario';
+			const statusCode = errorMessage.includes('registrado') ? 400 : 500;
+			return res.status(statusCode).json({ success: false, error: errorMessage });
+		}
+		if (!data) {
+			return res.status(404).json({ success: false, error: 'Usuario no encontrado' });
+		}
+		// actualizar el nombre de usuario en la sesión para que el cambio se refleje inmediatamente
+		req.session.user.nom = newUsername.trim();
+		return res.json({ success: true, user: data });
+	} catch (error) {
+		console.error('Error updating username:', error);
+		return res.status(500).json({ success: false, error: 'Error al actualizar el nombre de usuario' });
 	}
 });
 

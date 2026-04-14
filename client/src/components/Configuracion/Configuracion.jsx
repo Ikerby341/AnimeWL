@@ -2,15 +2,73 @@ import "./Configuracion.css";
 import { useUserInfo } from './../../hooks/useAuth';
 
 export function Configuracion() {
-    const { nom, email } = useUserInfo();
+    let userInfo = useUserInfo();
+    
+    function changeUsername() {
+        const newUsername = document.getElementById('username').value;
+        if (newUsername.trim() == userInfo.nom) {
+            return;
+        } else if (newUsername.trim() === '') {
+            alert('El nombre de usuario no puede estar vacío');
+            return;
+        }
+        fetch(`/api/user/update-username?newUsername=${encodeURIComponent(newUsername)}`, {
+            method: 'GET',
+            credentials: 'include'
+        })
+            .then(async response => {
+                if (response.ok) {
+                    acualitzarDadesUsuari();
+                    window.location.reload();
+                    return;
+                }
+
+                let errorMessage = 'Error al actualizar el nombre de usuario';
+                try {
+                    const data = await response.json();
+                    if (data && data.error) {
+                        errorMessage += ': ' + data.error;
+                    } else {
+                        errorMessage += ': ' + response.statusText;
+                    }
+                } catch (err) {
+                    console.error('Error parsing error response:', err);
+                    errorMessage += ': ' + response.statusText;
+                }
+                alert(errorMessage);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error al actualizar el nombre de usuario: ' + error.message);
+            });
+    }
+
+    function acualitzarDadesUsuari() {
+        fetch('/api/check-session', {
+            method: 'GET',
+            credentials: 'include'
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    userInfo = data.user;
+                } else {
+                    userInfo = null;
+                }
+            })
+            .catch(error => {
+                console.error('Error checking session:', error);
+                userInfo = null;
+            });
+    }
 
     return (
         <div className="configuracion">
             <label htmlFor="username">Nombre de usuario:</label>
-            <input type="text" id="username" name="username" placeholder="Tu nombre de usuario" defaultValue={nom} />
-            <button className="save-button">✏️</button>
+            <input type="text" id="username" name="username" placeholder="Tu nombre de usuario" defaultValue={userInfo.nom} />
+            <button className="save-button" onClick={changeUsername}>✏️</button>
             <label htmlFor="email">Correo electrónico:</label>
-            <input type="email" id="email" name="email" placeholder="Tu correo electrónico" defaultValue={email} />
+            <input type="email" id="email" name="email" placeholder="Tu correo electrónico" defaultValue={userInfo.email} />
             <button className="save-button">✏️</button>
             <label htmlFor="password">Cambiar contraseña:</label>
             <input type="password" id="current-password" name="current-password" placeholder="Contraseña actual" style={{ marginTop: '10px' }} />

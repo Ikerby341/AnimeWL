@@ -77,3 +77,20 @@ export async function updateUserAnimeChoice(id_usuari, field, id_anime) {
         .select()
         .maybeSingle();
 }
+
+export async function updateUsername(id_usuari, newUsername) {
+    let result = await supabase.from('usuari').select('nom').eq('nom', newUsername).maybeSingle();
+    if (result.error) {
+        console.error('Error checking username uniqueness:', result.error);
+        return { data: null, error: result.error };
+    } else if (result.data) {
+        const message = 'Ese nombre de usuario ya está registrado.';
+        return { data: null, error: new Error(message) };
+    }
+    const { data, error } = await supabase.from('usuari').update({ nom: newUsername }).eq('id_usuari', id_usuari).select().maybeSingle();
+    if (error) {
+        console.error('Error updating username:', error);
+        return { data: null, error: error };
+    }
+    return { data, error };
+}
