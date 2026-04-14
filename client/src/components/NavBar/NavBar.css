@@ -27,8 +27,9 @@
 
 .search-container {
   position: relative;
-  display: inline-block;          /* ancho ajustado al contenido */
-  margin-left: 1rem;              /* reemplaza el margin del input */
+  display: flex;
+  align-items: center;
+  margin-left: 1rem;
 }
 
 

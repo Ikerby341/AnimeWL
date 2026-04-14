@@ -124,15 +124,15 @@ export function Configuracion() {
     return (
         <div className="configuracion">
             <label htmlFor="username">Nombre de usuario:</label>
-            <input type="text" id="username" name="username" placeholder="Tu nombre de usuario" defaultValue={userInfo.nom} />
+            <input className="password-input" type="text" id="username" name="username" placeholder="Tu nombre de usuario" defaultValue={userInfo.nom} />
             <button className="save-button" onClick={changeUsername}>✏️</button>
             <label htmlFor="email">Correo electrónico:</label>
-            <input type="email" id="email" name="email" placeholder="Tu correo electrónico" defaultValue={userInfo.email} />
+            <input className="password-input" type="email" id="email" name="email" placeholder="Tu correo electrónico" defaultValue={userInfo.email} />
             <button className="save-button">✏️</button>
             <label htmlFor="password">Cambiar contraseña:</label>
-            <input type="password" id="current-password" name="current-password" placeholder="Contraseña actual" style={{ marginTop: '10px' }} />
-            <input type="password" id="password" name="password" placeholder="Nueva contraseña" />
-            <input type="password" id="confirm-password" name="confirm-password" placeholder="Confirmar nueva contraseña" />
+            <input className="password-input" type="password" id="current-password" name="current-password" placeholder="Contraseña actual" style={{ marginTop: '10px' }} />
+            <input className="password-input" type="password" id="password" name="password" placeholder="Nueva contraseña" />
+            <input className="password-input" type="password" id="confirm-password" name="confirm-password" placeholder="Confirmar nueva contraseña" />
             <button className="change-button" onClick={changePassword}>Cambiar contraseña</button>
         </div>
     );
