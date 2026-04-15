@@ -5,10 +5,11 @@ import { fileURLToPath } from 'url';
 import axios from 'axios';
 import { randomUUID, randomBytes, scryptSync } from 'crypto';
 import session from 'express-session';
+import nodemailer from 'nodemailer';
 import supabase from './config/db.js';
 import { syncAnimeById, syncAnimeMetadataById, mapJikanToDb } from './controllers/syncAnime.js';
 import { findAnimeById, listAnimes, testDbConnection } from './models/anime_model.js';
-import { registerUser, findUserByNom, updateUserProfilePicture, updateUserAnimeChoice, updateUsername, updateUserPassword } from './models/users_model.js';
+import { registerUser, findUserByNom, findUserByEmail, updateUserProfilePicture, updateUserAnimeChoice, updateUsername, updateUserPassword, updateUserEmail } from './models/users_model.js';
 
 function hashPassword(password) {
 	const salt = randomBytes(16).toString('hex');
@@ -19,6 +20,42 @@ function hashPassword(password) {
 function validateEmail(email) {
 	return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
+
+function getMailTransporter() {
+	const host = process.env.EMAIL_SMTP_HOST;
+	const port = process.env.EMAIL_SMTP_PORT;
+	const user = process.env.EMAIL_SMTP_USER;
+	const pass = process.env.EMAIL_SMTP_PASS;
+	const secure = process.env.EMAIL_SMTP_SECURE === 'true';
+
+	if (!host || !port || !user || !pass) {
+		throw new Error('Faltan variables de entorno de correo electrónico (EMAIL_SMTP_HOST, EMAIL_SMTP_PORT, EMAIL_SMTP_USER, EMAIL_SMTP_PASS)');
+	}
+
+	return nodemailer.createTransport({
+		host,
+		port: Number(port),
+		secure,
+		auth: {
+			user,
+			pass
+		}
+	});
+}
+
+async function sendVerificationEmail(to, code) {
+	const transporter = getMailTransporter();
+	const from = process.env.EMAIL_FROM || process.env.EMAIL_SMTP_USER;
+	const mailOptions = {
+		from,
+		to,
+		subject: 'Código de verificación para cambio de correo',
+		text: `Tu código de verificación es: ${code}. Introduce este código en la sección de configuración para cambiar tu correo electrónico.`,
+		html: `<p>Tu código de verificación es: <strong>${code}</strong></p><p>Introduce este código en la sección de configuración para cambiar tu correo electrónico.</p>`
+	};
+	return transporter.sendMail(mailOptions);
+}
+
 const __filename = fileURLToPath(import.meta.url);	// Ruta d'aquest arxiu (servidor.js)
 const __dirname = path.dirname(__filename);			// Ruta de la carpeta on es troba aquest arxiu
 
@@ -382,6 +419,88 @@ app.post('/api/user/update-password', async (req, res) => {
 	} catch (error) {
 		console.error('Error updating password:', error);
 		return res.status(500).json({ success: false, error: 'Error al actualizar la contraseña.' });
+	}
+});
+
+app.post('/api/user/send-email-code', async (req, res) => {
+	if (!req.session.user) {
+		return res.status(401).json({ success: false, error: 'No hay sesión activa' });
+	}
+
+	const currentEmail = req.session.user.email;
+	if (!currentEmail) {
+		return res.status(400).json({ success: false, error: 'No se encontró el correo electrónico asociado.' });
+	}
+
+	const code = Math.floor(100000 + Math.random() * 900000).toString();
+	req.session.emailChange = {
+		code,
+		expiresAt: Date.now() + 10 * 60 * 1000
+	};
+
+	try {
+		await sendVerificationEmail(currentEmail, code);
+		return res.json({ success: true, message: 'Código enviado al correo electrónico actual.' });
+	} catch (error) {
+		console.error('Error sending email verification code:', error);
+		return res.status(500).json({ success: false, error: 'Error al enviar el código de verificación.' });
+	}
+});
+
+app.post('/api/user/update-email', async (req, res) => {
+	if (!req.session.user) {
+		return res.status(401).json({ success: false, error: 'No hay sesión activa' });
+	}
+
+	const { code, newEmail } = req.body;
+	if (!code || !newEmail) {
+		return res.status(400).json({ success: false, error: 'Faltan datos para cambiar el correo electrónico.' });
+	}
+
+	if (!validateEmail(newEmail)) {
+		return res.status(400).json({ success: false, error: 'El nuevo correo electrónico no es válido.' });
+	}
+
+	const sessionCode = req.session.emailChange?.code;
+	const expiresAt = req.session.emailChange?.expiresAt;
+
+	if (!sessionCode || !expiresAt || Date.now() > expiresAt) {
+		return res.status(400).json({ success: false, error: 'El código de verificación ha caducado. Vuelve a solicitar uno nuevo.' });
+	}
+
+	if (String(code).trim() !== String(sessionCode).trim()) {
+		return res.status(400).json({ success: false, error: 'El código de verificación no es correcto.' });
+	}
+
+	if (newEmail.trim().toLowerCase() === req.session.user.email?.trim().toLowerCase()) {
+		return res.status(400).json({ success: false, error: 'El nuevo correo debe ser diferente al actual.' });
+	}
+
+	try {
+		const existingEmail = await findUserByEmail(newEmail.trim());
+		if (existingEmail.error) {
+			console.error('Error checking email uniqueness:', existingEmail.error);
+			return res.status(500).json({ success: false, error: 'Error al comprobar el correo electrónico.' });
+		}
+		if (existingEmail.data) {
+			return res.status(400).json({ success: false, error: 'Ese correo electrónico ya está registrado.' });
+		}
+
+		const { data, error } = await updateUserEmail(req.session.user.id_usuari, newEmail.trim());
+		if (error) {
+			console.error('Error updating email:', error);
+			return res.status(500).json({ success: false, error: 'Error al actualizar el correo electrónico.' });
+		}
+		if (!data) {
+			return res.status(404).json({ success: false, error: 'Usuario no encontrado.' });
+		}
+
+		req.session.user.email = newEmail.trim();
+		delete req.session.emailChange;
+		return res.json({ success: true, message: 'Correo electrónico actualizado correctamente.' });
+	} catch (error) {
+		console.error('Error updating email:', error);
+		return res.status(500).json({ success: false, error: 'Error al actualizar el correo electrónico.' });
 	}
 });
 

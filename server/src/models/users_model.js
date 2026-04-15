@@ -95,6 +95,10 @@ export async function updateUsername(id_usuari, newUsername) {
     return { data, error };
 }
 
+export async function updateUserEmail(id_usuari, newEmail) {
+    return await supabase.from('usuari').update({ email: newEmail }).eq('id_usuari', id_usuari).select().maybeSingle();
+}
+
 export async function updateUserPassword(id_usuari, newContrasenya) {
     return await supabase.from('usuari').update({ contrasenya: newContrasenya }).eq('id_usuari', id_usuari).select().maybeSingle();
 }
