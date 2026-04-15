@@ -38,6 +38,30 @@ export function mapJikanToDb(anime) {
     };
 }
 
+async function fetchJikanJson(url) {
+    let attempts = 0;
+    while (true) {
+        try {
+            const res = await axios.get(url);
+            return res.data;
+        } catch (err) {
+            const status = err.response?.status;
+            if (status === 429) {
+                attempts += 1;
+                const delay = Math.min(1000 * 2 ** attempts, 30000);
+                console.warn(`rate limit hit when fetching ${url}, waiting ${delay}ms`);
+                await new Promise((r) => setTimeout(r, delay));
+                continue;
+            }
+            if (status >= 500) {
+                console.error(`Jikan server error ${status} for ${url}`);
+                return null;
+            }
+            throw err;
+        }
+    }
+}
+
 // obtener lista completa de episodios para un anime (puede paginarse)
 async function fetchEpisodes(animeId) {
     const episodes = [];
@@ -46,22 +70,9 @@ async function fetchEpisodes(animeId) {
         const url = `https://api.jikan.moe/v4/anime/${animeId}/episodes?page=${page}`;
         let res;
         let attempts = 0;
-        while (true) {
-            try {
-                res = await axios.get(url);
-                break;
-            } catch (err) {
-                if (err.response && err.response.status === 429) {
-                    attempts++;
-                    const delay = Math.min(1000 * 2 ** attempts, 30000);
-                    console.warn(`rate limit hit on episodes, waiting ${delay}ms`);
-                    await new Promise((r) => setTimeout(r, delay));
-                    continue;
-                }
-                throw err;
-            }
-        }
-        const d = res.data;
+        const json = await fetchJikanJson(url);
+        if (!json || !json.data) break;
+        const d = json;
         if (!d || !d.data || d.data.length === 0) break;
         episodes.push(...d.data);
         if (!d.pagination.has_next_page) break;
@@ -74,24 +85,8 @@ async function fetchEpisodes(animeId) {
 export async function syncAnimeMetadataById(idAnime) {
     if (!idAnime) return;
     const url = `https://api.jikan.moe/v4/anime/${idAnime}/full`;
-    let attempts = 0;
-    let data;
-    while (true) {
-        try {
-            const res = await axios.get(url);
-            data = res.data.data;
-            break;
-        } catch (err) {
-            if (err.response && err.response.status === 429) {
-                attempts++;
-                const delay = Math.min(1000 * 2 ** attempts, 30000);
-                console.warn(`rate limit hit when fetching anime ${idAnime}, waiting ${delay}ms`);
-                await new Promise((r) => setTimeout(r, delay));
-                continue;
-            }
-            throw err;
-        }
-    }
+    const json = await fetchJikanJson(url);
+    const data = json?.data;
     if (!data) return null;
 
     const record = mapJikanToDb(data);
@@ -107,24 +102,8 @@ export async function syncAnimeById(idAnime) {
     if (!idAnime) return;
     // llamamos al endpoint de detalle de Jikan para obtener toda la información
     const url = `https://api.jikan.moe/v4/anime/${idAnime}/full`;
-    let attempts = 0;
-    let data;
-    while (true) {
-        try {
-            const res = await axios.get(url);
-            data = res.data.data;
-            break;
-        } catch (err) {
-            if (err.response && err.response.status === 429) {
-                attempts++;
-                const delay = Math.min(1000 * 2 ** attempts, 30000);
-                console.warn(`rate limit hit when fetching anime ${idAnime}, waiting ${delay}ms`);
-                await new Promise((r) => setTimeout(r, delay));
-                continue;
-            }
-            throw err;
-        }
-    }
+    const json = await fetchJikanJson(url);
+    const data = json?.data;
     if (!data) return null;
 
     const record = mapJikanToDb(data);

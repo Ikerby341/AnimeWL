@@ -62,11 +62,15 @@ export function Perfil() {
             setSearchError(null);
             setIsSearching(true);
             try {
-                const response = await fetch(`https://api.jikan.moe/v4/anime?q=${encodeURIComponent(searchQuery)}&sfw&limit=10`);
+                const response = await fetch(`/api/jikan/search?q=${encodeURIComponent(searchQuery)}`);
                 if (!response.ok) {
-                    throw new Error('Error al buscar anime');
+                    const errorData = await response.json().catch(() => ({}));
+                    throw new Error(errorData.error || 'Error al buscar anime');
                 }
                 const data = await response.json();
+                if (!data.success) {
+                    throw new Error(data.error || 'Error al buscar anime');
+                }
                 setSearchResults(data.data || []);
             } catch (error) {
                 console.error('Error searching anime:', error);
@@ -95,8 +99,26 @@ export function Perfil() {
         setSearchError(null);
     }
 
+    function normalizeAnimeResult(anime) {
+        const title = anime.title || anime.titol || anime.name || 'Anime desconocido';
+        const imageUrl = anime.images?.jpg?.image_url || anime.imatge_portada || anime.image_url || '';
+        const id = anime.mal_id || anime.id_anime || anime.id || null;
+        const type = anime.type || anime.estat || 'Anime';
+        const rawYear = anime.year || anime.aired?.from || anime.dataafegit || anime.lastupdate || anime.created_at;
+        const year = rawYear
+            ? String(rawYear).slice(0, 4)
+            : 'Año desconocido';
+        return { title, imageUrl, id, type, year };
+    }
+
     async function handleSelectSearchResult(anime) {
         if (!searchType) return;
+        const normalized = normalizeAnimeResult(anime);
+        if (!normalized.id) {
+            alert('No se pudo seleccionar este anime porque falta el identificador.');
+            return;
+        }
+
         try {
             const response = await fetch('/api/user/anime', {
                 method: 'POST',
@@ -106,7 +128,7 @@ export function Perfil() {
                 },
                 body: JSON.stringify({
                     type: searchType,
-                    id_anime: anime.mal_id
+                    id_anime: normalized.id
                 })
             });
             const data = await response.json();
@@ -241,15 +263,18 @@ export function Perfil() {
                                 <p className="select-anime-empty">No se encontraron resultados.</p>
                             )}
                             <ul className="select-anime-results">
-                                {searchResults.map((anime) => (
-                                    <li key={anime.mal_id} className="select-anime-result" onClick={() => handleSelectSearchResult(anime)}>
-                                        <img src={anime.images?.jpg?.image_url} alt={anime.title} />
-                                        <div className="select-anime-info">
-                                            <span className="result-title">{anime.title}</span>
-                                            <span className="result-subtitle">{anime.type} · {anime.year || 'Año desconocido'}</span>
-                                        </div>
-                                    </li>
-                                ))}
+                                {searchResults.map((anime) => {
+                                    const normalized = normalizeAnimeResult(anime);
+                                    return (
+                                        <li key={normalized.id || anime.mal_id || anime.id} className="select-anime-result" onClick={() => handleSelectSearchResult(anime)}>
+                                            <img src={normalized.imageUrl || addAnimePlaceholder} alt={normalized.title} />
+                                            <div className="select-anime-info">
+                                                <span className="perfil-result-title">{normalized.title}</span>
+                                                <span className="result-subtitle">{normalized.type} · {normalized.year}</span>
+                                            </div>
+                                        </li>
+                                    );
+                                })}
                             </ul>
                         </div>
                     </div>

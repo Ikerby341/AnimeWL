@@ -5,6 +5,7 @@ import { fileURLToPath } from 'url';
 import axios from 'axios';
 import { randomUUID, randomBytes, scryptSync } from 'crypto';
 import session from 'express-session';
+import supabase from './config/db.js';
 import { syncAnimeById, syncAnimeMetadataById, mapJikanToDb } from './controllers/syncAnime.js';
 import { findAnimeById, listAnimes, testDbConnection } from './models/anime_model.js';
 import { registerUser, findUserByNom, updateUserProfilePicture, updateUserAnimeChoice, updateUsername, updateUserPassword } from './models/users_model.js';
@@ -137,6 +138,79 @@ app.get('/api/anime/genre/:genreId/:limit', async (req, res) => {
 	} catch (err) {
 		console.error('GET /api/anime/genre/:genreId/:limit error', err);
 		res.status(500).json({ success: false, error: err.message });
+	}
+});
+
+async function fetchAnimeFromDb(query) {
+	try {
+		const { data, error } = await supabase
+			.from('anime')
+			.select('*')
+			.ilike('titol', `%${query}%`)
+			.order('lastupdate', { ascending: false })
+			.limit(10);
+		if (error) {
+			console.error('fetchAnimeFromDb error', error);
+			return [];
+		}
+		return data || [];
+	} catch (err) {
+		console.error('fetchAnimeFromDb thrown error', err);
+		return [];
+	}
+}
+
+async function fetchJikanSearch(query) {
+	const url = `https://api.jikan.moe/v4/anime?q=${encodeURIComponent(query)}&sfw&limit=10`;
+	let attempts = 0;
+	while (true) {
+		try {
+			const response = await axios.get(url, {
+				headers: {
+					Accept: 'application/json',
+					'User-Agent': 'AnimeWL/1.0'
+				}
+			});
+			return response.data?.data || [];
+		} catch (err) {
+			const status = err.response?.status;
+			if (status === 429 && attempts < 3) {
+				attempts += 1;
+				const delay = Math.min(1000 * 2 ** attempts, 30000);
+				console.warn(`Jikan rate limit for search, retrying in ${delay}ms`);
+				await new Promise((r) => setTimeout(r, delay));
+				continue;
+			}
+			console.error('fetchJikanSearch error', status, err.message || err);
+			throw err;
+		}
+	}
+}
+
+app.get('/api/jikan/search', async (req, res) => {
+	const query = req.query.q;
+	if (!query || typeof query !== 'string' || query.trim() === '') {
+		return res.status(400).json({ success: false, error: 'Query parameter is required' });
+	}
+
+	const trimmedQuery = query.trim();
+	let data = await fetchAnimeFromDb(trimmedQuery);
+	if (data.length > 0) {
+		console.log('/api/jikan/search db', trimmedQuery, 'results', data.length);
+		return res.json({ success: true, data });
+	}
+
+	try {
+		data = await fetchJikanSearch(trimmedQuery);
+		console.log('/api/jikan/search jikan', trimmedQuery, 'results', data.length);
+		res.json({ success: true, data });
+	} catch (err) {
+		const status = err.response?.status || 500;
+		res.status(status).json({
+			success: false,
+			error: err.response?.data?.message || 'Error searching anime on Jikan',
+			status
+		});
 	}
 });
 

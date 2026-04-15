@@ -33,14 +33,29 @@ export function Navbar({ searchBar = true, directory = true, favorites = true, p
   }, []);
 
 
+  function normalizeSearchResult(anime) {
+    const title = anime.title || anime.titol || anime.name || 'Anime desconocido';
+    const imageUrl = anime.images?.jpg?.image_url || anime.imatge_portada || anime.image_url || '';
+    const id = anime.mal_id || anime.id_anime || anime.id || null;
+    return { title, imageUrl, id };
+  }
+
   useEffect(() => {
     if (query.trim() === '') {
       return;
     }
     const timer = setTimeout(async () => {
       try {
-        const res = await fetch(`https://api.jikan.moe/v4/anime?q=${encodeURIComponent(query)}&sfw&limit=10`);
+        const res = await fetch(`/api/jikan/search?q=${encodeURIComponent(query)}`);
+        if (!res.ok) {
+          console.error('search error', res.status);
+          return;
+        }
         const data = await res.json();
+        if (!data.success) {
+          console.error('search error', data.error);
+          return;
+        }
         setResults(data.data || []);
         setShowDropdown(true);
       } catch (err) {
@@ -51,11 +66,13 @@ export function Navbar({ searchBar = true, directory = true, favorites = true, p
   }, [query]);
 
   function handleSelect(anime) {
-    // navegar hacia la página de detalles; el endpoint /api/anime/:id se
-    // encargará de sincronizar en caso de faltar información en la BBDD
+    const normalized = normalizeSearchResult(anime);
+    if (!normalized.id) {
+      return;
+    }
     setQuery('');
     setShowDropdown(false);
-    navigate(`/details/${anime.mal_id}`);
+    navigate(`/details/${normalized.id}`);
   }
 
   const handleUserMenuToggle = () => {
@@ -97,16 +114,19 @@ export function Navbar({ searchBar = true, directory = true, favorites = true, p
             />
             {showDropdown && results.length > 0 && (
               <ul className="search-results">
-                {results.map((r) => (
-                  <li key={r.mal_id} onClick={() => handleSelect(r)}>
-                    <img
-                      src={r.images?.jpg?.image_url}
-                      alt={r.title}
-                      className="result-thumb"
-                    />
-                    <span className="result-title">{r.title}</span>
-                  </li>
-                ))}
+                {results.map((r) => {
+                  const normalized = normalizeSearchResult(r);
+                  return (
+                    <li key={normalized.id || r.mal_id || r.id} onClick={() => handleSelect(r)}>
+                      <img
+                        src={normalized.imageUrl}
+                        alt={normalized.title}
+                        className="result-thumb"
+                      />
+                      <span className="result-title">{normalized.title}</span>
+                    </li>
+                  );
+                })}
               </ul>
             )}
           </div>
