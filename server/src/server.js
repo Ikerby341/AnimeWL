@@ -161,7 +161,7 @@ async function fetchAnimeFromDb(query) {
 }
 
 async function fetchJikanSearch(query) {
-	const url = `https://api.jikan.moe/v4/anime?q=${encodeURIComponent(query)}&sfw&limit=10`;
+	const url = `https://api.jikan.moe/v4/anime?q=${encodeURIComponent(query)}&limit=10&sfw=true`;
 	let attempts = 0;
 	while (true) {
 		try {
@@ -181,7 +181,13 @@ async function fetchJikanSearch(query) {
 				await new Promise((r) => setTimeout(r, delay));
 				continue;
 			}
-			console.error('fetchJikanSearch error', status, err.message || err);
+			console.error('fetchJikanSearch error', {
+				status,
+				message: err.message,
+				url: err.config?.url,
+				data: err.response?.data,
+				headers: err.response?.headers,
+			});
 			throw err;
 		}
 	}
@@ -194,24 +200,36 @@ app.get('/api/jikan/search', async (req, res) => {
 	}
 
 	const trimmedQuery = query.trim();
-	let data = await fetchAnimeFromDb(trimmedQuery);
-	if (data.length > 0) {
-		console.log('/api/jikan/search db', trimmedQuery, 'results', data.length);
-		return res.json({ success: true, data });
-	}
+	let data = [];
+	let jikanError = null;
 
 	try {
 		data = await fetchJikanSearch(trimmedQuery);
 		console.log('/api/jikan/search jikan', trimmedQuery, 'results', data.length);
-		res.json({ success: true, data });
+		if (data.length > 0) {
+			return res.json({ success: true, data });
+		}
 	} catch (err) {
-		const status = err.response?.status || 500;
-		res.status(status).json({
+		jikanError = err;
+		console.warn('Jikan search failed, falling back to DB', err.message || err);
+	}
+
+	data = await fetchAnimeFromDb(trimmedQuery);
+	if (data.length > 0) {
+		console.log('/api/jikan/search db fallback', trimmedQuery, 'results', data.length);
+		return res.json({ success: true, data });
+	}
+
+	if (jikanError) {
+		const status = jikanError.response?.status || 500;
+		return res.status(status).json({
 			success: false,
-			error: err.response?.data?.message || 'Error searching anime on Jikan',
+			error: jikanError.response?.data?.message || 'Error searching anime on Jikan',
 			status
 		});
 	}
+
+	return res.json({ success: true, data: [] });
 });
 
 // devolver un anime de la BBDD; si existe devolvemos inmediatamente
