@@ -9,7 +9,7 @@ import nodemailer from 'nodemailer';
 import supabase from './config/db.js';
 import { syncAnimeById, syncAnimeMetadataById, mapJikanToDb } from './controllers/syncAnime.js';
 import { findAnimeById, listAnimes, testDbConnection } from './models/anime_model.js';
-import { findCommentsByAnimeId } from './models/comment_model.js';
+import { findCommentsByAnimeId, insertComment } from './models/comment_model.js';
 import { registerUser, findUserByNom, findUserByEmail, updateUserProfilePicture, updateUserAnimeChoice, updateUsername, updateUserPassword, updateUserEmail } from './models/users_model.js';
 
 function hashPassword(password) {
@@ -342,6 +342,32 @@ app.get('/api/anime/:id/comments', async (req, res) => {
 		return res.json({ success: true, comments });
 	} catch (err) {
 		console.error('GET /api/anime/:id/comments error', err);
+		return res.status(500).json({ success: false, error: err.message });
+	}
+});
+
+app.post('/api/anime/:id/comments', async (req, res) => {
+	const { id } = req.params;
+	const { contingut, id_capitol } = req.body;
+	if (!req.session.user) {
+		return res.status(401).json({ success: false, error: 'No hay sesión activa' });
+	}
+	if (!contingut || typeof contingut !== 'string' || contingut.trim() === '') {
+		return res.status(400).json({ success: false, error: 'El comentario no puede estar vacío' });
+	}
+	try {
+		const newComment = {
+			id_comentari: randomUUID(),
+			id_usuari: req.session.user.id_usuari,
+			id_anime: id,
+			id_capitol: id_capitol || null,
+			contingut: contingut.trim(),
+			data_hora: new Date().toISOString()
+		};
+		const inserted = await insertComment(newComment);
+		return res.json({ success: true, comment: inserted });
+	} catch (err) {
+		console.error('POST /api/anime/:id/comments error', err);
 		return res.status(500).json({ success: false, error: err.message });
 	}
 });

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
+import { useIsLoggedIn } from '../hooks/useAuth';
 import { Navbar } from '../components/NavBar/NavBar.jsx';
 import { AnimeDetails } from '../components/AnimeDetails/AnimeDetails.jsx';
 
@@ -10,6 +11,7 @@ export default function Details() {
   const [error, setError] = useState('');
   const [comments, setComments] = useState([]);
   const [commentsLoading, setCommentsLoading] = useState(true);
+  const isLoggedIn = useIsLoggedIn();
 
   useEffect(() => {
     if (!id) return;
@@ -73,8 +75,11 @@ export default function Details() {
       {!loading && anime && (
         <AnimeDetails
           anime={anime}
+          animeId={anime.id_anime}
           comments={comments}
           commentsLoading={commentsLoading}
+          isLoggedIn={isLoggedIn}
+          onCommentAdded={(newComment) => setComments((prevComments) => [newComment, ...prevComments])}
         />
       )}
     </div>

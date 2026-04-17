@@ -1,7 +1,7 @@
 import './AnimeDetails.css'
 import { AnimeComments } from '../AnimeComments/AnimeComments.jsx';
 
-export function AnimeDetails({ anime, comments = [], commentsLoading = true }) {
+export function AnimeDetails({ anime, animeId, comments = [], commentsLoading = true, isLoggedIn = false, onCommentAdded }) {
     if (!anime) {
         return <div>No hay información del anime.</div>;
     }
@@ -41,7 +41,13 @@ export function AnimeDetails({ anime, comments = [], commentsLoading = true }) {
                     </p>
                 </div>
             </div>
-            <AnimeComments comments={comments} loading={commentsLoading} />
+            <AnimeComments
+                animeId={animeId}
+                comments={comments}
+                loading={commentsLoading}
+                isLoggedIn={isLoggedIn}
+                onCommentAdded={onCommentAdded}
+            />
         </div>
     );
 }
