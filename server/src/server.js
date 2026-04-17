@@ -407,7 +407,7 @@ app.post('/api/anime/:id/progress', async (req, res) => {
 	}
 });
 
-app.post('/api/anime/:id/comments', async (req, res) => {
+app.post('/api/anime/:id/rating', async (req, res) => {
 	const { id } = req.params;
 	const { puntuacio, id_capitol } = req.body;
 	if (!req.session.user) {
