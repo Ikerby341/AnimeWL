@@ -33,6 +33,62 @@
     flex-direction: column;
     flex: 1;
     gap: 16px;
+    position: relative;
+}
+
+.anime-details-header {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    align-items: flex-start;
+    width: 100%;
+}
+
+.anime-rating {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 6px;
+    min-width: 180px;
+}
+
+.anime-rating-stars {
+    display: flex;
+    gap: 6px;
+}
+
+.anime-rating-summary,
+.anime-rating-user,
+.anime-rating-error {
+    color: #ffffff;
+    font-size: 0.9rem;
+    text-align: right;
+    margin: 0;
+}
+
+.anime-rating-error {
+    color: #ff7979;
+}
+
+.star {
+    background: none;
+    border: none;
+    color: #666;
+    font-size: 1.2rem;
+    cursor: default;
+    padding: 0;
+}
+
+.star.selected {
+    color: #ffd700;
+}
+
+.star.clickable {
+    cursor: pointer;
+}
+
+.star.clickable:hover {
+    color: #ffdb6b;
 }
 
 .anime-comments-section {

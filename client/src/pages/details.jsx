@@ -11,6 +11,10 @@ export default function Details() {
   const [error, setError] = useState('');
   const [comments, setComments] = useState([]);
   const [commentsLoading, setCommentsLoading] = useState(true);
+  const [ratingData, setRatingData] = useState({ average: 0, count: 0 });
+  const [userRating, setUserRating] = useState(null);
+  const [ratingLoading, setRatingLoading] = useState(true);
+  const [ratingError, setRatingError] = useState('');
   const isLoggedIn = useIsLoggedIn();
 
   useEffect(() => {
@@ -63,6 +67,54 @@ export default function Details() {
     loadComments();
   }, [id]);
 
+  useEffect(() => {
+    if (!id) return;
+
+    const loadRating = async () => {
+      setRatingLoading(true);
+      setRatingError('');
+      try {
+        const r = await fetch(`/api/anime/${id}/rating`, { credentials: 'include' });
+        const data = await r.json();
+        if (data && data.success) {
+          setRatingData(data.rating || { average: 0, count: 0 });
+          setUserRating(data.userRating ?? null);
+        } else {
+          setRatingError(data.error || 'Error al cargar valoración');
+        }
+      } catch (err) {
+        console.error('fetch rating error', err);
+        setRatingError('Error al cargar valoración');
+      } finally {
+        setRatingLoading(false);
+      }
+    };
+
+    loadRating();
+  }, [id, isLoggedIn]);
+
+  const handleRate = async (value) => {
+    try {
+      const response = await fetch(`/api/anime/${id}/rating`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ puntuacio: value })
+      });
+      const data = await response.json();
+      if (!response.ok || !data.success) {
+        console.error('submit rating error', data.error);
+        return;
+      }
+      setRatingData(data.rating || { average: 0, count: 0 });
+      setUserRating(data.userRating ?? value);
+    } catch (err) {
+      console.error('submit rating error', err);
+    }
+  };
+
   return (
     <div>
       <Navbar />
@@ -79,6 +131,11 @@ export default function Details() {
           comments={comments}
           commentsLoading={commentsLoading}
           isLoggedIn={isLoggedIn}
+          rating={ratingData}
+          userRating={userRating}
+          ratingLoading={ratingLoading}
+          ratingError={ratingError}
+          onRate={handleRate}
           onCommentAdded={(newComment) => setComments((prevComments) => [newComment, ...prevComments])}
         />
       )}

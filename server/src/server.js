@@ -11,6 +11,7 @@ import { syncAnimeById, syncAnimeMetadataById, mapJikanToDb } from './controller
 import { findAnimeById, listAnimes, testDbConnection } from './models/anime_model.js';
 import { findCommentsByAnimeId, insertComment } from './models/comment_model.js';
 import { registerUser, findUserByNom, findUserByEmail, updateUserProfilePicture, updateUserAnimeChoice, updateUsername, updateUserPassword, updateUserEmail } from './models/users_model.js';
+import { findRatingSummaryByAnimeId, findRatingByAnimeAndUser, saveRating } from './models/rating_model.js';
 
 function hashPassword(password) {
 	const salt = randomBytes(16).toString('hex');
@@ -342,6 +343,49 @@ app.get('/api/anime/:id/comments', async (req, res) => {
 		return res.json({ success: true, comments });
 	} catch (err) {
 		console.error('GET /api/anime/:id/comments error', err);
+		return res.status(500).json({ success: false, error: err.message });
+	}
+});
+
+app.get('/api/anime/:id/rating', async (req, res) => {
+	const { id } = req.params;
+	try {
+		const rating = await findRatingSummaryByAnimeId(id);
+		let userRating = null;
+		if (req.session.user) {
+			const userRatingRecord = await findRatingByAnimeAndUser(id, req.session.user.id_usuari);
+			userRating = userRatingRecord?.puntuacio ?? null;
+		}
+		return res.json({ success: true, rating, userRating });
+	} catch (err) {
+		console.error('GET /api/anime/:id/rating error', err);
+		return res.status(500).json({ success: false, error: err.message });
+	}
+});
+
+app.post('/api/anime/:id/rating', async (req, res) => {
+	const { id } = req.params;
+	const { puntuacio, id_capitol } = req.body;
+	if (!req.session.user) {
+		return res.status(401).json({ success: false, error: 'No hay sesión activa' });
+	}
+	const ratingValue = Number(puntuacio);
+	if (!ratingValue || ratingValue < 1 || ratingValue > 5) {
+		return res.status(400).json({ success: false, error: 'La valoración debe ser un número entre 1 y 5.' });
+	}
+	try {
+		const savedRating = await saveRating({
+			id_valoracio: randomUUID(),
+			id_usuari: req.session.user.id_usuari,
+			id_anime: id,
+			id_capitol: id_capitol || null,
+			puntuacio: ratingValue,
+			data: new Date().toISOString().split('T')[0]
+		});
+		const rating = await findRatingSummaryByAnimeId(id);
+		return res.json({ success: true, rating, userRating: savedRating.puntuacio });
+	} catch (err) {
+		console.error('POST /api/anime/:id/rating error', err);
 		return res.status(500).json({ success: false, error: err.message });
 	}
 });
