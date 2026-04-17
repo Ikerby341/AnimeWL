@@ -11,6 +11,7 @@ export default function Profile() {
             <div className="not-logged-in">
                 <h2>No has iniciado sesión</h2>
                 <p>Por favor, inicia sesión para ver tu perfil.</p>
+                <button className='buttonProfileLogin' onClick={() => window.location.href = '/login'}>Iniciar sesión</button>
             </div>
         );
     }

@@ -261,14 +261,14 @@ export function Configuracion() {
                             placeholder="Código de verificación"
                         />
                         <button
-                            className="save-button configuracion-email-send-button"
+                            className="change-button configuracion-email-send-button"
                             onClick={sendEmailVerificationCode}
                             disabled={isSendCodeDisabled}
                         >
                             {isSendCodeDisabled ? 'Puedes solicitar otro código en 60s' : 'Enviar código al correo actual'}
                         </button>
                         <div className="modal-actions">
-                            <button className="save-button" onClick={changeEmail}>Cambiar correo</button>
+                            <button className="change-button" onClick={changeEmail}>Cambiar correo</button>
                         </div>
                     </div>
                 </div>

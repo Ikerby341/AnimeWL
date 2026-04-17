@@ -1,0 +1,80 @@
+.anime-comments-section {
+    margin-top: 24px;
+    padding: 20px;
+    border-radius: 18px;
+    background: #242424;
+    color: #f3f3f3;
+}
+
+.comments-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 18px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    padding-bottom: 12px;
+}
+
+.comments-header h2 {
+    margin: 0;
+    font-size: 1.4rem;
+    letter-spacing: 0.02em;
+}
+
+.comments-header span {
+    color: #9ca3af;
+    font-size: 0.95rem;
+}
+
+.comments-loading,
+.comments-empty {
+    color: #d1d5db;
+    padding: 14px 0;
+}
+
+.comments-list {
+    display: grid;
+    gap: 14px;
+}
+
+.comment-card {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 18px;
+    border-radius: 16px;
+}
+
+.comment-card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 10px;
+}
+
+.comment-user {
+    margin: 0 0 4px;
+    font-weight: 700;
+    color: #f8fafc;
+}
+
+.comment-meta {
+    margin: 0;
+    color: #a1a1aa;
+    font-size: 0.9rem;
+}
+
+.comment-date {
+    margin: 0;
+    color: #94a3b8;
+    font-size: 0.82rem;
+    white-space: nowrap;
+}
+
+.comment-text {
+    margin: 0;
+    line-height: 1.65;
+    color: #e5e7eb;
+    white-space: pre-wrap;
+}

@@ -8,12 +8,15 @@ export default function Details() {
   const [anime, setAnime] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [comments, setComments] = useState([]);
+  const [commentsLoading, setCommentsLoading] = useState(true);
 
   useEffect(() => {
     if (!id) return;
 
     const load = async () => {
       setLoading(true);
+      setError('');
       try {
         const r = await fetch(`/api/anime/${id}`);
         const data = await r.json();
@@ -24,12 +27,38 @@ export default function Details() {
         }
       } catch (err) {
         console.error('fetch anime error', err);
+        setError('Error al cargar los datos del anime');
       } finally {
         setLoading(false);
       }
     };
 
     load();
+  }, [id]);
+
+  useEffect(() => {
+    if (!id) return;
+
+    const loadComments = async () => {
+      setCommentsLoading(true);
+      try {
+        const r = await fetch(`/api/anime/${id}/comments`);
+        const data = await r.json();
+        if (data && data.success) {
+          setComments(data.comments || []);
+        } else {
+          console.error('fetch comments error', data.error);
+          setComments([]);
+        }
+      } catch (err) {
+        console.error('fetch comments error', err);
+        setComments([]);
+      } finally {
+        setCommentsLoading(false);
+      }
+    };
+
+    loadComments();
   }, [id]);
 
   return (
@@ -41,7 +70,13 @@ export default function Details() {
         </div>
       )}
       {!loading && error && <p className="error-message">{error}</p>}
-      {!loading && anime && <AnimeDetails anime={anime} />}
+      {!loading && anime && (
+        <AnimeDetails
+          anime={anime}
+          comments={comments}
+          commentsLoading={commentsLoading}
+        />
+      )}
     </div>
   );
 }

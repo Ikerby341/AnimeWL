@@ -9,6 +9,7 @@ import nodemailer from 'nodemailer';
 import supabase from './config/db.js';
 import { syncAnimeById, syncAnimeMetadataById, mapJikanToDb } from './controllers/syncAnime.js';
 import { findAnimeById, listAnimes, testDbConnection } from './models/anime_model.js';
+import { findCommentsByAnimeId } from './models/comment_model.js';
 import { registerUser, findUserByNom, findUserByEmail, updateUserProfilePicture, updateUserAnimeChoice, updateUsername, updateUserPassword, updateUserEmail } from './models/users_model.js';
 
 function hashPassword(password) {
@@ -331,6 +332,17 @@ app.get('/api/anime/:id', async (req, res) => {
 	} catch (err) {
 		console.error('GET /api/anime/:id error', err);
 		res.status(500).json({ success: false, error: err.message });
+	}
+});
+
+app.get('/api/anime/:id/comments', async (req, res) => {
+	const { id } = req.params;
+	try {
+		const comments = await findCommentsByAnimeId(id);
+		return res.json({ success: true, comments });
+	} catch (err) {
+		console.error('GET /api/anime/:id/comments error', err);
+		return res.status(500).json({ success: false, error: err.message });
 	}
 });
 
