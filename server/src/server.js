@@ -12,6 +12,7 @@ import { findAnimeById, listAnimes, testDbConnection } from './models/anime_mode
 import { findCommentsByAnimeId, insertComment } from './models/comment_model.js';
 import { registerUser, findUserByNom, findUserByEmail, updateUserProfilePicture, updateUserAnimeChoice, updateUsername, updateUserPassword, updateUserEmail } from './models/users_model.js';
 import { findRatingSummaryByAnimeId, findRatingByAnimeAndUser, saveRating } from './models/rating_model.js';
+import { findProgressByAnimeAndUser, saveProgress } from './models/progress_model.js';
 
 function hashPassword(password) {
 	const salt = randomBytes(16).toString('hex');
@@ -363,7 +364,50 @@ app.get('/api/anime/:id/rating', async (req, res) => {
 	}
 });
 
-app.post('/api/anime/:id/rating', async (req, res) => {
+app.get('/api/anime/:id/progress', async (req, res) => {
+	const { id } = req.params;
+	try {
+		let progress = null;
+		if (req.session.user) {
+			progress = await findProgressByAnimeAndUser(id, req.session.user.id_usuari);
+		}
+		const { data: capRows, error: capErr } = await supabase
+			.from('capitol')
+			.select('id_capitol')
+			.eq('id_anime', id);
+		const episodeCount = capErr ? 0 : (capRows || []).length;
+		return res.json({ success: true, progress, episodeCount });
+	} catch (err) {
+		console.error('GET /api/anime/:id/progress error', err);
+		return res.status(500).json({ success: false, error: err.message });
+	}
+});
+
+app.post('/api/anime/:id/progress', async (req, res) => {
+	const { id } = req.params;
+	const { capitols_vistos, minuts_totals } = req.body;
+	if (!req.session.user) {
+		return res.status(401).json({ success: false, error: 'No hay sesión activa' });
+	}
+	const chaptersWatched = Number(capitols_vistos);
+	if (Number.isNaN(chaptersWatched) || chaptersWatched < 0) {
+		return res.status(400).json({ success: false, error: 'El número de capítulos visto no es válido.' });
+	}
+	try {
+		const savedProgress = await saveProgress({
+			id_usuari: req.session.user.id_usuari,
+			id_anime: id,
+			capitols_vistos: chaptersWatched,
+			minuts_totals: Number(minuts_totals) || 0
+		});
+		return res.json({ success: true, progress: savedProgress });
+	} catch (err) {
+		console.error('POST /api/anime/:id/progress error', err);
+		return res.status(500).json({ success: false, error: err.message });
+	}
+});
+
+app.post('/api/anime/:id/comments', async (req, res) => {
 	const { id } = req.params;
 	const { puntuacio, id_capitol } = req.body;
 	if (!req.session.user) {

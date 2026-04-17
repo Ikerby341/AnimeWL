@@ -15,6 +15,10 @@ export default function Details() {
   const [userRating, setUserRating] = useState(null);
   const [ratingLoading, setRatingLoading] = useState(true);
   const [ratingError, setRatingError] = useState('');
+  const [progress, setProgress] = useState(null);
+  const [progressLoading, setProgressLoading] = useState(true);
+  const [progressError, setProgressError] = useState('');
+  const [episodeCount, setEpisodeCount] = useState(0);
   const isLoggedIn = useIsLoggedIn();
 
   useEffect(() => {
@@ -93,6 +97,32 @@ export default function Details() {
     loadRating();
   }, [id, isLoggedIn]);
 
+  useEffect(() => {
+    if (!id) return;
+
+    const loadProgress = async () => {
+      setProgressLoading(true);
+      setProgressError('');
+      try {
+        const r = await fetch(`/api/anime/${id}/progress`, { credentials: 'include' });
+        const data = await r.json();
+        if (data && data.success) {
+          setProgress(data.progress || null);
+          setEpisodeCount(data.episodeCount || 0);
+        } else {
+          setProgressError(data.error || 'Error al cargar el progreso');
+        }
+      } catch (err) {
+        console.error('fetch progress error', err);
+        setProgressError('Error al cargar el progreso');
+      } finally {
+        setProgressLoading(false);
+      }
+    };
+
+    loadProgress();
+  }, [id, isLoggedIn]);
+
   const handleRate = async (value) => {
     try {
       const response = await fetch(`/api/anime/${id}/rating`, {
@@ -112,6 +142,30 @@ export default function Details() {
       setUserRating(data.userRating ?? value);
     } catch (err) {
       console.error('submit rating error', err);
+    }
+  };
+
+  const handleProgressChange = async (value) => {
+    try {
+      const response = await fetch(`/api/anime/${id}/progress`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ capitols_vistos: value })
+      });
+      const data = await response.json();
+      if (!response.ok || !data.success) {
+        console.error('submit progress error', data.error);
+        setProgressError(data.error || 'Error al guardar el progreso');
+        return;
+      }
+      setProgress(data.progress || { capitols_vistos: value });
+      setProgressError('');
+    } catch (err) {
+      console.error('submit progress error', err);
+      setProgressError('Error al guardar el progreso');
     }
   };
 
@@ -136,6 +190,11 @@ export default function Details() {
           ratingLoading={ratingLoading}
           ratingError={ratingError}
           onRate={handleRate}
+          progress={progress}
+          progressLoading={progressLoading}
+          progressError={progressError}
+          episodeCount={episodeCount}
+          onProgressChange={handleProgressChange}
           onCommentAdded={(newComment) => setComments((prevComments) => [newComment, ...prevComments])}
         />
       )}

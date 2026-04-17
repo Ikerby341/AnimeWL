@@ -23,6 +23,17 @@ export async function findAnimeById(id_anime) {
         data.genres = data.anime_genere.map((g) => g.id_genere);
         delete data.anime_genere;
     }
+
+    const { data: capRows, error: capErr } = await supabase
+        .from('capitol')
+        .select('id_capitol')
+        .eq('id_anime', id_anime);
+    if (!capErr) {
+        data.episodeCount = (capRows || []).length;
+    } else {
+        data.episodeCount = 0;
+    }
+
     return data;
 }
 

@@ -28,6 +28,41 @@
     display: block;
 }
 
+.anime-progress {
+    margin-top: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    color: #fff;
+    max-width: 220px;
+}
+
+.anime-progress label {
+    font-size: 0.95rem;
+    font-weight: 600;
+}
+
+.progress-select {
+    width: 100%;
+    border-radius: 10px;
+    border: 0;
+    background: #242424;
+    color: #fff;
+    padding: 0.6rem 0.75rem;
+    font-size: 0.95rem;
+}
+
+.progress-loading,
+.progress-no-data,
+.progress-error {
+    margin: 0;
+    font-size: 0.9rem;
+}
+
+.progress-error {
+    color: #ff7979;
+}
+
 .anime-column2 {
     display: flex;
     flex-direction: column;

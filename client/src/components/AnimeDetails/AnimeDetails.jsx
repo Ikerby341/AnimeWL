@@ -2,7 +2,7 @@ import { useState } from 'react';
 import './AnimeDetails.css'
 import { AnimeComments } from '../AnimeComments/AnimeComments.jsx';
 
-export function AnimeDetails({ anime, animeId, comments = [], commentsLoading = true, isLoggedIn = false, onCommentAdded, rating = { average: 0, count: 0 }, userRating = null, ratingLoading = false, ratingError = '', onRate }) {
+export function AnimeDetails({ anime, animeId, comments = [], commentsLoading = true, isLoggedIn = false, onCommentAdded, rating = { average: 0, count: 0 }, userRating = null, ratingLoading = false, ratingError = '', onRate, progress = null, progressLoading = true, progressError = '', episodeCount = 0, onProgressChange }) {
     const [selectedStars, setSelectedStars] = useState(null);
     const [hoverStars, setHoverStars] = useState(0);
 
@@ -63,6 +63,35 @@ export function AnimeDetails({ anime, animeId, comments = [], commentsLoading = 
                         alt={titol}
                         className="anime-poster"
                     />
+                    {isLoggedIn && (
+                        <div className="anime-progress">
+                            <label htmlFor="progress-select">Has visto hasta el capítulo:</label>
+                            {progressLoading ? (
+                                <p className="progress-loading">Cargando progreso...</p>
+                            ) : (
+                                <>
+                                    {episodeCount > 0 ? (
+                                        <select
+                                            id="progress-select"
+                                            className="progress-select"
+                                            value={progress?.capitols_vistos ?? 0}
+                                            onChange={(e) => onProgressChange(Number(e.target.value))}
+                                        >
+                                            <option value={0}>0 (No visto)</option>
+                                            {Array.from({ length: episodeCount }, (_, index) => (
+                                                <option key={index + 1} value={index + 1}>
+                                                    {index + 1}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    ) : (
+                                        <p className="progress-no-data">No hay datos de capítulos disponibles.</p>
+                                    )}
+                                    {progressError && <div className="progress-error">{progressError}</div>}
+                                </>
+                            )}
+                        </div>
+                    )}
                 </div>
                 <div className="anime-column2">
                     <div className="anime-details-header">
