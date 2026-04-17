@@ -43,6 +43,11 @@
   transition: background 0.2s, transform 0.2s;
   backdrop-filter: blur(4px);
 }
+.coverflow-arrow svg {
+  display: block;
+  width: 20px;
+  height: 20px;
+}
 .coverflow-arrow:hover {
   background: rgba(255, 255, 255, 0.18);
   transform: translateY(-60%) scale(1.08);
