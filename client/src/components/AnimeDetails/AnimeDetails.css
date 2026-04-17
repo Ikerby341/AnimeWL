@@ -36,7 +36,7 @@
 }
 
 .anime-comments-section {
-    width: min(100%, 980px);
+    min-width: 95%;
     margin: 0 auto 0;
     margin-top: 16px;
 }

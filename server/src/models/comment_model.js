@@ -5,7 +5,7 @@ export async function findCommentsByAnimeId(id_anime) {
 
     const { data, error } = await supabase
         .from('comentari')
-        .select('id_comentari, id_usuari, id_anime, id_capitol, contingut, data_hora, usuari(nom)')
+        .select('id_comentari, id_usuari, id_anime, id_capitol, contingut, data_hora, usuari(nom, img_url)')
         .eq('id_anime', id_anime)
         .order('data_hora', { ascending: false });
 
@@ -17,5 +17,6 @@ export async function findCommentsByAnimeId(id_anime) {
     return (data || []).map((comment) => ({
         ...comment,
         userName: comment.usuari?.nom || 'Anónimo',
+        userImg: comment.usuari?.img_url || null,
     }));
 }

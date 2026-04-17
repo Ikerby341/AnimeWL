@@ -1,4 +1,5 @@
 import './AnimeComments.css';
+import userIcon from '../../assets/usuari.png';
 
 export function AnimeComments({ comments, loading }) {
     const formattedComments = comments || [];
@@ -14,26 +15,36 @@ export function AnimeComments({ comments, loading }) {
                 <div className="comments-empty">Aún no hay comentarios para este anime.</div>
             )}
             <div className="comments-list">
-                {formattedComments.map((comment) => (
-                    <article key={comment.id_comentari} className="comment-card">
-                        <div className="comment-card-top">
-                            <div>
-                                <p className="comment-user">{comment.userName}</p>
-                                <p className="comment-meta">{comment.id_capitol ? `Capítulo ${comment.id_capitol}` : 'General'}</p>
+                {formattedComments.map((comment) => {
+                    const avatarSrc = comment.userImg || userIcon;
+                    return (
+                        <article key={comment.id_comentari} className="comment-card">
+                            <div className="comment-card-top">
+                                <div className="comment-user-info">
+                                    <img
+                                        className="comment-avatar"
+                                        src={avatarSrc}
+                                        alt={comment.userName}
+                                    />
+                                    <div>
+                                        <p className="comment-user">{comment.userName}</p>
+                                        <p className="comment-meta">{comment.id_capitol ? `Capítulo ${comment.id_capitol}` : 'General'}</p>
+                                    </div>
+                                </div>
+                                <p className="comment-date">
+                                    {comment.data_hora ? new Date(comment.data_hora).toLocaleString('es-ES', {
+                                        day: '2-digit',
+                                        month: '2-digit',
+                                        year: 'numeric',
+                                        hour: '2-digit',
+                                        minute: '2-digit'
+                                    }) : ''}
+                                </p>
                             </div>
-                            <p className="comment-date">
-                                {comment.data_hora ? new Date(comment.data_hora).toLocaleString('es-ES', {
-                                    day: '2-digit',
-                                    month: '2-digit',
-                                    year: 'numeric',
-                                    hour: '2-digit',
-                                    minute: '2-digit'
-                                }) : ''}
-                            </p>
-                        </div>
-                        <p className="comment-text">{comment.contingut}</p>
-                    </article>
-                ))}
+                            <p className="comment-text">{comment.contingut}</p>
+                        </article>
+                    );
+                })}
             </div>
         </section>
     );
