@@ -1,6 +1,7 @@
 import { Navbar } from '../components/NavBar/NavBar.jsx';
 import { ProfilePage } from '../components/ProfilePage/ProfilePage.jsx';
 import { useIsLoggedIn } from '../hooks/useAuth';
+import Footer from '../components/Footer/Footer.jsx';
 import '../styles/profile.css';
 
 export default function Profile() {
@@ -8,18 +9,22 @@ export default function Profile() {
 
     if (!isLoggedIn) {
         return (
-            <div className="not-logged-in">
-                <h2>No has iniciado sesión</h2>
-                <p>Por favor, inicia sesión para ver tu perfil.</p>
-                <button className='buttonProfileLogin' onClick={() => window.location.href = '/login'}>Iniciar sesión</button>
+            <div style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
+                <div className="not-logged-in">
+                    <h2>No has iniciado sesión</h2>
+                    <p>Por favor, inicia sesión para ver tu perfil.</p>
+                    <button className='buttonProfileLogin' onClick={() => window.location.href = '/login'}>Iniciar sesión</button>
+                </div>
+                <Footer />
             </div>
         );
     }
 
     return (
-        <div>
+        <div style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
             <Navbar profile={false} searchBar={false} favorites={false} directory={false} />
             <ProfilePage />
+            <Footer />
         </div>
     );
 }

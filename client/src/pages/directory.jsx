@@ -1,5 +1,6 @@
 import { Navbar } from '../components/NavBar/NavBar.jsx'
 import { AnimeCover } from '../components/AnimeCover/AnimeCover.jsx'
+import Footer from '../components/Footer/Footer.jsx'
 import '../styles/directory.css'
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -39,7 +40,7 @@ export default function Directory() {
   }, []);
 
   return (
-    <div>
+    <div style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
       <Navbar directory={false} />
       <div className="content">
         <br />
@@ -64,6 +65,7 @@ export default function Directory() {
           </div>
         )}
       </div>
+      <Footer />
     </div>
   );
 }

@@ -1,5 +1,6 @@
 import { Navbar } from '../components/NavBar/NavBar.jsx';
 import { Carrusel } from '../components/Carrusel/Carrusel.jsx';
+import Footer from '../components/Footer/Footer.jsx';
 import '../styles/home.css';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -84,7 +85,7 @@ function Home() {
     return () => { cancelled = true; };
   }, []);
   return (
-    <div>
+    <div style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
       <Navbar />
       <div className="content">
         {loadingRecent ? (
@@ -183,6 +184,7 @@ function Home() {
                         </div>
                       )}
       </div>
+      <Footer />
     </div>
   );
 }

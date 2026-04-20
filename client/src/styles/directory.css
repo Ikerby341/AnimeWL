@@ -1,6 +1,8 @@
 .content {
     margin-left: 6vw;
     margin-right: 6vw;
+    margin-bottom: 2rem;
+    flex: 1;
 }
 
 /* rejilla de portadas en el directorio */

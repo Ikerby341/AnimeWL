@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import { useIsLoggedIn } from '../hooks/useAuth';
 import { Navbar } from '../components/NavBar/NavBar.jsx';
 import { AnimeDetails } from '../components/AnimeDetails/AnimeDetails.jsx';
+import Footer from '../components/Footer/Footer.jsx';
 
 export default function Details() {
   const { id } = useParams();
@@ -170,7 +171,7 @@ export default function Details() {
   };
 
   return (
-    <div>
+    <div style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
       <Navbar />
       {loading && (
         <div className="loading-container">
@@ -198,6 +199,7 @@ export default function Details() {
           onCommentAdded={(newComment) => setComments((prevComments) => [newComment, ...prevComments])}
         />
       )}
+      <Footer />
     </div>
   );
 }
