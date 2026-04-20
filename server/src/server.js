@@ -399,7 +399,7 @@ app.get('/api/user/stats', async (req, res) => {
 
 app.post('/api/anime/:id/progress', async (req, res) => {
 	const { id } = req.params;
-	const { capitols_vistos, minuts_totals } = req.body;
+	const { capitols_vistos } = req.body;
 	if (!req.session.user) {
 		return res.status(401).json({ success: false, error: 'No hay sesión activa' });
 	}
@@ -407,12 +407,32 @@ app.post('/api/anime/:id/progress', async (req, res) => {
 	if (Number.isNaN(chaptersWatched) || chaptersWatched < 0) {
 		return res.status(400).json({ success: false, error: 'El número de capítulos visto no es válido.' });
 	}
+
+	let totalMinutes = 0;
+	if (chaptersWatched > 0) {
+		const { data: chapterRows, error: capErr } = await supabase
+			.from('capitol')
+			.select('numero, duracio_minuts')
+			.eq('id_anime', id)
+			.order('numero', { ascending: true })
+			.limit(chaptersWatched);
+
+		if (capErr) {
+			console.error('POST /api/anime/:id/progress capitol lookup error', capErr);
+		} else {
+			totalMinutes = (chapterRows || []).reduce((sum, row) => {
+				const minutes = Number(row.duracio_minuts);
+				return sum + (Number.isFinite(minutes) ? minutes : 0);
+			}, 0);
+		}
+	}
+
 	try {
 		const savedProgress = await saveProgress({
 			id_usuari: req.session.user.id_usuari,
 			id_anime: id,
 			capitols_vistos: chaptersWatched,
-			minuts_totals: Number(minuts_totals) || 0
+			minuts_totals: totalMinutes
 		});
 		return res.json({ success: true, progress: savedProgress });
 	} catch (err) {
