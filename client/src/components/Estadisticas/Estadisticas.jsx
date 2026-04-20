@@ -54,6 +54,7 @@ export function Estadisticas() {
 
     const chartBars = stats?.topAnimes || [];
     const maxMinutes = chartBars.length ? Math.max(...chartBars.map((item) => item.minutes || 0), 1) : 1;
+    const minBarRatio = 0.02;
     const topGenres = stats?.topGenres || [];
     const pieColors = ['#db2f46', '#ff7684', '#14b8a6'];
     const totalGenreValue = topGenres.reduce((sum, item) => sum + (item.value || 0), 0);
@@ -115,14 +116,18 @@ export function Estadisticas() {
                                 {chartBars.length > 0 ? (
                                     chartBars.map((item, index) => (
                                         <div className="stats-bar-item" key={index}>
-                                            <div
-                                                className="stats-bar-fill"
-                                                style={{
-                                                    height: `${Math.max((item.minutes || 0) / maxMinutes, 0.08) * 100}%`
-                                                }}
-                                            />
-                                            <span className="stats-bar-value">{formatHours(item.minutes)}</span>
-                                            <span className="stats-bar-label">{item.title}</span>
+                                            <div className="stats-bar-column">
+                                                <div
+                                                    className="stats-bar-fill"
+                                                    style={{
+                                                        height: `${Math.max((item.minutes || 0) / maxMinutes, item.minutes > 0 ? minBarRatio : 0) * 100}%`
+                                                    }}
+                                                />
+                                                <span className="stats-bar-value">{formatHours(item.minutes)}</span>
+                                            </div>
+                                            <div className="stats-bar-label-wrapper">
+                                                <span className="stats-bar-label">{item.title}</span>
+                                            </div>
                                         </div>
                                     ))
                                 ) : (
