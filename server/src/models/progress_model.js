@@ -140,12 +140,6 @@ export async function getUserStats(id_usuari) {
         0
     );
 
-    const totalFinishedAnimes = progresRows.reduce((count, row) => {
-        const animeId = String(row.id_anime);
-        const chapterCount = episodeCounts[animeId] || 0;
-        return count + (chapterCount > 0 && Number(row.capitols_vistos || 0) >= chapterCount ? 1 : 0);
-    }, 0);
-
     const { data: genreRows, error: genreErr } = await supabase
         .from('anime_genere')
         .select('id_anime, id_genere')
@@ -199,14 +193,21 @@ export async function getUserStats(id_usuari) {
         }
     }
 
-    const { data: animeRows, error: animeErr } = await supabase
-        .from('anime')
-        .select('id_anime, titol')
-        .in('id_anime', animeIds);
+    let animeRows = [];
 
-    if (animeErr) {
-        console.error('getUserStats animeRows error', animeErr);
-        throw animeErr;
+    try {
+        const { data, error: animeErr } = await supabase
+            .from('anime')
+            .select('id_anime, titol')
+            .in('id_anime', animeIds);
+
+        if (animeErr) {
+            console.error('getUserStats animeRows error', animeErr);
+        } else {
+            animeRows = data || [];
+        }
+    } catch (err) {
+        console.error('getUserStats animeRows exception', err);
     }
 
     const titleMap = {};
@@ -223,10 +224,16 @@ export async function getUserStats(id_usuari) {
         .sort((a, b) => b.minutes - a.minutes)
         .slice(0, 3);
 
+    const finishedAnimeCount = progresRows.reduce((count, row) => {
+        const animeId = String(row.id_anime);
+        const chapterCount = episodeCounts[animeId] || 0;
+        return count + (chapterCount > 0 && Number(row.capitols_vistos || 0) >= chapterCount ? 1 : 0);
+    }, 0);
+
     return {
         totalMinutes,
         totalChapters,
-        totalFinishedAnimes,
+        totalFinishedAnimes: finishedAnimeCount,
         topGenre,
         topGenres,
         topAnimes
