@@ -12,7 +12,7 @@ import { findAnimeById, listAnimes, testDbConnection } from './models/anime_mode
 import { findCommentsByAnimeId, insertComment } from './models/comment_model.js';
 import { registerUser, findUserByNom, findUserByEmail, updateUserProfilePicture, updateUserAnimeChoice, updateUsername, updateUserPassword, updateUserEmail } from './models/users_model.js';
 import { findRatingSummaryByAnimeId, findRatingByAnimeAndUser, saveRating } from './models/rating_model.js';
-import { findProgressByAnimeAndUser, saveProgress } from './models/progress_model.js';
+import { findProgressByAnimeAndUser, saveProgress, getUserStats } from './models/progress_model.js';
 
 function hashPassword(password) {
 	const salt = randomBytes(16).toString('hex');
@@ -379,6 +379,20 @@ app.get('/api/anime/:id/progress', async (req, res) => {
 		return res.json({ success: true, progress, episodeCount });
 	} catch (err) {
 		console.error('GET /api/anime/:id/progress error', err);
+		return res.status(500).json({ success: false, error: err.message });
+	}
+});
+
+app.get('/api/user/stats', async (req, res) => {
+	if (!req.session.user) {
+		return res.status(401).json({ success: false, error: 'No hay sesión activa' });
+	}
+
+	try {
+		const stats = await getUserStats(req.session.user.id_usuari);
+		return res.json({ success: true, stats });
+	} catch (err) {
+		console.error('GET /api/user/stats error', err);
 		return res.status(500).json({ success: false, error: err.message });
 	}
 });

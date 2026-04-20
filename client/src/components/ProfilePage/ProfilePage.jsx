@@ -2,6 +2,7 @@ import { useState } from 'react';
 import './ProfilePage.css';
 import { Perfil } from '../Perfil/Perfil.jsx';
 import { Configuracion } from '../Configuracion/Configuracion.jsx';
+import { Estadisticas } from '../Estadisticas/Estadisticas.jsx';
 
 export function ProfilePage() {
     const [activeView, setActiveView] = useState('Perfil');
