@@ -371,11 +371,11 @@ app.get('/api/anime/:id/progress', async (req, res) => {
 		if (req.session.user) {
 			progress = await findProgressByAnimeAndUser(id, req.session.user.id_usuari);
 		}
-		const { data: capRows, error: capErr } = await supabase
+		const { count, error: capErr } = await supabase
 			.from('capitol')
-			.select('id_capitol')
+			.select('id_capitol', { count: 'exact', head: true })
 			.eq('id_anime', id);
-		const episodeCount = capErr ? 0 : (capRows || []).length;
+		const episodeCount = capErr ? 0 : Number(count || 0);
 		return res.json({ success: true, progress, episodeCount });
 	} catch (err) {
 		console.error('GET /api/anime/:id/progress error', err);

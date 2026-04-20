@@ -151,12 +151,19 @@ export async function getUserStats(id_usuari) {
     }
 
     const genreTotals = {};
+    const countedAnimeByGenre = {};
+
     (genreRows || []).forEach((row) => {
         const animeId = String(row.id_anime);
         const progress = progressByAnime[animeId];
-        if (!progress) return;
+        if (!progress || Number(progress.capitols_vistos) <= 0) return;
+
         const genreKey = row.id_genere || 'Sin género';
-        genreTotals[genreKey] = (genreTotals[genreKey] || 0) + progress.capitols_vistos;
+        const genreAnimeKey = `${genreKey}:${animeId}`;
+        if (countedAnimeByGenre[genreAnimeKey]) return;
+
+        countedAnimeByGenre[genreAnimeKey] = true;
+        genreTotals[genreKey] = (genreTotals[genreKey] || 0) + 1;
     });
 
     const genreKeys = Object.entries(genreTotals).sort((a, b) => b[1] - a[1]);
