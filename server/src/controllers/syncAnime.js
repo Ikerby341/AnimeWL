@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { upsertAnime, upsertAnimeGenres, upsertChapters } from '../models/anime_model.js';
+import { upsertAnime, upsertAnimeGenres, upsertChapters, getEpisodeCountByAnime, touchAnimeLastUpdate } from '../models/anime_model.js';
 
 // ayuda para obtener una página de anime de Jikan
 async function fetchAnimePage(page = 1) {
@@ -63,19 +63,42 @@ async function fetchJikanJson(url) {
 }
 
 // obtener lista completa de episodios para un anime (puede paginarse)
-async function fetchEpisodes(animeId) {
+async function fetchEpisodes(animeId, skipEpisodes = 0) {
     const episodes = [];
     let page = 1;
+    let perPage = null;
+
     while (true) {
         const url = `https://api.jikan.moe/v4/anime/${animeId}/episodes?page=${page}`;
-        let res;
-        let attempts = 0;
         const json = await fetchJikanJson(url);
         if (!json || !json.data) break;
-        const d = json;
-        if (!d || !d.data || d.data.length === 0) break;
-        episodes.push(...d.data);
-        if (!d.pagination.has_next_page) break;
+
+        perPage = perPage || json.pagination?.per_page || 25;
+        if (skipEpisodes > 0 && page === 1) {
+            const targetPage = Math.floor(skipEpisodes / perPage) + 1;
+            if (targetPage > 1) {
+                page = targetPage;
+                continue;
+            }
+        }
+
+        let pageEpisodes = json.data;
+        if (skipEpisodes > 0) {
+            const firstIndex = (page - 1) * perPage;
+            if (firstIndex + pageEpisodes.length <= skipEpisodes) {
+                if (!json.pagination.has_next_page) break;
+                page++;
+                continue;
+            }
+            const start = Math.max(0, skipEpisodes - firstIndex);
+            pageEpisodes = pageEpisodes.slice(start);
+        }
+
+        if (pageEpisodes.length > 0) {
+            episodes.push(...pageEpisodes);
+        }
+
+        if (!json.pagination.has_next_page) break;
         page++;
     }
     return episodes;
@@ -111,10 +134,45 @@ export async function syncAnimeById(idAnime) {
     if (record.genres && record.genres.length > 0) {
         await upsertAnimeGenres(record.id_anime, record.genres);
     }
+
+    let apiEpisodeCount = data.episodes != null ? Number(data.episodes) : null;
+    if (!Number.isFinite(apiEpisodeCount)) {
+        apiEpisodeCount = null;
+    }
+    let dbEpisodeCount = 0;
+    if (apiEpisodeCount !== null) {
+        try {
+            dbEpisodeCount = await getEpisodeCountByAnime(record.id_anime);
+        } catch (err) {
+            console.error('episode count fetch error', err.message);
+        }
+    }
+
     try {
-        const eps = await fetchEpisodes(record.id_anime);
-        if (eps.length) {
-            await upsertChapters(record.id_anime, eps);
+        if (apiEpisodeCount !== null && apiEpisodeCount !== dbEpisodeCount) {
+            if (apiEpisodeCount > dbEpisodeCount) {
+                const eps = await fetchEpisodes(record.id_anime, dbEpisodeCount);
+                if (eps.length) {
+                    await upsertChapters(record.id_anime, eps, { replaceExisting: false });
+                    await touchAnimeLastUpdate(record.id_anime);
+                }
+            } else {
+                console.warn(
+                    `Episode count mismatch for anime ${record.id_anime}: ` +
+                    `API reports ${apiEpisodeCount} but DB has ${dbEpisodeCount}. Refreshing all chapters.`
+                );
+                const eps = await fetchEpisodes(record.id_anime);
+                if (eps.length) {
+                    await upsertChapters(record.id_anime, eps, { replaceExisting: true });
+                    await touchAnimeLastUpdate(record.id_anime);
+                }
+            }
+        } else if (apiEpisodeCount === null && dbEpisodeCount === 0) {
+            const eps = await fetchEpisodes(record.id_anime);
+            if (eps.length) {
+                await upsertChapters(record.id_anime, eps, { replaceExisting: false });
+                await touchAnimeLastUpdate(record.id_anime);
+            }
         }
     } catch (err) {
         console.error('episode fetch error', err.message);

@@ -37,6 +37,33 @@ export async function findAnimeById(id_anime) {
     return data;
 }
 
+export async function getEpisodeCountByAnime(id_anime) {
+    if (!id_anime) return 0;
+
+    try {
+        const { count, error } = await supabase
+            .from('capitol')
+            .select('id_capitol', { count: 'exact', head: true })
+            .eq('id_anime', id_anime);
+
+        if (!error && typeof count === 'number') {
+            return count;
+        }
+    } catch (err) {
+        console.error('episode count query error', err);
+    }
+
+    const { data, error } = await supabase
+        .from('capitol')
+        .select('id_capitol')
+        .eq('id_anime', id_anime);
+    if (!error && data) {
+        return data.length;
+    }
+
+    return 0;
+}
+
 export async function testDbConnection() {
     return await supabase
         .from('anime')
@@ -59,6 +86,15 @@ export async function updateAnime(id_anime, record) {
     return record;
 }
 
+export async function touchAnimeLastUpdate(id_anime) {
+    if (!id_anime) return;
+    try {
+        await updateAnime(id_anime, { lastupdate: new Date().toISOString() });
+    } catch (err) {
+        console.error('touchAnimeLastUpdate error', err);
+    }
+}
+
 export async function upsertAnime(record) {
     // the 'anime' table does not include a genres column; genres are
     // stored in the join table. strip them off before touching the main
@@ -70,16 +106,17 @@ export async function upsertAnime(record) {
         existing = await findAnimeById(data.id_anime);
     } catch (err) {
         console.error('select anime error', err);
-        return;
+        return false;
     }
 
     if (!existing) {
         try {
             await insertAnime(data);
+            return true;
         } catch (err) {
             console.error('insert error', err);
+            return false;
         }
-        return;
     }
 
     // comparar campos para determinar si es necesario actualizar
@@ -94,10 +131,14 @@ export async function upsertAnime(record) {
         data.lastupdate = new Date().toISOString();
         try {
             await updateAnime(data.id_anime, data);
+            return true;
         } catch (err) {
             console.error('update error', err);
+            return false;
         }
     }
+
+    return false;
 }
 
 async function ensureGenre(name) {
@@ -171,11 +212,12 @@ async function fetchEpisodeDetail(animeId, epId) {
     }
 }
 
-export async function upsertChapters(id_anime, episodes = []) {
+export async function upsertChapters(id_anime, episodes = [], options = { replaceExisting: false }) {
     if (!id_anime) return;
     try {
-        // opcional: borrar capítulos existentes para el anime
-        await supabase.from('capitol').delete().eq('id_temporada', id_anime);
+        if (options.replaceExisting) {
+            await supabase.from('capitol').delete().eq('id_anime', id_anime);
+        }
         for (const ep of episodes) {
             let num = extractEpisodeNumber(ep);
             let duration = parseDuration(ep.duration);
