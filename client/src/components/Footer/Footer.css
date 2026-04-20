@@ -18,11 +18,18 @@
 }
 
 .footer-title {
-  color: #209F36;
   font-size: 1.8rem;
   margin: 0;
   margin-bottom: 0.5rem;
   font-weight: bold;
+}
+
+.footer-title-white {
+  color: white;
+}
+
+.footer-title-green {
+  color: #209F36;
 }
 
 .footer-subtitle {

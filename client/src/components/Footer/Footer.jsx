@@ -5,7 +5,10 @@ export default function Footer() {
     <footer className="footer">
       <div className="footer-content">
         <div className="footer-main">
-          <h1 className="footer-title">AnimeWL</h1>
+          <h3 className="footer-title">
+            <span className="footer-title-white">Anime</span>
+            <span className="footer-title-green">WL</span>
+          </h3>
           <p className="footer-subtitle">Tu plataforma de anime favorita</p>
         </div>
         
