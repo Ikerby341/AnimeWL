@@ -93,12 +93,12 @@ export default function Favorites() {
 
         {isLoggedIn && !loading && favorites.length > 0 && (
           <div className="favorites-grid">
-            {favorites.map((favorite) => {
+            {favorites.map((favorite, index) => {
               const anime = favorite.anime;
               if (!anime) return null;
 
               return (
-                <div key={favorite.id_llista} className="favorite-card" onClick={() => handleSelectAnime(anime)}>
+                <div key={`${favorite.id_anime}-${index}`} className="favorite-card" onClick={() => handleSelectAnime(anime)}>
                   <div className="favorite-card-image-container">
                     <img 
                       src={anime.imatge_portada || ''} 
