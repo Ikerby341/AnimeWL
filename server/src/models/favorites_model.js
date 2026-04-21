@@ -6,7 +6,7 @@ export async function findFavoritesByUser(id_usuari) {
 
     const { data, error } = await supabase
         .from('llista')
-        .select('id_llista, id_usuari, llista_anime(id_anime)')
+        .select('id_llista, id_usuari, llista_anime(id_anime, estat)')
         .eq('id_usuari', id_usuari);
 
     if (error) {
@@ -31,6 +31,7 @@ export async function findFavoritesByUser(id_usuari) {
                             id_llista: list.id_llista,
                             id_usuari: list.id_usuari,
                             id_anime: item.id_anime,
+                            estat: item.estat || 'Por ver',
                             capitols_vistos: progress?.capitols_vistos || 0
                         };
                     } catch (err) {
@@ -39,6 +40,7 @@ export async function findFavoritesByUser(id_usuari) {
                             id_llista: list.id_llista,
                             id_usuari: list.id_usuari,
                             id_anime: item.id_anime,
+                            estat: item.estat || 'Por ver',
                             capitols_vistos: 0
                         };
                     }
@@ -174,6 +176,43 @@ export async function removeFavorite(id_usuari, id_anime) {
 
     if (error) {
         console.error('removeFavorite error', error);
+        throw error;
+    }
+
+    return data;
+}
+
+export async function updateFavoriteStatus(id_usuari, id_anime, estat) {
+    if (!id_usuari || !id_anime || !estat) {
+        throw new Error('Faltan datos para actualizar el estado del favorito');
+    }
+
+    // Obtener el id_llista del usuario
+    const { data: listData, error: listError } = await supabase
+        .from('llista')
+        .select('id_llista')
+        .eq('id_usuari', id_usuari)
+        .maybeSingle();
+
+    if (listError) {
+        console.error('updateFavoriteStatus list lookup error', listError);
+        throw listError;
+    }
+
+    if (!listData) {
+        throw new Error('Lista no encontrada');
+    }
+
+    const { data, error } = await supabase
+        .from('llista_anime')
+        .update({ estat })
+        .eq('id_llista', listData.id_llista)
+        .eq('id_anime', id_anime)
+        .select()
+        .maybeSingle();
+
+    if (error) {
+        console.error('updateFavoriteStatus error', error);
         throw error;
     }
 

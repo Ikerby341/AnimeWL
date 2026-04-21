@@ -13,7 +13,7 @@ import { findCommentsByAnimeId, insertComment } from './models/comment_model.js'
 import { registerUser, findUserByNom, findUserByEmail, updateUserProfilePicture, updateUserAnimeChoice, updateUsername, updateUserPassword, updateUserEmail } from './models/users_model.js';
 import { findRatingSummaryByAnimeId, findRatingByAnimeAndUser, saveRating } from './models/rating_model.js';
 import { findProgressByAnimeAndUser, saveProgress, getUserStats } from './models/progress_model.js';
-import { findFavoritesByUser, findFavoriteById, addFavorite, removeFavorite } from './models/favorites_model.js';
+import { findFavoritesByUser, findFavoriteById, addFavorite, removeFavorite, updateFavoriteStatus } from './models/favorites_model.js';
 
 function hashPassword(password) {
 	const salt = randomBytes(16).toString('hex');
@@ -529,6 +529,28 @@ app.delete('/api/user/favorites/:id_anime', async (req, res) => {
 		return res.json({ success: true, removed });
 	} catch (err) {
 		console.error('DELETE /api/user/favorites/:id_anime error', err);
+		return res.status(500).json({ success: false, error: err.message });
+	}
+});
+
+// Actualizar estado del favorito
+app.put('/api/user/favorites/:id_anime', async (req, res) => {
+	if (!req.session.user) {
+		return res.status(401).json({ success: false, error: 'No hay sesión activa' });
+	}
+
+	const { id_anime } = req.params;
+	const { estat } = req.body;
+
+	if (!id_anime || !estat) {
+		return res.status(400).json({ success: false, error: 'Falta el id del anime o el estado' });
+	}
+
+	try {
+		const updated = await updateFavoriteStatus(req.session.user.id_usuari, id_anime, estat);
+		return res.json({ success: true, updated });
+	} catch (err) {
+		console.error('PUT /api/user/favorites/:id_anime error', err);
 		return res.status(500).json({ success: false, error: err.message });
 	}
 });

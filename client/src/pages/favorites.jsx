@@ -67,6 +67,34 @@ export default function Favorites() {
     }
   };
 
+  const handleStatusChange = async (e, id_anime) => {
+    e.stopPropagation();
+    const newStatus = e.target.value;
+    try {
+      const response = await fetch(`/api/user/favorites/${id_anime}`, {
+        method: 'PUT',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ estat: newStatus })
+      });
+      const data = await response.json();
+      if (!response.ok || !data.success) {
+        console.error('update favorite status error', data.error);
+        return;
+      }
+      // Actualizar el estado local
+      setFavorites(prevFavorites =>
+        prevFavorites.map(fav =>
+          fav.id_anime === id_anime ? { ...fav, estat: newStatus } : fav
+        )
+      );
+    } catch (err) {
+      console.error('update favorite status error', err);
+    }
+  };
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
       <Navbar favorites={false} />
@@ -112,6 +140,16 @@ export default function Favorites() {
                       <p className="favorite-card-episode">
                         Cap. {favorite.capitols_vistos}
                       </p>
+                      <select
+                        className="favorite-card-status"
+                        value={favorite.estat || 'Por ver'}
+                        onChange={(e) => handleStatusChange(e, favorite.id_anime)}
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <option value="Por ver">Por ver</option>
+                        <option value="Viendo">Viendo</option>
+                        <option value="Finalizado">Finalizado</option>
+                      </select>
                     </div>
                     <div className="favorite-card-rating">
                       {[1, 2, 3, 4, 5].map((i) => (
