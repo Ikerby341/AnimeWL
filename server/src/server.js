@@ -13,6 +13,7 @@ import { findCommentsByAnimeId, insertComment } from './models/comment_model.js'
 import { registerUser, findUserByNom, findUserByEmail, updateUserProfilePicture, updateUserAnimeChoice, updateUsername, updateUserPassword, updateUserEmail } from './models/users_model.js';
 import { findRatingSummaryByAnimeId, findRatingByAnimeAndUser, saveRating } from './models/rating_model.js';
 import { findProgressByAnimeAndUser, saveProgress, getUserStats } from './models/progress_model.js';
+import { findFavoritesByUser, findFavoriteById, addFavorite, removeFavorite } from './models/favorites_model.js';
 
 function hashPassword(password) {
 	const salt = randomBytes(16).toString('hex');
@@ -437,6 +438,91 @@ app.post('/api/anime/:id/progress', async (req, res) => {
 		return res.json({ success: true, progress: savedProgress });
 	} catch (err) {
 		console.error('POST /api/anime/:id/progress error', err);
+		return res.status(500).json({ success: false, error: err.message });
+	}
+});
+
+// Obtener favoritos del usuario
+app.get('/api/user/favorites', async (req, res) => {
+	if (!req.session.user) {
+		return res.status(401).json({ success: false, error: 'No hay sesión activa' });
+	}
+
+	try {
+		const favorites = await findFavoritesByUser(req.session.user.id_usuari);
+
+		// Enriquecer con datos del anime
+		const enrichedFavorites = await Promise.all(
+			favorites.map(async (fav) => {
+				try {
+					const anime = await findAnimeById(fav.id_anime);
+					return {
+						...fav,
+						anime: anime || null
+					};
+				} catch (err) {
+					console.error(`Error loading anime ${fav.id_anime}:`, err);
+					return {
+						...fav,
+						anime: null
+					};
+				}
+			})
+		);
+
+		return res.json({ success: true, favorites: enrichedFavorites });
+	} catch (err) {
+		console.error('GET /api/user/favorites error', err);
+		return res.status(500).json({ success: false, error: err.message });
+	}
+});
+
+// Agregar a favoritos
+app.post('/api/user/favorites/:id_anime', async (req, res) => {
+	if (!req.session.user) {
+		return res.status(401).json({ success: false, error: 'No hay sesión activa' });
+	}
+
+	const { id_anime } = req.params;
+	if (!id_anime) {
+		return res.status(400).json({ success: false, error: 'Falta el id del anime' });
+	}
+
+	try {
+		let anime = await findAnimeById(id_anime);
+		if (!anime) {
+			console.log(`Anime ${id_anime} no encontrado en BBDD, sincronizando antes de agregar a favoritos.`);
+			await syncAnimeMetadataById(id_anime);
+			anime = await findAnimeById(id_anime);
+			if (!anime) {
+				return res.status(500).json({ success: false, error: 'No se pudo sincronizar el anime seleccionado.' });
+			}
+		}
+
+		const favorite = await addFavorite(req.session.user.id_usuari, id_anime);
+		return res.json({ success: true, favorite: { ...favorite, anime } });
+	} catch (err) {
+		console.error('POST /api/user/favorites/:id_anime error', err);
+		return res.status(500).json({ success: false, error: err.message });
+	}
+});
+
+// Eliminar de favoritos
+app.delete('/api/user/favorites/:id_anime', async (req, res) => {
+	if (!req.session.user) {
+		return res.status(401).json({ success: false, error: 'No hay sesión activa' });
+	}
+
+	const { id_anime } = req.params;
+	if (!id_anime) {
+		return res.status(400).json({ success: false, error: 'Falta el id del anime' });
+	}
+
+	try {
+		const removed = await removeFavorite(req.session.user.id_usuari, id_anime);
+		return res.json({ success: true, removed });
+	} catch (err) {
+		console.error('DELETE /api/user/favorites/:id_anime error', err);
 		return res.status(500).json({ success: false, error: err.message });
 	}
 });

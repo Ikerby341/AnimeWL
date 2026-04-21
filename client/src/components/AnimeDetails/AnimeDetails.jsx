@@ -2,9 +2,10 @@ import { useState } from 'react';
 import './AnimeDetails.css'
 import { AnimeComments } from '../AnimeComments/AnimeComments.jsx';
 
-export function AnimeDetails({ anime, animeId, comments = [], commentsLoading = true, isLoggedIn = false, onCommentAdded, rating = { average: 0, count: 0 }, userRating = null, ratingLoading = false, ratingError = '', onRate, progress = null, progressLoading = true, progressError = '', episodeCount = 0, onProgressChange }) {
+export function AnimeDetails({ anime, animeId, comments = [], commentsLoading = true, isLoggedIn = false, onCommentAdded, rating = { average: 0, count: 0 }, userRating = null, ratingLoading = false, ratingError = '', onRate, progress = null, progressLoading = true, progressError = '', episodeCount = 0, onProgressChange, isFavorite = false, onAddToFavorites, onRemoveFromFavorites }) {
     const [selectedStars, setSelectedStars] = useState(null);
     const [hoverStars, setHoverStars] = useState(0);
+    const [favoriteLoading, setFavoriteLoading] = useState(false);
 
     if (!anime) {
         return <div>No hay información del anime.</div>;
@@ -19,6 +20,19 @@ export function AnimeDetails({ anime, animeId, comments = [], commentsLoading = 
         if (!hasInteractiveRating) return;
         setSelectedStars(value);
         onRate(value);
+    };
+
+    const handleFavoriteClick = async () => {
+        setFavoriteLoading(true);
+        try {
+            if (isFavorite && onRemoveFromFavorites) {
+                await onRemoveFromFavorites();
+            } else if (!isFavorite && onAddToFavorites) {
+                await onAddToFavorites();
+            }
+        } finally {
+            setFavoriteLoading(false);
+        }
     };
 
     const starElements = [1, 2, 3, 4, 5].map((value) => {
@@ -57,12 +71,24 @@ export function AnimeDetails({ anime, animeId, comments = [], commentsLoading = 
         <div className="anime-details">
             <div className="anime-main">
                 <div className="anime-column1">
-                    <img
-                        id="anime-img"
-                        src={imatge_portada || ''}
-                        alt={titol}
-                        className="anime-poster"
-                    />
+                    <div className="anime-poster-container">
+                        <img
+                            id="anime-img"
+                            src={imatge_portada || ''}
+                            alt={titol}
+                            className="anime-poster"
+                        />
+                        {isLoggedIn && (
+                            <button 
+                                className={`favorite-button ${isFavorite ? 'favorited' : ''}`}
+                                onClick={handleFavoriteClick}
+                                disabled={favoriteLoading}
+                                title={isFavorite ? 'Eliminar de favoritos' : 'Agregar a favoritos'}
+                            >
+                                {favoriteLoading ? '...' : (isFavorite ? '✓' : '+')}
+                            </button>
+                        )}
+                    </div>
                     {isLoggedIn && (
                         <div className="anime-progress">
                             <label htmlFor="progress-select">Has visto hasta el capítulo:</label>

@@ -170,3 +170,42 @@
     line-height: 1.6;
     margin: 0;
 }
+
+.anime-poster-container {
+    position: relative;
+    display: inline-block;
+    width: 200px;
+}
+
+.favorite-button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    border: none;
+    background-color: rgba(0, 0, 0, 0.7);
+    color: #fff;
+    font-size: 1.5rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+.favorite-button:hover:not(:disabled) {
+    background-color: rgba(32, 159, 54, 0.9);
+    transform: scale(1.1);
+}
+
+.favorite-button.favorited {
+    background-color: rgba(32, 159, 54, 0.9);
+    color: #fff;
+}
+
+.favorite-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}

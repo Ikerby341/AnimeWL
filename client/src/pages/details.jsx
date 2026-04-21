@@ -20,6 +20,7 @@ export default function Details() {
   const [progressLoading, setProgressLoading] = useState(true);
   const [progressError, setProgressError] = useState('');
   const [episodeCount, setEpisodeCount] = useState(0);
+  const [isFavorite, setIsFavorite] = useState(false);
   const isLoggedIn = useIsLoggedIn();
 
   useEffect(() => {
@@ -124,6 +125,69 @@ export default function Details() {
     loadProgress();
   }, [id, isLoggedIn]);
 
+  // Cargar si el anime está en favoritos
+  useEffect(() => {
+    if (!id || !isLoggedIn) {
+      setIsFavorite(false);
+      return;
+    }
+
+    const checkFavorite = async () => {
+      try {
+        const r = await fetch(`/api/user/favorites`, { credentials: 'include' });
+        const data = await r.json();
+        if (data && data.success && data.favorites) {
+          const isFav = data.favorites.some(fav => String(fav.id_anime) === String(id));
+          setIsFavorite(isFav);
+        }
+      } catch (err) {
+        console.error('fetch favorite status error', err);
+      }
+    };
+
+    checkFavorite();
+  }, [id, isLoggedIn]);
+
+  const handleAddToFavorites = async () => {
+    try {
+      const response = await fetch(`/api/user/favorites/${id}`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+      const data = await response.json();
+      if (!response.ok || !data.success) {
+        console.error('add to favorites error', data.error);
+        return;
+      }
+      setIsFavorite(true);
+    } catch (err) {
+      console.error('add to favorites error', err);
+    }
+  };
+
+  const handleRemoveFromFavorites = async () => {
+    try {
+      const response = await fetch(`/api/user/favorites/${id}`, {
+        method: 'DELETE',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+      const data = await response.json();
+      if (!response.ok || !data.success) {
+        console.error('remove from favorites error', data.error);
+        return;
+      }
+      setIsFavorite(false);
+    } catch (err) {
+      console.error('remove from favorites error', err);
+    }
+  };
+
   const handleRate = async (value) => {
     try {
       const response = await fetch(`/api/anime/${id}/rating`, {
@@ -197,6 +261,9 @@ export default function Details() {
           episodeCount={episodeCount}
           onProgressChange={handleProgressChange}
           onCommentAdded={(newComment) => setComments((prevComments) => [newComment, ...prevComments])}
+          isFavorite={isFavorite}
+          onAddToFavorites={handleAddToFavorites}
+          onRemoveFromFavorites={handleRemoveFromFavorites}
         />
       )}
       <Footer />
