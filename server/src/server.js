@@ -451,14 +451,20 @@ app.get('/api/user/favorites', async (req, res) => {
 	try {
 		const favorites = await findFavoritesByUser(req.session.user.id_usuari);
 
-		// Enriquecer con datos del anime
+		// Enriquecer con datos del anime y valoración media
 		const enrichedFavorites = await Promise.all(
 			favorites.map(async (fav) => {
 				try {
 					const anime = await findAnimeById(fav.id_anime);
+					let ratingData = { average: 0, count: 0 };
+					try {
+						ratingData = await findRatingSummaryByAnimeId(fav.id_anime);
+					} catch (err) {
+						console.error(`Error loading rating for anime ${fav.id_anime}:`, err);
+					}
 					return {
 						...fav,
-						anime: anime || null
+						anime: anime ? { ...anime, rating: ratingData } : null
 					};
 				} catch (err) {
 					console.error(`Error loading anime ${fav.id_anime}:`, err);

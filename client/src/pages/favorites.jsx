@@ -106,7 +106,7 @@ export default function Favorites() {
                     </div>
                     <div className="favorite-card-rating">
                       {[1, 2, 3, 4, 5].map((i) => (
-                        <span key={i} className={`star ${i <= Math.round(anime.rating || 0) ? 'filled' : ''}`}>★</span>
+                        <span key={i} className={`star ${i <= Math.round(anime.rating?.average || 0) ? 'filled' : ''}`}>★</span>
                       ))}
                     </div>
                     <button 
