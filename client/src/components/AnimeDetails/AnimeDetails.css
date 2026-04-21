@@ -183,26 +183,36 @@
     right: 10px;
     width: 45px;
     height: 45px;
-    border-radius: 50%;
-    border: none;
-    background-color: rgba(0, 0, 0, 0.7);
-    color: #fff;
-    font-size: 1.5rem;
+    border-radius: 8px;
+    border: 2px solid #209F36;
+    background-color: transparent;
+    color: #209F36;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
     transition: all 0.3s ease;
+    padding: 0;
+}
+
+.favorite-button svg {
+    width: 24px;
+    height: 24px;
 }
 
 .favorite-button:hover:not(:disabled) {
-    background-color: rgba(32, 159, 54, 0.9);
+    background-color: rgba(32, 159, 54, 0.1);
     transform: scale(1.1);
 }
 
 .favorite-button.favorited {
-    background-color: rgba(32, 159, 54, 0.9);
+    background-color: #209F36;
+    border-color: #209F36;
     color: #fff;
+}
+
+.favorite-button.favorited:hover:not(:disabled) {
+    background-color: rgba(32, 159, 54, 0.8);
 }
 
 .favorite-button:disabled {

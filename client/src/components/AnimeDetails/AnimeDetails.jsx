@@ -79,13 +79,19 @@ export function AnimeDetails({ anime, animeId, comments = [], commentsLoading = 
                             className="anime-poster"
                         />
                         {isLoggedIn && (
-                            <button 
+                            <button
                                 className={`favorite-button ${isFavorite ? 'favorited' : ''}`}
                                 onClick={handleFavoriteClick}
                                 disabled={favoriteLoading}
                                 title={isFavorite ? 'Eliminar de favoritos' : 'Agregar a favoritos'}
                             >
-                                {favoriteLoading ? '...' : (isFavorite ? '✓' : '+')}
+                                {favoriteLoading ? (
+                                    '...'
+                                ) : (
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill={isFavorite ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2">
+                                        <path d="M8 4h8c1.1 0 2 .9 2 2v14l-6-4-6 4V6c0-1.1.9-2 2-2z" />
+                                    </svg>
+                                )}
                             </button>
                         )}
                     </div>
