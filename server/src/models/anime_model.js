@@ -218,22 +218,54 @@ export async function upsertChapters(id_anime, episodes = [], options = { replac
         if (options.replaceExisting) {
             await supabase.from('capitol').delete().eq('id_anime', id_anime);
         }
-        for (const ep of episodes) {
-            let num = extractEpisodeNumber(ep);
+
+        // averiguar cuál es el capítulo más alto que ya tenemos en BBDD,
+        // para así procesar solo los episodios nuevos en orden ascendente
+        let maxStoredEpisode = 0;
+        if (!options.replaceExisting) {
+            const { data: maxRow, error: maxErr } = await supabase
+                .from('capitol')
+                .select('numero')
+                .eq('id_anime', id_anime)
+                .order('numero', { ascending: false })
+                .limit(1)
+                .maybeSingle();
+            if (maxErr) {
+                console.error('upsertChapters: error fetching max episode', maxErr);
+            } else if (maxRow) {
+                maxStoredEpisode = maxRow.numero || 0;
+            }
+        }
+
+        // filtrar solo los episodios nuevos (por encima del máximo almacenado)
+        // y ordenarlos de forma ascendente para empezar por el primero que falta
+        const newEpisodes = episodes
+            .map((ep) => ({ ep, num: extractEpisodeNumber(ep) }))
+            .filter(({ num }) => num != null && num > maxStoredEpisode)
+            .sort((a, b) => a.num - b.num);
+
+        if (newEpisodes.length === 0) {
+            console.log(`upsertChapters [${id_anime}]: no hay episodios nuevos (máx. almacenado: ${maxStoredEpisode})`);
+            return;
+        }
+
+        console.log(
+            `upsertChapters [${id_anime}]: ${newEpisodes.length} episodios nuevos a partir del ${newEpisodes[0].num} (máx. almacenado: ${maxStoredEpisode})`
+        );
+
+        for (const { ep, num: extractedNum } of newEpisodes) {
+            let num = extractedNum;
             let duration = parseDuration(ep.duration);
 
-            // si aún no tenemos número o duración, pedir el endpoint de detalle
-            if (num == null || duration == null) {
+            // si aún no tenemos duración, pedir el endpoint de detalle individual
+            // (el número ya lo tenemos garantizado por el filtro anterior)
+            if (duration == null) {
                 try {
                     // pequeña pausa antes de llamar al detalle para evitar límites de tasa
                     await new Promise((r) => setTimeout(r, 2000));
-                    const det = await fetchEpisodeDetail(id_anime, ep.mal_id || num || 0);
+                    const det = await fetchEpisodeDetail(id_anime, ep.mal_id || num);
                     if (det) {
-                        if (num == null) {
-                            const detNum = extractEpisodeNumber(det);
-                            if (detNum != null) num = detNum;
-                        }
-                        if (duration == null && det.duration != null) {
+                        if (det.duration != null) {
                             duration = parseDuration(det.duration);
                         }
                     }
@@ -247,7 +279,7 @@ export async function upsertChapters(id_anime, episodes = [], options = { replac
                 id_capitol,
                 id_anime: id_anime,
                 titol: ep.title || '',
-                numero: num != null ? num : 0,
+                numero: num,
                 duracio_minuts: duration || null,
             };
             const { error } = await supabase.from('capitol').upsert(rec, { onConflict: 'id_capitol' });

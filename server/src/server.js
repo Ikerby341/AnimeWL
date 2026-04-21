@@ -415,8 +415,7 @@ app.post('/api/anime/:id/progress', async (req, res) => {
 			.from('capitol')
 			.select('numero, duracio_minuts')
 			.eq('id_anime', id)
-			.order('numero', { ascending: true })
-			.limit(chaptersWatched);
+			.order('numero', { ascending: true });
 
 		if (capErr) {
 			console.error('POST /api/anime/:id/progress capitol lookup error', capErr);
