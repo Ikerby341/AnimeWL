@@ -159,12 +159,14 @@ export async function syncAnimeById(idAnime) {
             } else {
                 console.warn(
                     `Episode count mismatch for anime ${record.id_anime}: ` +
-                    `API reports ${apiEpisodeCount} but DB has ${dbEpisodeCount}. Refreshing all chapters.`
+                    `API reports ${apiEpisodeCount} but DB has ${dbEpisodeCount}.`
                 );
-                const eps = await fetchEpisodes(record.id_anime);
-                if (eps.length) {
-                    await upsertChapters(record.id_anime, eps, { replaceExisting: true });
-                    await touchAnimeLastUpdate(record.id_anime);
+                if (!(apiEpisodeCount < dbEpisodeCount)) {
+                    const eps = await fetchEpisodes(record.id_anime);
+                    if (eps.length) {
+                        await upsertChapters(record.id_anime, eps, { replaceExisting: true });
+                        await touchAnimeLastUpdate(record.id_anime);
+                    }
                 }
             }
         } else if (apiEpisodeCount === null && dbEpisodeCount === 0) {
