@@ -1,14 +1,23 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useIsLoggedIn } from '../hooks/useAuth';
 import { Navbar } from '../components/NavBar/NavBar.jsx';
 import Footer from '../components/Footer/Footer.jsx';
 import '../styles/favorites.css'
 
 export default function Favorites() {
+  const navigate = useNavigate();
   const [favorites, setFavorites] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const isLoggedIn = useIsLoggedIn();
+
+  const handleSelectAnime = (anime) => {
+    const id = anime.id_anime || anime.id;
+    if (id) {
+      navigate(`/details/${id}`);
+    }
+  };
 
   useEffect(() => {
     if (!isLoggedIn) {
@@ -89,7 +98,7 @@ export default function Favorites() {
               if (!anime) return null;
 
               return (
-                <div key={favorite.id_llista} className="favorite-card">
+                <div key={favorite.id_llista} className="favorite-card" onClick={() => handleSelectAnime(anime)}>
                   <div className="favorite-card-image-container">
                     <img 
                       src={anime.imatge_portada || ''} 
@@ -111,7 +120,10 @@ export default function Favorites() {
                     </div>
                     <button 
                       className="favorite-card-delete"
-                      onClick={() => handleRemoveFavorite(favorite.id_anime)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleRemoveFavorite(favorite.id_anime);
+                      }}
                       title="Eliminar de favoritos"
                     >
                       🗑️
