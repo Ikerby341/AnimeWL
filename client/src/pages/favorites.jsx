@@ -96,6 +96,19 @@ export default function Favorites() {
                       alt={anime.titol}
                       className="favorite-card-image"
                     />
+                  </div>
+                  <div className="favorite-card-info">
+                    <div>
+                      <h3 className="favorite-card-title">{anime.titol}</h3>
+                      <p className="favorite-card-episode">
+                        Cap. {favorite.capitols_vistos}
+                      </p>
+                    </div>
+                    <div className="favorite-card-rating">
+                      {[1, 2, 3, 4, 5].map((i) => (
+                        <span key={i} className={`star ${i <= Math.round(anime.rating || 0) ? 'filled' : ''}`}>★</span>
+                      ))}
+                    </div>
                     <button 
                       className="favorite-card-delete"
                       onClick={() => handleRemoveFavorite(favorite.id_anime)}
@@ -103,17 +116,6 @@ export default function Favorites() {
                     >
                       🗑️
                     </button>
-                  </div>
-                  <div className="favorite-card-info">
-                    <h3 className="favorite-card-title">{anime.titol}</h3>
-                    <p className="favorite-card-episode">
-                      Capítulo {favorite.capitols_vistos}
-                    </p>
-                    <div className="favorite-card-rating">
-                      {[1, 2, 3, 4, 5].map((i) => (
-                        <span key={i} className={`star ${i <= Math.round(anime.rating || 0) ? 'filled' : ''}`}>★</span>
-                      ))}
-                    </div>
                   </div>
                 </div>
               );
