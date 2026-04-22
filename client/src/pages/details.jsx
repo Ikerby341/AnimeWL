@@ -134,7 +134,7 @@ export default function Details() {
 
     const checkFavorite = async () => {
       try {
-        const r = await fetch(`/api/user/favorites`, { credentials: 'include' });
+        const r = await fetch(`${import.meta.env.VITE_BACKENDURL}/api/user/favorites`, { credentials: 'include' });
         const data = await r.json();
         if (data && data.success && data.favorites) {
           const isFav = data.favorites.some(fav => String(fav.id_anime) === String(id));

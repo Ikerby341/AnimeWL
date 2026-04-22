@@ -29,7 +29,7 @@ export default function Favorites() {
       setLoading(true);
       setError('');
       try {
-        const r = await fetch('/api/user/favorites', { credentials: 'include' });
+        const r = await fetch(`/api/user/favorites`, { credentials: 'include' });
         const data = await r.json();
         if (data && data.success) {
           setFavorites(data.favorites || []);
