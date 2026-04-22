@@ -31,7 +31,7 @@ function Home() {
     async function load() {
       try {
         // Fetch recent animes for carousel
-        const recentRes = await fetch('/api/anime/recent/5');
+        const recentRes = await fetch(`${import.meta.env.VITE_BACKENDURL}/api/anime/recent/5`);
         if (!recentRes.ok) throw new Error('failed to fetch recent animes');
         const recentBody = await recentRes.json();
         if (!cancelled) {
@@ -40,7 +40,7 @@ function Home() {
           setLoadingRecent(false);
         }
 
-        const res = await fetch('/api/anime/genre/action/7');
+        const res = await fetch(`${import.meta.env.VITE_BACKENDURL}/api/anime/genre/action/7`);
         if (!res.ok) throw new Error('failed to fetch');
         const body = await res.json();
         if (!cancelled) {
@@ -49,7 +49,7 @@ function Home() {
           setActionAnimes(list);
           setLoadingAction(false);
         }
-        const res2 = await fetch('/api/anime/genre/fantasy/7');
+        const res2 = await fetch(`${import.meta.env.VITE_BACKENDURL}/api/anime/genre/fantasy/7`);
         if (!res2.ok) throw new Error('failed to fetch');
         const body2 = await res2.json();
         if (!cancelled) {
@@ -58,7 +58,7 @@ function Home() {
           setFantasyAnimes(list);
           setLoadingFantasy(false);
         }
-        const res3 = await fetch('/api/anime/genre/romance/7');
+        const res3 = await fetch(`${import.meta.env.VITE_BACKENDURL}/api/anime/genre/romance/7`);
         if (!res3.ok) throw new Error('failed to fetch');
         const body3 = await res3.json();
         if (!cancelled) {
@@ -67,7 +67,7 @@ function Home() {
           setRomanceAnimes(list);
           setLoadingRomance(false);
         }
-        const res4 = await fetch('/api/anime/genre/sports/7');
+        const res4 = await fetch(`${import.meta.env.VITE_BACKENDURL}/api/anime/genre/sports/7`);
         if (!res4.ok) throw new Error('failed to fetch');
         const body4 = await res4.json();
         if (!cancelled) {

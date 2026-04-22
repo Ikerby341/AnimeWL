@@ -46,7 +46,7 @@ export function Navbar({ searchBar = true, directory = true, favorites = true, p
     }
     const timer = setTimeout(async () => {
       try {
-        const res = await fetch(`/api/jikan/search?q=${encodeURIComponent(query)}`);
+        const res = await fetch(`${import.meta.env.VITE_BACKENDURL}/api/jikan/search?q=${encodeURIComponent(query)}`);
         if (!res.ok) {
           console.error('search error', res.status);
           return;

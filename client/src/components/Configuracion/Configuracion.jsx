@@ -17,7 +17,7 @@ export function Configuracion() {
             alert('El nombre de usuario no puede estar vacío');
             return;
         }
-        fetch(`/api/user/update-username?newUsername=${encodeURIComponent(newUsername)}`, {
+        fetch(`${import.meta.env.VITE_BACKENDURL}/api/user/update-username?newUsername=${encodeURIComponent(newUsername)}`, {
             method: 'GET',
             credentials: 'include'
         })
@@ -57,7 +57,7 @@ export function Configuracion() {
             setIsSendCodeDisabled(false);
         }, 60000); // Rehabilitar el botón después de 60 segundos
 
-        fetch('/api/user/send-email-code', {
+        fetch(`${import.meta.env.VITE_BACKENDURL}/api/user/send-email-code`, {
             method: 'POST',
             credentials: 'include'
         })
@@ -93,7 +93,7 @@ export function Configuracion() {
             return;
         }
 
-        fetch('/api/user/update-email', {
+        fetch(`${import.meta.env.VITE_BACKENDURL}/api/user/update-email`, {
             method: 'POST',
             credentials: 'include',
             headers: {
@@ -153,7 +153,7 @@ export function Configuracion() {
             return;
         }
 
-        fetch('/api/user/update-password', {
+        fetch(`${import.meta.env.VITE_BACKENDURL}/api/user/update-password`, {
             method: 'POST',
             credentials: 'include',
             headers: {
@@ -195,7 +195,7 @@ export function Configuracion() {
     }
 
     function acualitzarDadesUsuari() {
-        fetch('/api/check-session', {
+        fetch(`${import.meta.env.VITE_BACKENDURL}/api/check-session`, {
             method: 'GET',
             credentials: 'include'
         })

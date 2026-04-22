@@ -49,7 +49,7 @@ export function RegisterForm() {
 
     setLoading(true)
     try {
-      const response = await fetch('/api/register', {
+      const response = await fetch(`${import.meta.env.VITE_BACKENDURL}/api/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

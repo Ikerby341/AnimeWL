@@ -27,7 +27,7 @@ export function Perfil() {
             }
 
             try {
-                const response = await fetch(`/api/anime/${id}?cacheOnly=true`, {
+                const response = await fetch(`${import.meta.env.VITE_BACKENDURL}/api/anime/${id}?cacheOnly=true`, {
                     method: 'GET',
                     credentials: 'include'
                 });
@@ -62,7 +62,7 @@ export function Perfil() {
             setSearchError(null);
             setIsSearching(true);
             try {
-                const response = await fetch(`/api/jikan/search?q=${encodeURIComponent(searchQuery)}`);
+                const response = await fetch(`${import.meta.env.VITE_BACKENDURL}/api/jikan/search?q=${encodeURIComponent(searchQuery)}`);
                 if (!response.ok) {
                     const errorData = await response.json().catch(() => ({}));
                     throw new Error(errorData.error || 'Error al buscar anime');
@@ -120,7 +120,7 @@ export function Perfil() {
         }
 
         try {
-            const response = await fetch('/api/user/anime', {
+            const response = await fetch(`${import.meta.env.VITE_BACKENDURL}/api/user/anime`, {
                 method: 'POST',
                 credentials: 'include',
                 headers: {
@@ -156,7 +156,7 @@ export function Perfil() {
             alert('La URL no puede estar vacía.');
             return;
         }
-        fetch('/api/update-profile-picture', {
+        fetch(`${import.meta.env.VITE_BACKENDURL}/api/update-profile-picture`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -181,7 +181,7 @@ export function Perfil() {
     }
 
     function actualitzarUserInfo() {
-        fetch('/api/check-session', {
+        fetch(`${import.meta.env.VITE_BACKENDURL}/api/check-session`, {
             method: 'GET',
             credentials: 'include'
         })

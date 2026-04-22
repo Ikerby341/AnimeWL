@@ -24,7 +24,7 @@ export function Estadisticas() {
     useEffect(() => {
         const fetchStats = async () => {
             try {
-                const response = await fetch('/api/user/stats', {
+                const response = await fetch(`${import.meta.env.VITE_BACKENDURL}/api/user/stats`, {
                     credentials: 'include'
                 });
 

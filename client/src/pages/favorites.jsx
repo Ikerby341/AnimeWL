@@ -29,7 +29,7 @@ export default function Favorites() {
       setLoading(true);
       setError('');
       try {
-        const r = await fetch(`/api/user/favorites`, { credentials: 'include' });
+        const r = await fetch(`${import.meta.env.VITE_BACKENDURL}/api/user/favorites`, { credentials: 'include' });
         const data = await r.json();
         if (data && data.success) {
           setFavorites(data.favorites || []);
@@ -49,7 +49,7 @@ export default function Favorites() {
 
   const handleRemoveFavorite = async (id_anime) => {
     try {
-      const response = await fetch(`/api/user/favorites/${id_anime}`, {
+      const response = await fetch(`${import.meta.env.VITE_BACKENDURL}/api/user/favorites/${id_anime}`, {
         method: 'DELETE',
         credentials: 'include',
         headers: {
@@ -71,7 +71,7 @@ export default function Favorites() {
     e.stopPropagation();
     const newStatus = e.target.value;
     try {
-      const response = await fetch(`/api/user/favorites/${id_anime}`, {
+      const response = await fetch(`${import.meta.env.VITE_BACKENDURL}/api/user/favorites/${id_anime}`, {
         method: 'PUT',
         credentials: 'include',
         headers: {

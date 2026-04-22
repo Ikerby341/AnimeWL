@@ -30,7 +30,7 @@ export default function Details() {
       setLoading(true);
       setError('');
       try {
-        const r = await fetch(`/api/anime/${id}`);
+        const r = await fetch(`${import.meta.env.VITE_BACKENDURL}/api/anime/${id}`);
         const data = await r.json();
         if (data && data.anime) {
           setAnime(data.anime);
@@ -54,7 +54,7 @@ export default function Details() {
     const loadComments = async () => {
       setCommentsLoading(true);
       try {
-        const r = await fetch(`/api/anime/${id}/comments`);
+        const r = await fetch(`${import.meta.env.VITE_BACKENDURL}/api/anime/${id}/comments`);
         const data = await r.json();
         if (data && data.success) {
           setComments(data.comments || []);
@@ -80,7 +80,7 @@ export default function Details() {
       setRatingLoading(true);
       setRatingError('');
       try {
-        const r = await fetch(`/api/anime/${id}/rating`, { credentials: 'include' });
+        const r = await fetch(`${import.meta.env.VITE_BACKENDURL}/api/anime/${id}/rating`, { credentials: 'include' });
         const data = await r.json();
         if (data && data.success) {
           setRatingData(data.rating || { average: 0, count: 0 });
@@ -106,7 +106,7 @@ export default function Details() {
       setProgressLoading(true);
       setProgressError('');
       try {
-        const r = await fetch(`/api/anime/${id}/progress`, { credentials: 'include' });
+        const r = await fetch(`${import.meta.env.VITE_BACKENDURL}/api/anime/${id}/progress`, { credentials: 'include' });
         const data = await r.json();
         if (data && data.success) {
           setProgress(data.progress || null);
@@ -150,7 +150,7 @@ export default function Details() {
 
   const handleAddToFavorites = async () => {
     try {
-      const response = await fetch(`/api/user/favorites/${id}`, {
+      const response = await fetch(`${import.meta.env.VITE_BACKENDURL}/api/user/favorites/${id}`, {
         method: 'POST',
         credentials: 'include',
         headers: {
@@ -170,7 +170,7 @@ export default function Details() {
 
   const handleRemoveFromFavorites = async () => {
     try {
-      const response = await fetch(`/api/user/favorites/${id}`, {
+      const response = await fetch(`${import.meta.env.VITE_BACKENDURL}/api/user/favorites/${id}`, {
         method: 'DELETE',
         credentials: 'include',
         headers: {
@@ -190,7 +190,7 @@ export default function Details() {
 
   const handleRate = async (value) => {
     try {
-      const response = await fetch(`/api/anime/${id}/rating`, {
+      const response = await fetch(`${import.meta.env.VITE_BACKENDURL}/api/anime/${id}/rating`, {
         method: 'POST',
         credentials: 'include',
         headers: {
@@ -212,7 +212,7 @@ export default function Details() {
 
   const handleProgressChange = async (value) => {
     try {
-      const response = await fetch(`/api/anime/${id}/progress`, {
+      const response = await fetch(`${import.meta.env.VITE_BACKENDURL}/api/anime/${id}/progress`, {
         method: 'POST',
         credentials: 'include',
         headers: {

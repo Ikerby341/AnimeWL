@@ -20,7 +20,7 @@ export function AnimeComments({ animeId, comments, loading, isLoggedIn, onCommen
         }
         setSubmitLoading(true);
         try {
-            const response = await fetch(`/api/anime/${animeId}/comments`, {
+            const response = await fetch(`${import.meta.env.VITE_BACKENDURL}/api/anime/${animeId}/comments`, {
                 method: 'POST',
                 credentials: 'include',
                 headers: {

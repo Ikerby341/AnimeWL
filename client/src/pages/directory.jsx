@@ -21,7 +21,7 @@ export default function Directory() {
     let cancelled = false;
     async function load() {
       try {
-        const res = await fetch('/api/anime');
+        const res = await fetch(`${import.meta.env.VITE_BACKENDURL}/api/anime`);
         if (!res.ok) throw new Error('failed to fetch');
         const body = await res.json();
         if (!cancelled) {

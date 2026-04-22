@@ -12,7 +12,7 @@ export function AuthProvider({ children }) {
 
   const checkSession = async () => {
     try {
-      const response = await fetch('/api/session', {
+      const response = await fetch(`${import.meta.env.VITE_BACKENDURL}/api/session`, {
         credentials: 'include'
       })
 
@@ -36,7 +36,7 @@ export function AuthProvider({ children }) {
   }
 
   const login = async (username, password, remember = false) => {
-    const response = await fetch('/api/login', {
+    const response = await fetch(`${import.meta.env.VITE_BACKENDURL}/api/login`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -56,7 +56,7 @@ export function AuthProvider({ children }) {
 
   const logout = async () => {
     try {
-      await fetch('/api/logout', {
+      await fetch(`${import.meta.env.VITE_BACKENDURL}/api/logout`, {
         method: 'POST',
         credentials: 'include'
       })
