@@ -19,13 +19,16 @@ export function AuthProvider({ children }) {
       if (response.status === 401) {
         // 401 es esperado cuando no hay sesión, no es un error
         setUser(null)
-      } else {
+      } else if (response.ok) {
         const data = await response.json()
         if (data.success) {
           setUser(data.user)
         } else {
           setUser(null)
         }
+      } else {
+        console.error('Error checking session:', response.status)
+        setUser(null)
       }
     } catch (error) {
       console.error('Error checking session:', error)
