@@ -12,6 +12,7 @@ export function Perfil() {
     const { checkSession } = useAuth();
     const [favoriteAnime, setFavoriteAnime] = useState(null);
     const [recommendedAnime, setRecommendedAnime] = useState(null);
+    const [watchingAnime, setWatchingAnime] = useState(null);
     const [showSearchModal, setShowSearchModal] = useState(false);
     const [searchType, setSearchType] = useState(null);
     const [searchQuery, setSearchQuery] = useState('');
@@ -49,6 +50,47 @@ export function Perfil() {
         fetchAnime(userInfo?.id_anime_preferit, setFavoriteAnime, 'favorite');
         fetchAnime(userInfo?.id_anime_recomanat, setRecommendedAnime, 'recommended');
     }, [userInfo?.id_anime_preferit, userInfo?.id_anime_recomanat]);
+
+    // Obtener un anime aleatorio de la lista de favoritos que esté "Viendo"
+    useEffect(() => {
+        const fetchWatchingAnime = async () => {
+            try {
+                const response = await fetch(`${import.meta.env.VITE_BACKENDURL}/api/user/favorites`, {
+                    method: 'GET',
+                    credentials: 'include'
+                });
+
+                if (!response.ok) {
+                    console.error('Error fetching favorites:', response.status);
+                    setWatchingAnime(null);
+                    return;
+                }
+
+                const data = await response.json();
+                if (!data.success || !data.favorites) {
+                    setWatchingAnime(null);
+                    return;
+                }
+
+                // Filtrar solo los que están en estado "Viendo"
+                const watchingList = data.favorites.filter(fav => fav.estat === 'Viendo');
+
+                if (watchingList.length === 0) {
+                    setWatchingAnime(null);
+                    return;
+                }
+
+                // Seleccionar uno aleatorio
+                const randomIndex = Math.floor(Math.random() * watchingList.length);
+                setWatchingAnime(watchingList[randomIndex].anime);
+            } catch (error) {
+                console.error('Error fetching watching anime:', error);
+                setWatchingAnime(null);
+            }
+        };
+
+        fetchWatchingAnime();
+    }, []);
 
     useEffect(() => {
         if (!showSearchModal || searchQuery.trim() === '') {
@@ -237,10 +279,12 @@ export function Perfil() {
                     />
                     <p>Anime recomendado</p>
                 </div>
-                <div className="anime-card">
-                    <img src="https://myanimelist.net/images/anime/1071/149486.jpg" alt="Actualmente viendo" />
-                    <p>Actualmente viendo</p>
-                </div>
+                {watchingAnime && (
+                    <div className="anime-card">
+                        <img src={watchingAnime?.imatge_portada || addAnimePlaceholder} alt={watchingAnime?.titol || 'Actualmente viendo'} />
+                        <p>Actualmente viendo</p>
+                    </div>
+                )}
             </div>
             {
                 showSearchModal && (
