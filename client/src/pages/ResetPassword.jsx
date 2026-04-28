@@ -22,7 +22,7 @@ export default function ResetPassword() {
       }
 
       try {
-        const response = await fetch(`${import.meta.env.VITE_API_URL || ''}/api/verify-reset-token?token=${token}`)
+        const response = await fetch(`${import.meta.env.VITE_BACKENDURL || ''}/api/verify-reset-token?token=${token}`)
         const data = await response.json()
         setTokenValid(data.success)
       } catch (err) {
@@ -55,7 +55,7 @@ export default function ResetPassword() {
 
     setLoading(true)
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL || ''}/api/reset-password`, {
+      const response = await fetch(`${import.meta.env.VITE_BACKENDURL || ''}/api/reset-password`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

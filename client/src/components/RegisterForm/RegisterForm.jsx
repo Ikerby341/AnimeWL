@@ -83,6 +83,7 @@ export function RegisterForm() {
           value={formData.username}
           onChange={handleChange}
           required
+          maxLength={30}
         />
 
         <label htmlFor="email">Email:</label>

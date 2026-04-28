@@ -20,7 +20,7 @@ export default function ForgotPassword() {
 
     setLoading(true)
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL || ''}/api/forgot-password`, {
+      const response = await fetch(`${import.meta.env.VITE_BACKENDURL || ''}/api/forgot-password`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

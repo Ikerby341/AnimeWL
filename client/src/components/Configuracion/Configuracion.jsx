@@ -217,7 +217,7 @@ export function Configuracion() {
         <div className="configuracion">
             <label htmlFor="username">Nombre de usuario:</label>
             <br />
-            <input className="password-input" type="text" id="username" name="username" placeholder="Tu nombre de usuario" defaultValue={userInfo.nom} />
+            <input className="password-input" type="text" id="username" name="username" placeholder="Tu nombre de usuario" defaultValue={userInfo.nom} maxLength={30} />
             <button className="save-button" onClick={changeUsername}>✏️</button>
             <br />
             <label htmlFor="current-email">Correo electrónico actual:</label>
