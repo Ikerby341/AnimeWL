@@ -185,8 +185,8 @@
     height: 45px;
     border-radius: 8px;
     border: 2px solid #209F36;
-    background-color: transparent;
-    color: #209F36;
+    background-color: #209F36;
+    color: #ffffff;
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -201,7 +201,7 @@
 }
 
 .favorite-button:hover:not(:disabled) {
-    background-color: rgba(32, 159, 54, 0.1);
+    background-color: #1b8a2e;
     transform: scale(1.1);
 }
 
@@ -212,7 +212,7 @@
 }
 
 .favorite-button.favorited:hover:not(:disabled) {
-    background-color: rgba(32, 159, 54, 0.8);
+    background-color: #1b8a2e;
 }
 
 .favorite-button:disabled {
