@@ -7,6 +7,8 @@ import Directory from './pages/directory.jsx'
 import Favorites from './pages/favorites.jsx'
 import Profile from './pages/profile.jsx'
 import Details from './pages/details.jsx'
+import ForgotPassword from './pages/ForgotPassword.jsx'
+import ResetPassword from './pages/ResetPassword.jsx'
 import { AuthProvider } from './contexts/AuthContext.jsx'
 
 function App() {
@@ -20,6 +22,8 @@ function App() {
         <Route path='/favorites' element={<Favorites />} />
         <Route path='/profile' element={<Profile />} />
         <Route path='/details/:id' element={<Details />} />
+        <Route path='/forgot-password' element={<ForgotPassword />} />
+        <Route path='/reset-password' element={<ResetPassword />} />
       </Routes>
     </AuthProvider>
   )

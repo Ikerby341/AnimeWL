@@ -88,7 +88,7 @@ export function LoginForm() {
             />
             <label htmlFor="remember">Recuérdame</label>
           </div>
-          <label htmlFor="forgot" className="forgot-password">¿Has olvidado tu contraseña?</label>
+          <a href="/forgot-password" className="forgot-password">¿Has olvidado tu contraseña?</a>
         </div>
         <button type="submit" className="login-button" disabled={loading}>
           {loading ? 'Iniciando...' : 'Iniciar sesión'}
