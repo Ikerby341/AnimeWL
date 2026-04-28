@@ -62,7 +62,7 @@ export default function ForgotPassword() {
       <div className="forgot-password-card">
         <h2>¿Has olvidado tu contraseña?</h2>
         <p>Introduce tu correo electrónico y te enviaremos un enlace para restablecer tu contraseña.</p>
-        
+
         <form onSubmit={handleSubmit}>
           <label htmlFor="email">Correo electrónico:</label>
           <input
