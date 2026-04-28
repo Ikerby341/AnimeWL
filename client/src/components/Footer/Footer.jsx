@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import './Footer.css';
 
 export default function Footer() {
@@ -11,10 +12,14 @@ export default function Footer() {
           </h3>
           <p className="footer-subtitle">Tu plataforma de anime favorita</p>
         </div>
-        
+
         <div className="footer-links">
-          <button className="footer-button">Términos y Condiciones</button>
-          <button className="footer-button">Política de Privacidad</button>
+          <Link className="footer-button" to="/terminos-y-condiciones">
+            Terminos y Condiciones
+          </Link>
+          <Link className="footer-button" to="/politica-de-privacidad">
+            Politica de Privacidad
+          </Link>
         </div>
       </div>
     </footer>

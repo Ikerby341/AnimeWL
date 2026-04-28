@@ -54,6 +54,10 @@
   cursor: pointer;
   font-size: 0.9rem;
   transition: all 0.3s ease;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .footer-button:hover {
