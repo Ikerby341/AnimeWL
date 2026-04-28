@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import logo from './../../assets/LogoSuperior.webp';
+import mobileLogo from './../../assets/LogoAnimeWLCuadrado.png';
 import userIcon from './../../assets/usuari.png';
 import favoriteIcon from './../../assets/favorito.png';
 import directoryIcon from './../../assets/directorio.png';
@@ -8,11 +9,21 @@ import { ButtonNavBar } from './../ButtonNavBar/ButtonNavBar';
 import { useAuth, useUserInfo } from '../../hooks/useAuth.js';
 import './NavBar.css';
 
+const MOBILE_BREAKPOINT = 768;
+
+function getViewportWidth() {
+  const windowWidth = typeof window !== 'undefined' ? window.innerWidth : MOBILE_BREAKPOINT + 1;
+  const screenWidth = typeof window !== 'undefined' && window.screen ? window.screen.width : windowWidth;
+  return Math.min(windowWidth, screenWidth);
+}
+
 export function Navbar({ searchBar = true, directory = true, favorites = true, profile = true }) {
   const [query, setQuery] = useState('');
   const [results, setResults] = useState([]);
   const [showDropdown, setShowDropdown] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
+  const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
+  const [isMobileViewport, setIsMobileViewport] = useState(() => getViewportWidth() <= MOBILE_BREAKPOINT);
   const navigate = useNavigate();
   const { user, logout } = useAuth();
   const wrapperRef = useRef(null);
@@ -30,6 +41,24 @@ export function Navbar({ searchBar = true, directory = true, favorites = true, p
     }
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  useEffect(() => {
+    const handleResize = () => {
+      const mobile = getViewportWidth() <= MOBILE_BREAKPOINT;
+      setIsMobileViewport(mobile);
+      if (!mobile) {
+        setMobileSearchOpen(false);
+      }
+    };
+
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    window.addEventListener('orientationchange', handleResize);
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      window.removeEventListener('orientationchange', handleResize);
+    };
   }, []);
 
 
@@ -90,13 +119,21 @@ export function Navbar({ searchBar = true, directory = true, favorites = true, p
   };
 
   const userInfo = useUserInfo();
+  const currentLogo = isMobileViewport ? mobileLogo : logo;
+  const logoClassName = isMobileViewport ? 'logo logo-mobile' : 'logo';
+  const navbarClassName = isMobileViewport ? 'navbar navbar-mobile' : 'navbar';
+  const navbarDivClassName = isMobileViewport ? 'navbarDiv navbarDiv-mobile' : 'navbarDiv';
+  const searchContainerClassName = isMobileViewport ? 'search-container search-container-mobile' : 'search-container';
+  const mobileActionsClassName = isMobileViewport ? 'navbarDiv navbarDiv-mobile navbar-actions-mobile' : navbarDivClassName;
+  const shouldShowInlineSearch = searchBar && !isMobileViewport;
+  const shouldShowMobileSearch = searchBar && isMobileViewport && mobileSearchOpen;
 
   return (
-    <nav className="navbar" ref={wrapperRef}>
-      <div className="navbarDiv">
-        <Link to="/"> <img src={logo} alt="Logo" className="logo" /></Link>
-        {searchBar && (
-          <div className="search-container">
+    <nav className={navbarClassName} ref={wrapperRef}>
+      <div className={navbarDivClassName}>
+        <Link to="/"> <img src={currentLogo} alt="Logo AnimeWL" className={logoClassName} /></Link>
+        {shouldShowInlineSearch && (
+          <div className={searchContainerClassName}>
             <input
               type="text"
               placeholder="Buscar anime..."
@@ -132,7 +169,23 @@ export function Navbar({ searchBar = true, directory = true, favorites = true, p
           </div>
         )}
       </div>
-      <div className="navbarDiv">
+      <div className={mobileActionsClassName}>
+        {searchBar && isMobileViewport && (
+          <button
+            type="button"
+            className={`mobile-search-toggle ${mobileSearchOpen ? 'mobile-search-toggle-active' : ''}`}
+            aria-label={mobileSearchOpen ? 'Ocultar busqueda' : 'Mostrar busqueda'}
+            onClick={() => {
+              setMobileSearchOpen((prev) => !prev);
+              setShowDropdown(false);
+            }}
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <circle cx="11" cy="11" r="6.5" />
+              <path d="M16 16L21 21" />
+            </svg>
+          </button>
+        )}
         {directory && < ButtonNavBar link="/directory" img={directoryIcon} />}
         {userInfo && favorites && < ButtonNavBar link="/favorites" img={favoriteIcon} />}
         {profile && (
@@ -173,6 +226,42 @@ export function Navbar({ searchBar = true, directory = true, favorites = true, p
           </div>
         )}
       </div>
+      {shouldShowMobileSearch && (
+        <div className="search-container search-container-mobile-panel">
+          <input
+            type="text"
+            placeholder="Buscar anime..."
+            className="searchBar searchBar-mobile-panel"
+            aria-label="Barra de busqueda"
+            value={query}
+            onChange={(e) => {
+              const val = e.target.value;
+              setQuery(val);
+              if (val.trim() === '') {
+                setResults([]);
+                setShowDropdown(false);
+              }
+            }}
+          />
+          {showDropdown && results.length > 0 && (
+            <ul className="search-results search-results-mobile">
+              {results.map((r) => {
+                const normalized = normalizeSearchResult(r);
+                return (
+                  <li key={normalized.id || r.mal_id || r.id} onClick={() => handleSelect(r)}>
+                    <img
+                      src={normalized.imageUrl}
+                      alt={normalized.title}
+                      className="result-thumb"
+                    />
+                    <span className="result-title">{normalized.title}</span>
+                  </li>
+                );
+              })}
+            </ul>
+          )}
+        </div>
+      )}
     </nav>
   );
 }

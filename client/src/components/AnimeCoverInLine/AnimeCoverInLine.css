@@ -102,3 +102,19 @@
     color: gold;
 }
 
+@media (max-width: 768px) {
+    .anime-cover {
+        width: 11rem;
+        flex: 0 0 11rem;
+    }
+
+    .anime-cover-image {
+        height: 15rem;
+    }
+
+    .anime-cover-title {
+        font-size: 0.8rem;
+        padding: 0.45rem 0.55rem;
+    }
+}
+

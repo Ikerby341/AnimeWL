@@ -79,3 +79,21 @@
 .coverflow-dot:hover:not(.coverflow-dot--active) {
   background: rgba(255, 255, 255, 0.6);
 }
+
+@media (max-width: 768px) {
+  .coverflow-carousel {
+    padding: 1rem 0 2.75rem;
+  }
+
+  .coverflow-track {
+    height: 300px;
+  }
+
+  .coverflow-arrow {
+    width: 38px;
+    height: 38px;
+  }
+
+  .coverflow-arrow--left  { left: 0.25rem; }
+  .coverflow-arrow--right { right: 0.25rem; }
+}

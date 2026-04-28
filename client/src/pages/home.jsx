@@ -6,6 +6,14 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AnimeCoverInLine } from '../components/AnimeCoverInLine/AnimeCoverInLine.jsx'
 
+const MOBILE_BREAKPOINT = 768;
+
+function getViewportWidth() {
+  const windowWidth = typeof window !== 'undefined' ? window.innerWidth : MOBILE_BREAKPOINT + 1;
+  const screenWidth = typeof window !== 'undefined' && window.screen ? window.screen.width : windowWidth;
+  return Math.min(windowWidth, screenWidth);
+}
+
 function Home() {
   const navigate = useNavigate();
   const [actionAnimes, setActionAnimes] = useState([]);
@@ -18,6 +26,7 @@ function Home() {
   const [loadingFantasy, setLoadingFantasy] = useState(true);
   const [loadingRomance, setLoadingRomance] = useState(true);
   const [loadingSports, setLoadingSports] = useState(true);
+  const [isMobileViewport, setIsMobileViewport] = useState(() => getViewportWidth() <= MOBILE_BREAKPOINT);
 
   function handleSelect(anime) {
     const id = anime.id_anime || anime.id;
@@ -25,6 +34,21 @@ function Home() {
       navigate(`/details/${id}`);
     }
   }
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobileViewport(getViewportWidth() <= MOBILE_BREAKPOINT);
+    };
+
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    window.addEventListener('orientationchange', handleResize);
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      window.removeEventListener('orientationchange', handleResize);
+    };
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -84,10 +108,14 @@ function Home() {
     load();
     return () => { cancelled = true; };
   }, []);
+
+  const contentClassName = isMobileViewport ? 'content content-mobile' : 'content';
+  const gridClassName = isMobileViewport ? 'anime-grid-inline anime-grid-inline-mobile' : 'anime-grid-inline';
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
       <Navbar />
-      <div className="content">
+      <div className={contentClassName}>
         {loadingRecent ? (
           <div className="loading-container">
             <div className="loader"></div>
@@ -110,7 +138,7 @@ function Home() {
                     <div className="loader"></div>
                   </div>
                 ) : (
-                  <div className="anime-grid-inline">
+                  <div className={gridClassName}>
                     {actionAnimes.map((a) => (
                       <AnimeCoverInLine
                         key={a.id_anime || a.id}
@@ -130,7 +158,7 @@ function Home() {
                     <div className="loader"></div>
                   </div>
                 ) : (
-                  <div className="anime-grid-inline">
+                  <div className={gridClassName}>
                     {romanceAnimes.map((a) => (
                       <AnimeCoverInLine
                         key={a.id_anime || a.id}
@@ -150,7 +178,7 @@ function Home() {
                     <div className="loader"></div>
                   </div>
                 ) : (
-                  <div className="anime-grid-inline">
+                  <div className={gridClassName}>
                     {fantasyAnimes.map((a) => (
                       <AnimeCoverInLine
                         key={a.id_anime || a.id}
@@ -170,7 +198,7 @@ function Home() {
                       <div className="loader"></div>
                       </div>
                       ) : (
-                        <div className="anime-grid-inline">
+                        <div className={gridClassName}>
                           {SportsAnimes.map((a) => (
                             <AnimeCoverInLine
                               key={a.id_anime || a.id}

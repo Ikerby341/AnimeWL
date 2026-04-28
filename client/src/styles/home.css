@@ -19,3 +19,45 @@
     justify-content: start;
     box-sizing: border-box;
 }
+
+.content-mobile {
+    margin-left: 1rem;
+    margin-right: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.content-mobile h2 {
+    margin-top: 2rem;
+    margin-bottom: 0.75rem;
+    font-size: 1.35rem;
+}
+
+.anime-grid-inline-mobile {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    gap: 0.75rem;
+    padding-bottom: 0.75rem;
+    scroll-behavior: smooth;
+    -ms-overflow-style: auto;
+    scrollbar-width: thin;
+    scrollbar-color: #209F36 #111111;
+}
+
+.anime-grid-inline-mobile::-webkit-scrollbar {
+    height: 0.5rem;
+}
+
+.anime-grid-inline-mobile::-webkit-scrollbar-track {
+    background: #111111;
+    border-radius: 999px;
+}
+
+.anime-grid-inline-mobile::-webkit-scrollbar-thumb {
+    background: #209F36;
+    border-radius: 999px;
+}
+
+.anime-grid-inline-mobile::-webkit-scrollbar-thumb:hover {
+    background: #1b8a2e;
+}

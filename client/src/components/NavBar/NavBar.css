@@ -15,6 +15,10 @@
   max-height: 3.5rem;
 }
 
+.logo-mobile {
+  max-height: 3.25rem;
+}
+
 .searchBar {
   padding: 0.5rem;
   padding-left: 1rem;
@@ -41,6 +45,54 @@
 .navbarDiv{
   display: flex;
   align-items: center;
+}
+
+.navbar-mobile {
+  gap: 0.75rem;
+  padding: 0.5rem 0.75rem;
+  flex-wrap: wrap;
+}
+
+.navbarDiv-mobile {
+  min-width: 0;
+}
+
+.navbar-actions-mobile {
+  margin-left: auto;
+  gap: 0.45rem;
+  flex-shrink: 0;
+}
+
+.search-container-mobile {
+  margin-left: 0.75rem;
+  min-width: 0;
+  flex: 1;
+}
+
+.navbar-mobile .searchBar {
+  width: min(42vw, 12rem);
+  font-size: 1rem;
+}
+
+.navbar-mobile .logo-mobile {
+  width: 3rem;
+  max-height: 3rem;
+  object-fit: contain;
+}
+
+.navbar-mobile .user-menu-container {
+  margin-left: 0;
+}
+
+.navbar-mobile .user-icon,
+.navbar-mobile .icon {
+  width: 2.35rem;
+  height: 2.35rem;
+}
+
+.navbar-mobile .user-dropdown {
+  right: 0;
+  min-width: 160px;
 }
 
 .search-results {
@@ -82,6 +134,62 @@
 
 .search-results li:hover {
   background-color: #f0f0f0;
+}
+
+.mobile-search-toggle {
+  width: 2.35rem;
+  height: 2.35rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  background: transparent;
+  color: #ffffff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  cursor: pointer;
+}
+
+.mobile-search-toggle svg {
+  width: 1.1rem;
+  height: 1.1rem;
+  stroke: currentColor;
+  stroke-width: 2;
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.mobile-search-toggle-active {
+  background-color: #209F36;
+  border-color: #209F36;
+}
+
+.search-container-mobile-panel {
+  width: 100%;
+  margin-left: 0;
+  margin-top: 0.1rem;
+  display: block;
+}
+
+.searchBar-mobile-panel {
+  width: 100%;
+  min-width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  font-size: 1rem;
+  height: 2.7rem;
+  padding: 0.6rem 1rem;
+}
+
+.navbar-mobile .search-container-mobile-panel .searchBar-mobile-panel {
+  width: 100%;
+  min-width: 100%;
+  max-width: 100%;
+}
+
+.search-results-mobile {
+  top: calc(100% + 0.35rem);
 }
 
 .result-thumb {
