@@ -1,5 +1,5 @@
 import './styles/App.css'
-import { Routes, Route } from 'react-router-dom'
+import { Navigate, Routes, Route } from 'react-router-dom'
 import Home from './pages/home.jsx'
 import Login from './pages/login.jsx'
 import Register from './pages/register.jsx'
@@ -28,6 +28,7 @@ function App() {
         <Route path='/reset-password' element={<ResetPassword />} />
         <Route path='/terminos-y-condiciones' element={<Terms />} />
         <Route path='/politica-de-privacidad' element={<Privacy />} />
+        <Route path='*' element={<Navigate to="/" replace />} />
       </Routes>
     </AuthProvider>
   )
