@@ -42,7 +42,7 @@ export default function Directory() {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
       <Navbar directory={false} />
-      <div className="content">
+      <div className="content directory-content">
         <br />
         <h1>DIRECTORIO DE ANIMES</h1>
         {loading ? (
@@ -50,7 +50,7 @@ export default function Directory() {
             <div className="loader"></div>
           </div>
         ) : (
-          <div className="anime-grid">
+          <div className="directory-anime-grid">
             {animes.map((a) => (
               <AnimeCover
                 key={a.id_anime || a.id}

@@ -5,8 +5,7 @@
     flex: 1;
 }
 
-/* rejilla de portadas en el directorio */
-.anime-grid {
+.directory-anime-grid {
     display: grid;
     width: 100%;
     grid-template-columns: repeat(6, 1fr); 
@@ -15,4 +14,31 @@
     padding-left: 6vw;
     padding-right: 6vw;
     box-sizing: border-box;
+}
+
+@media (max-width: 768px) {
+    .directory-content {
+        margin-left: 1rem;
+        margin-right: 1rem;
+    }
+
+    .directory-anime-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.75rem;
+        padding-left: 0;
+        padding-right: 0;
+        overflow-x: hidden;
+    }
+
+    .directory-anime-grid .anime-cover {
+        width: 100%;
+        min-width: 0;
+        border-radius: 0.75rem;
+    }
+
+    .directory-anime-grid .anime-cover-image {
+        height: auto;
+        aspect-ratio: 11 / 15;
+        border-radius: 0.75rem;
+    }
 }
