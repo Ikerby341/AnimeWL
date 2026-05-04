@@ -7,6 +7,8 @@
     margin: 2rem;
     gap: 24px;
     align-items: center;
+    box-sizing: border-box;
+    max-width: 100%;
 }
 
 .anime-main {
@@ -15,14 +17,16 @@
     flex-direction: row;
     gap: 20px;
     align-items: flex-start;
+    min-width: 0;
 }
 
 .anime-column1 {
-    flex-shrink: 0;
+    flex: 0 1 200px;
+    min-width: 140px;
 }
 
 .anime-poster {
-    width: 200px;
+    width: 100%;
     object-fit: cover;
     border-radius: 20px;
     display: block;
@@ -34,7 +38,8 @@
     flex-direction: column;
     gap: 8px;
     color: #fff;
-    max-width: 220px;
+    width: 100%;
+    max-width: 100%;
 }
 
 .anime-progress label {
@@ -67,6 +72,7 @@
     display: flex;
     flex-direction: column;
     flex: 1;
+    min-width: 0;
     gap: 16px;
     position: relative;
 }
@@ -77,6 +83,7 @@
     gap: 16px;
     align-items: flex-start;
     width: 100%;
+    min-width: 0;
 }
 
 .anime-rating {
@@ -84,7 +91,8 @@
     flex-direction: column;
     align-items: flex-end;
     gap: 6px;
-    min-width: 180px;
+    flex: 0 1 180px;
+    min-width: 0;
 }
 
 .anime-rating-stars {
@@ -99,6 +107,7 @@
     font-size: 0.9rem;
     text-align: right;
     margin: 0;
+    overflow-wrap: anywhere;
 }
 
 .anime-rating-error {
@@ -127,7 +136,9 @@
 }
 
 .anime-comments-section {
-    min-width: 95%;
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
     margin: 0 auto 0;
     margin-top: 16px;
 }
@@ -158,6 +169,7 @@
     font-size: 1.8rem;
     font-weight: 700;
     margin: 0;
+    overflow-wrap: anywhere;
 }
 
 #gender {
@@ -169,12 +181,13 @@
     font-size: 0.9rem;
     line-height: 1.6;
     margin: 0;
+    overflow-wrap: anywhere;
 }
 
 .anime-poster-container {
     position: relative;
     display: inline-block;
-    width: 200px;
+    width: 100%;
 }
 
 .favorite-button {
@@ -218,4 +231,66 @@
 .favorite-button:disabled {
     opacity: 0.6;
     cursor: not-allowed;
+}
+
+@media (max-width: 920px) {
+    .anime-details {
+        margin: 1.25rem;
+        padding: 18px;
+    }
+
+    .anime-main {
+        gap: 16px;
+    }
+
+    .anime-column1 {
+        flex-basis: clamp(140px, 24vw, 180px);
+    }
+
+    .anime-details-header {
+        flex-wrap: wrap;
+    }
+
+    .anime-rating {
+        align-items: flex-start;
+        flex-basis: auto;
+        width: 100%;
+    }
+
+    .anime-rating-summary,
+    .anime-rating-error {
+        text-align: left;
+    }
+
+    #anime-title {
+        font-size: 1.55rem;
+    }
+}
+
+@media (max-width: 640px) {
+    .anime-details {
+        margin: 1rem;
+        padding: 16px;
+        border-radius: 18px;
+    }
+
+    .anime-main {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .anime-column1 {
+        width: min(100%, 220px);
+        flex-basis: auto;
+    }
+
+    .anime-column2 {
+        width: 100%;
+    }
+
+    #anime-title,
+    #gender,
+    #synopsis {
+        text-align: left;
+    }
 }
