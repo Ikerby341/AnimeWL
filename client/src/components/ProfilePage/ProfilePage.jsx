@@ -2,8 +2,29 @@ import './ProfilePage.css';
 import { Perfil } from '../Perfil/Perfil.jsx';
 import { Configuracion } from '../Configuracion/Configuracion.jsx';
 import { Estadisticas } from '../Estadisticas/Estadisticas.jsx';
+import { useEffect, useState } from 'react';
 
 export function ProfilePage({ activeView = 'Perfil', onViewChange = () => {} }) {
+    const [favoritos, setFavoritos] = useState([]);
+
+    useEffect(() => {
+        const loadFavoritos = async () => {
+            try {
+                const response = await fetch(`${import.meta.env.VITE_BACKENDURL}/api/user/favorites`, {
+                    credentials: 'include'
+                });
+                const data = await response.json();
+                if (data.success && data.favorites) {
+                    setFavoritos(data.favorites);
+                }
+            } catch (err) {
+                console.error('Error loading favorites for profile:', err);
+            }
+        };
+
+        loadFavoritos();
+    }, []);
+
     return (
         <div className="profile-page">
             <div className="profile-options">
@@ -28,7 +49,7 @@ export function ProfilePage({ activeView = 'Perfil', onViewChange = () => {} }) 
             </div>
 
             <div className="profile-content">
-                {activeView === 'Perfil' && <Perfil />}
+                {activeView === 'Perfil' && <Perfil profileFavorites={favoritos} />}
 
                 {activeView === 'Estadisticas' && <Estadisticas />}
 

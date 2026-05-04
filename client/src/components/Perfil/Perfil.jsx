@@ -1,5 +1,6 @@
 import { useUserInfo, useAuth } from './../../hooks/useAuth';
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import userIcon from './../../assets/usuari.webp';
 import './Perfil.css';
 
@@ -8,6 +9,7 @@ const addAnimePlaceholder = 'data:image/svg+xml;utf8,%3Csvg xmlns=%22http://www.
 
 
 export function Perfil({ profileUser = null, profileFavorites = [], readOnly = false, hideEmail = false }) {
+    const navigate = useNavigate();
     const ownUserInfo = useUserInfo();
     let userInfo = profileUser || ownUserInfo;
     const { checkSession } = useAuth();
@@ -54,7 +56,8 @@ export function Perfil({ profileUser = null, profileFavorites = [], readOnly = f
 
     // Obtener un anime aleatorio de la lista de favoritos que esté "Viendo"
     useEffect(() => {
-        if (readOnly) {
+        if (profileFavorites && profileFavorites.length > 0) {
+            // Si ya tenemos los favoritos (desde ProfilePage), usarlos directamente
             const watchingList = profileFavorites.filter(fav => fav.estat === 'Viendo');
             if (watchingList.length === 0) {
                 setWatchingAnime(null);
@@ -63,6 +66,12 @@ export function Perfil({ profileUser = null, profileFavorites = [], readOnly = f
 
             const randomIndex = Math.floor(Math.random() * watchingList.length);
             setWatchingAnime(watchingList[randomIndex].anime);
+            return;
+        }
+
+        if (readOnly) {
+            // Si es perfil público y profileFavorites está vacío
+            setWatchingAnime(null);
             return;
         }
 
@@ -165,6 +174,22 @@ export function Perfil({ profileUser = null, profileFavorites = [], readOnly = f
             ? String(rawYear).slice(0, 4)
             : 'Año desconocido';
         return { title, imageUrl, id, type, year };
+    }
+
+    function getAnimeId(anime) {
+        return anime?.id_anime || anime?.id || anime?.mal_id || null;
+    }
+
+    function handleProfileAnimeClick(anime, editableType) {
+        if (readOnly) {
+            const animeId = getAnimeId(anime);
+            if (animeId) {
+                navigate(`/details/${animeId}`);
+            }
+            return;
+        }
+
+        openSearchModal(editableType);
     }
 
     async function handleSelectSearchResult(anime) {
@@ -276,27 +301,51 @@ export function Perfil({ profileUser = null, profileFavorites = [], readOnly = f
             </div>
             <div className="profile-separator" />
             <div className="profile-anime-list">
-                <div className={readOnly ? 'anime-card' : 'anime-card anime-card-clickable'} onClick={() => openSearchModal('favorite')}>
+                <div
+                    className={readOnly ? (favoriteAnime ? 'anime-card profile-anime-link-card' : 'anime-card') : 'anime-card anime-card-clickable'}
+                    onClick={() => handleProfileAnimeClick(favoriteAnime, 'favorite')}
+                >
                     <img
                         src={
                             favoriteAnime?.imatge_portada || addAnimePlaceholder
                         }
                         alt={favoriteAnime?.titol || 'Añadir anime favorito'}
                     />
+                    {readOnly && favoriteAnime && (
+                        <div className="profile-anime-card-overlay">
+                            <span>{favoriteAnime.titol || 'Ver detalles'}</span>
+                        </div>
+                    )}
                     <p>Anime favorito</p>
                 </div>
-                <div className={readOnly ? 'anime-card' : 'anime-card anime-card-clickable'} onClick={() => openSearchModal('recommended')}>
+                <div
+                    className={readOnly ? (recommendedAnime ? 'anime-card profile-anime-link-card' : 'anime-card') : 'anime-card anime-card-clickable'}
+                    onClick={() => handleProfileAnimeClick(recommendedAnime, 'recommended')}
+                >
                     <img
                         src={
                             recommendedAnime?.imatge_portada || addAnimePlaceholder
                         }
                         alt={recommendedAnime?.titol || 'Añadir anime recomendado'}
                     />
+                    {readOnly && recommendedAnime && (
+                        <div className="profile-anime-card-overlay">
+                            <span>{recommendedAnime.titol || 'Ver detalles'}</span>
+                        </div>
+                    )}
                     <p>Anime recomendado</p>
                 </div>
                 {watchingAnime && (
-                    <div className="anime-card">
+                    <div
+                        className={readOnly ? 'anime-card profile-anime-link-card' : 'anime-card'}
+                        onClick={() => readOnly && handleProfileAnimeClick(watchingAnime)}
+                    >
                         <img src={watchingAnime?.imatge_portada || addAnimePlaceholder} alt={watchingAnime?.titol || 'Actualmente viendo'} />
+                        {readOnly && (
+                            <div className="profile-anime-card-overlay">
+                                <span>{watchingAnime.titol || 'Ver detalles'}</span>
+                            </div>
+                        )}
                         <p>Actualmente viendo</p>
                     </div>
                 )}
