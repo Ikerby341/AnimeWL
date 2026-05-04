@@ -6,6 +6,7 @@ import Register from './pages/register.jsx'
 import Directory from './pages/directory.jsx'
 import Favorites from './pages/favorites.jsx'
 import Profile from './pages/profile.jsx'
+import PublicProfile from './pages/publicProfile.jsx'
 import Details from './pages/details.jsx'
 import ForgotPassword from './pages/ForgotPassword.jsx'
 import ResetPassword from './pages/ResetPassword.jsx'
@@ -23,6 +24,7 @@ function App() {
         <Route path='/directory' element={<Directory />} />
         <Route path='/favorites' element={<Favorites />} />
         <Route path='/profile' element={<Profile />} />
+        <Route path='/profile/:userId' element={<PublicProfile />} />
         <Route path='/details/:id' element={<Details />} />
         <Route path='/forgot-password' element={<ForgotPassword />} />
         <Route path='/reset-password' element={<ResetPassword />} />

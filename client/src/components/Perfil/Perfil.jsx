@@ -7,8 +7,9 @@ const addAnimePlaceholder = 'data:image/svg+xml;utf8,%3Csvg xmlns=%22http://www.
 
 
 
-export function Perfil() {
-    let userInfo = useUserInfo();
+export function Perfil({ profileUser = null, profileFavorites = [], readOnly = false, hideEmail = false }) {
+    const ownUserInfo = useUserInfo();
+    let userInfo = profileUser || ownUserInfo;
     const { checkSession } = useAuth();
     const [favoriteAnime, setFavoriteAnime] = useState(null);
     const [recommendedAnime, setRecommendedAnime] = useState(null);
@@ -53,6 +54,18 @@ export function Perfil() {
 
     // Obtener un anime aleatorio de la lista de favoritos que esté "Viendo"
     useEffect(() => {
+        if (readOnly) {
+            const watchingList = profileFavorites.filter(fav => fav.estat === 'Viendo');
+            if (watchingList.length === 0) {
+                setWatchingAnime(null);
+                return;
+            }
+
+            const randomIndex = Math.floor(Math.random() * watchingList.length);
+            setWatchingAnime(watchingList[randomIndex].anime);
+            return;
+        }
+
         const fetchWatchingAnime = async () => {
             try {
                 const response = await fetch(`${import.meta.env.VITE_BACKENDURL}/api/user/favorites`, {
@@ -90,7 +103,7 @@ export function Perfil() {
         };
 
         fetchWatchingAnime();
-    }, []);
+    }, [readOnly, profileFavorites]);
 
     useEffect(() => {
         if (!showSearchModal || searchQuery.trim() === '') {
@@ -126,6 +139,7 @@ export function Perfil() {
     }, [searchQuery, showSearchModal]);
 
     function openSearchModal(type) {
+        if (readOnly) return;
         setSearchType(type);
         setSearchQuery('');
         setSearchResults([]);
@@ -189,6 +203,7 @@ export function Perfil() {
     }
 
     function editPfpView() {
+        if (readOnly) return;
         document.querySelector('.edit-pfp-container').style.display = 'flex';
     };
 
@@ -241,8 +256,8 @@ export function Perfil() {
             });
     }
     return (
-        <div>
-            <div className='edit-pfp-container'>
+        <div className={readOnly ? 'perfil-read-only' : undefined}>
+            {!readOnly && <div className='edit-pfp-container'>
                 <div className='edit-pfp-overlay'>
                     <span className='edit-pfp-text'>Introduce la URL de la foto de perfil</span>
                     <input type="text" className='edit-pfp-input' placeholder='URL de la foto de perfil' />
@@ -251,17 +266,17 @@ export function Perfil() {
                         document.querySelector('.edit-pfp-container').style.display = 'none';
                     }}>Cancelar</button>
                 </div>
-            </div>
+            </div>}
             <div className="profile-info">
                 <img src={userInfo?.img_url || userIcon} alt="Profile" className="profile-picture" onClick={editPfpView} />
                 <div className="profile-details">
                     <h2>{userInfo?.nom || 'Error al cargar el nombre de usuario'}</h2>
-                    <p>{userInfo?.email || 'Error al cargar el email'}</p>
+                    {!hideEmail && <p>{userInfo?.email || 'Error al cargar el email'}</p>}
                 </div>
             </div>
             <div className="profile-separator" />
             <div className="profile-anime-list">
-                <div className="anime-card anime-card-clickable" onClick={() => openSearchModal('favorite')}>
+                <div className={readOnly ? 'anime-card' : 'anime-card anime-card-clickable'} onClick={() => openSearchModal('favorite')}>
                     <img
                         src={
                             favoriteAnime?.imatge_portada || addAnimePlaceholder
@@ -270,7 +285,7 @@ export function Perfil() {
                     />
                     <p>Anime favorito</p>
                 </div>
-                <div className="anime-card anime-card-clickable" onClick={() => openSearchModal('recommended')}>
+                <div className={readOnly ? 'anime-card' : 'anime-card anime-card-clickable'} onClick={() => openSearchModal('recommended')}>
                     <img
                         src={
                             recommendedAnime?.imatge_portada || addAnimePlaceholder

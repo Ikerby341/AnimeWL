@@ -1,6 +1,18 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import './AnimeComments.css';
 import userIcon from '../../assets/usuari.webp';
+
+function getCommentUserId(comment) {
+    return comment.id_usuari
+        || comment.id_usuario
+        || comment.id_user
+        || comment.userId
+        || comment.user_id
+        || comment.user?.id_usuari
+        || comment.user?.id
+        || null;
+}
 
 export function AnimeComments({ animeId, comments, loading, isLoggedIn, onCommentAdded }) {
     const [isFormOpen, setIsFormOpen] = useState(false);
@@ -87,20 +99,33 @@ export function AnimeComments({ animeId, comments, loading, isLoggedIn, onCommen
             <div className="comments-list">
                 {formattedComments.map((comment) => {
                     const avatarSrc = comment.userImg || userIcon;
+                    const commentUserId = getCommentUserId(comment);
+                    const userContent = (
+                        <>
+                            <img
+                                className="comment-avatar"
+                                src={avatarSrc}
+                                alt={comment.userName}
+                            />
+                            <div>
+                                <p className="comment-user">{comment.userName}</p>
+                                <p className="comment-meta">{comment.id_capitol ? `Capítulo ${comment.id_capitol}` : 'General'}</p>
+                            </div>
+                        </>
+                    );
+
                     return (
                         <article key={comment.id_comentari} className="comment-card">
                             <div className="comment-card-top">
-                                <div className="comment-user-info">
-                                    <img
-                                        className="comment-avatar"
-                                        src={avatarSrc}
-                                        alt={comment.userName}
-                                    />
-                                    <div>
-                                        <p className="comment-user">{comment.userName}</p>
-                                        <p className="comment-meta">{comment.id_capitol ? `Capítulo ${comment.id_capitol}` : 'General'}</p>
+                                {commentUserId ? (
+                                    <Link className="comment-user-info comment-user-link" to={`/profile/${commentUserId}`}>
+                                        {userContent}
+                                    </Link>
+                                ) : (
+                                    <div className="comment-user-info">
+                                        {userContent}
                                     </div>
-                                </div>
+                                )}
                                 <p className="comment-date">
                                     {comment.data_hora ? new Date(comment.data_hora).toLocaleString('es-ES', {
                                         day: '2-digit',

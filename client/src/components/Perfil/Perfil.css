@@ -180,6 +180,11 @@
     cursor: pointer;
 }
 
+.perfil-read-only .profile-picture:hover {
+    filter: none;
+    cursor: default;
+}
+
 .profile-details {
     display: flex;
     flex-direction: column;
