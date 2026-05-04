@@ -1,5 +1,5 @@
 import './RegisterForm.css'
-import loginIcon from './../../assets/LogoAnimeWLCuadrado.png'
+import loginIcon from './../../assets/LogoAnimeWLCuadrado.webp'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 

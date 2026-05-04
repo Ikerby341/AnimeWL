@@ -1,6 +1,6 @@
 import { useUserInfo, useAuth } from './../../hooks/useAuth';
 import { useState, useEffect } from 'react';
-import userIcon from './../../assets/usuari.png';
+import userIcon from './../../assets/usuari.webp';
 import './Perfil.css';
 
 const addAnimePlaceholder = 'data:image/svg+xml;utf8,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 120 120%22%3E%3Crect width=%22120%22 height=%22120%22 rx=%2224%22 fill=%22%23111%22/%3E%3Cpath d=%22M60 34a6 6 0 0 1 6 6v14h14a6 6 0 0 1 0 12H66v14a6 6 0 1 1-12 0V66H40a6 6 0 0 1 0-12h14V40a6 6 0 0 1 6-6z%22 fill=%22%23fff%22/%3E%3C/svg%3E';

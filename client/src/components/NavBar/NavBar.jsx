@@ -1,10 +1,10 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import logo from './../../assets/LogoSuperior.webp';
-import mobileLogo from './../../assets/LogoAnimeWLCuadrado.png';
-import userIcon from './../../assets/usuari.png';
-import favoriteIcon from './../../assets/favorito.png';
-import directoryIcon from './../../assets/directorio.png';
+import mobileLogo from './../../assets/LogoAnimeWLCuadrado.webp';
+import userIcon from './../../assets/usuari.webp';
+import favoriteIcon from './../../assets/favorito.webp';
+import directoryIcon from './../../assets/directorio.webp';
 import { ButtonNavBar } from './../ButtonNavBar/ButtonNavBar';
 import { useAuth, useUserInfo } from '../../hooks/useAuth.js';
 import './NavBar.css';

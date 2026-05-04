@@ -25,7 +25,6 @@ export function AnimeCarruselCard({
                 </div>
             </div>
             <img src={imageUrl} alt={altText} className="anime-carrusel-image" />
-            {/* bottom bar always visible with title + optional subtitle */}
             {showTitle && (
                 <div className="carrusel-bottom-bar">
                     {title && <h4 className="bottom-title">{title}</h4>}

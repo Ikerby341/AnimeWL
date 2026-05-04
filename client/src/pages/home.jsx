@@ -54,7 +54,6 @@ function Home() {
     let cancelled = false;
     async function load() {
       try {
-        // Fetch recent animes for carousel
         const recentRes = await fetch(`${import.meta.env.VITE_BACKENDURL}/api/anime/recent/5`);
         if (!recentRes.ok) throw new Error('failed to fetch recent animes');
         const recentBody = await recentRes.json();
@@ -69,7 +68,6 @@ function Home() {
         const body = await res.json();
         if (!cancelled) {
           const list = body.anime || [];
-          console.log('fetched animes', list.map(a=>({id:a.id_anime,episodeCount:a.episodeCount})));
           setActionAnimes(list);
           setLoadingAction(false);
         }
@@ -78,7 +76,6 @@ function Home() {
         const body2 = await res2.json();
         if (!cancelled) {
           const list = body2.anime || [];
-          console.log('fetched animes', list.map(a=>({id:a.id_anime,episodeCount:a.episodeCount})));
           setFantasyAnimes(list);
           setLoadingFantasy(false);
         }
@@ -87,7 +84,6 @@ function Home() {
         const body3 = await res3.json();
         if (!cancelled) {
           const list = body3.anime || [];
-          console.log('fetched animes', list.map(a=>({id:a.id_anime,episodeCount:a.episodeCount})));
           setRomanceAnimes(list);
           setLoadingRomance(false);
         }
@@ -96,7 +92,6 @@ function Home() {
         const body4 = await res4.json();
         if (!cancelled) {
           const list = body4.anime || [];
-          console.log('fetched animes', list.map(a=>({id:a.id_anime,episodeCount:a.episodeCount})));
           setSportsAnimes(list);
           setLoadingSports(false);
         }

@@ -73,14 +73,12 @@
 .carrusel-overlay-synopsis {
     font-size: 0.75rem;
     line-height: 1.2;
-    /* allow more lines before truncating */
     max-height: 4rem;
     overflow: hidden;
     text-overflow: ellipsis;
     margin: 0 0 0.5rem;
 }
 
-/* bottom bar with title/subtitle */
 .carrusel-bottom-bar {
     position: absolute;
     left: 0;
@@ -101,4 +99,28 @@
 .bottom-subtitle {
     margin: 0;
     font-size: 0.75rem;
+}
+
+@media (max-width: 768px) {
+    .anime-carrusel-cover {
+        width: min(12rem, 66vw);
+    }
+
+    .anime-carrusel-image {
+        height: auto;
+        aspect-ratio: 5 / 7;
+    }
+
+    .carrusel-overlay-title {
+        font-size: 0.9rem;
+    }
+
+    .carrusel-overlay-episodes {
+        font-size: 0.8rem;
+    }
+
+    .carrusel-overlay-synopsis {
+        font-size: 0.7rem;
+        max-height: 3.4rem;
+    }
 }

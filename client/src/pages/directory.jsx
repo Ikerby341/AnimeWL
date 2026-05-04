@@ -26,7 +26,6 @@ export default function Directory() {
         const body = await res.json();
         if (!cancelled) {
           const list = body.anime || [];
-          console.log('fetched animes', list.map(a=>({id:a.id_anime,episodeCount:a.episodeCount}))); // debug
           setAnimes(list);
         }
       } catch (err) {
@@ -58,7 +57,7 @@ export default function Directory() {
                 title={a.titol || a.title || '---'}
                 synopsis={a.sinopsi_es || a.sinopsi || ''}
                 episodeCount={a.episodeCount}
-                showStar={false} /* cambiar según sesión */
+                showStar={false}
                 onClick={() => handleSelect(a)}
               />
             ))}

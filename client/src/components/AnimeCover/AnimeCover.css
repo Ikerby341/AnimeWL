@@ -30,7 +30,6 @@
     text-overflow: ellipsis;
 }
 
-/* ejemplo de contenedor padre; si quieres una rejilla uniforme */
 .anime-grid {
     display: flex;
     flex-wrap: wrap;

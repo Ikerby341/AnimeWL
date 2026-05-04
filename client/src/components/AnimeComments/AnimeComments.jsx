@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import './AnimeComments.css';
-import userIcon from '../../assets/usuari.png';
+import userIcon from '../../assets/usuari.webp';
 
 export function AnimeComments({ animeId, comments, loading, isLoggedIn, onCommentAdded }) {
     const [isFormOpen, setIsFormOpen] = useState(false);
