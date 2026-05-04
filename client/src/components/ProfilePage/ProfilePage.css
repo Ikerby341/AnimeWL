@@ -62,6 +62,10 @@
     .profile-page {
         grid-template-columns: 1fr;
     }
+
+    .profile-options {
+        display: none;
+    }
 }
 
 @media (max-width: 640px) {
@@ -69,7 +73,6 @@
         padding: 16px;
     }
 
-    .profile-options,
     .profile-content {
         border-radius: 18px;
         padding: 20px;

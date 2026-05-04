@@ -1,30 +1,27 @@
-import { useState } from 'react';
 import './ProfilePage.css';
 import { Perfil } from '../Perfil/Perfil.jsx';
 import { Configuracion } from '../Configuracion/Configuracion.jsx';
 import { Estadisticas } from '../Estadisticas/Estadisticas.jsx';
 
-export function ProfilePage() {
-    const [activeView, setActiveView] = useState('Perfil');
-
+export function ProfilePage({ activeView = 'Perfil', onViewChange = () => {} }) {
     return (
         <div className="profile-page">
             <div className="profile-options">
                 <button
                     className={activeView === 'Perfil' ? 'selected-page' : 'not-selected-page'}
-                    onClick={() => setActiveView('Perfil')}
+                    onClick={() => onViewChange('Perfil')}
                 >
                     Perfil
                 </button>
                 <button
                     className={activeView === 'Estadisticas' ? 'selected-page' : 'not-selected-page'}
-                    onClick={() => setActiveView('Estadisticas')}
+                    onClick={() => onViewChange('Estadisticas')}
                 >
                     Estadísticas
                 </button>
                 <button
                     className={activeView === 'Configuracion' ? 'selected-page' : 'not-selected-page'}
-                    onClick={() => setActiveView('Configuracion')}
+                    onClick={() => onViewChange('Configuracion')}
                 >
                     Configuración
                 </button>

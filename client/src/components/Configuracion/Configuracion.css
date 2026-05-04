@@ -22,6 +22,22 @@ input:focus {
     margin: 1%;
 }
 
+#username.password-input,
+#current-email.password-input {
+    display: inline-block;
+    width: calc(100% - 3.75rem);
+    max-width: calc(100% - 3.75rem);
+    box-sizing: border-box;
+    vertical-align: top;
+}
+
+.configuracion > .save-button {
+    width: 2.75rem;
+    height: 2.6rem;
+    margin: 0 0 20px 0.45rem;
+    vertical-align: top;
+}
+
 .save-button:hover {
     background-color: #1A7B2C;
     cursor: pointer;

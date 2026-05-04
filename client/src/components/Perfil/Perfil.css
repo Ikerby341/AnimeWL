@@ -16,14 +16,16 @@
 
 .profile-anime-list {
     display: grid;
-    grid-template-columns: repeat(3, minmax(13rem, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 20px;
     margin-top: 24px;
     justify-items: center;
 }
 
 .anime-card {
-    width: 13rem;
+    width: 100%;
+    max-width: 13rem;
+    box-sizing: border-box;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -34,7 +36,8 @@
 
 .anime-card img {
     width: 100%;
-    height: 19rem;
+    height: auto;
+    aspect-ratio: 13 / 19;
     border-radius: 20px;
     object-fit: cover;
 }
@@ -271,7 +274,8 @@
 
 @media (max-width: 980px) {
     .profile-anime-list {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 16px;
     }
 }
 

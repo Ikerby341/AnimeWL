@@ -10,6 +10,7 @@ import { useAuth, useUserInfo } from '../../hooks/useAuth.js';
 import './NavBar.css';
 
 const MOBILE_BREAKPOINT = 768;
+const PROFILE_MENU_BREAKPOINT = 980;
 
 function getViewportWidth() {
   const windowWidth = typeof window !== 'undefined' ? window.innerWidth : MOBILE_BREAKPOINT + 1;
@@ -17,17 +18,28 @@ function getViewportWidth() {
   return Math.min(windowWidth, screenWidth);
 }
 
-export function Navbar({ searchBar = true, directory = true, favorites = true, profile = true }) {
+export function Navbar({
+  searchBar = true,
+  directory = true,
+  favorites = true,
+  profile = true,
+  profileMenuItems = [],
+  activeProfileView = '',
+  onProfileViewChange,
+}) {
   const [query, setQuery] = useState('');
   const [results, setResults] = useState([]);
   const [showDropdown, setShowDropdown] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
+  const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
   const [isMobileViewport, setIsMobileViewport] = useState(() => getViewportWidth() <= MOBILE_BREAKPOINT);
+  const [isProfileMenuViewport, setIsProfileMenuViewport] = useState(() => getViewportWidth() <= PROFILE_MENU_BREAKPOINT);
   const navigate = useNavigate();
   const { user, logout } = useAuth();
   const wrapperRef = useRef(null);
   const userMenuRef = useRef(null);
+  const profileMenuRef = useRef(null);
 
   // cerrar dropdown cuando se hace click fuera
   useEffect(() => {
@@ -38,6 +50,9 @@ export function Navbar({ searchBar = true, directory = true, favorites = true, p
       if (userMenuRef.current && !userMenuRef.current.contains(event.target)) {
         setShowUserMenu(false);
       }
+      if (profileMenuRef.current && !profileMenuRef.current.contains(event.target)) {
+        setShowProfileMenu(false);
+      }
     }
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
@@ -45,10 +60,16 @@ export function Navbar({ searchBar = true, directory = true, favorites = true, p
 
   useEffect(() => {
     const handleResize = () => {
-      const mobile = getViewportWidth() <= MOBILE_BREAKPOINT;
+      const viewportWidth = getViewportWidth();
+      const mobile = viewportWidth <= MOBILE_BREAKPOINT;
+      const profileMenuViewport = viewportWidth <= PROFILE_MENU_BREAKPOINT;
       setIsMobileViewport(mobile);
+      setIsProfileMenuViewport(profileMenuViewport);
       if (!mobile) {
         setMobileSearchOpen(false);
+      }
+      if (!profileMenuViewport) {
+        setShowProfileMenu(false);
       }
     };
 
@@ -127,11 +148,44 @@ export function Navbar({ searchBar = true, directory = true, favorites = true, p
   const mobileActionsClassName = isMobileViewport ? 'navbarDiv navbarDiv-mobile navbar-actions-mobile' : navbarDivClassName;
   const shouldShowInlineSearch = searchBar && !isMobileViewport;
   const shouldShowMobileSearch = searchBar && isMobileViewport && mobileSearchOpen;
+  const shouldShowProfileMobileMenu = isProfileMenuViewport && profileMenuItems.length > 0 && onProfileViewChange;
 
   return (
     <nav className={navbarClassName} ref={wrapperRef}>
       <div className={navbarDivClassName}>
         <Link to="/"> <img src={currentLogo} alt="Logo AnimeWL" className={logoClassName} /></Link>
+        {shouldShowProfileMobileMenu && (
+          <div className="profile-mobile-menu-container" ref={profileMenuRef}>
+            <button
+              type="button"
+              className={`profile-mobile-menu-toggle ${showProfileMenu ? 'profile-mobile-menu-toggle-active' : ''}`}
+              aria-label="Abrir menu de perfil"
+              aria-expanded={showProfileMenu}
+              onClick={() => setShowProfileMenu((prev) => !prev)}
+            >
+              <span />
+              <span />
+              <span />
+            </button>
+            {showProfileMenu && (
+              <div className="profile-mobile-dropdown">
+                {profileMenuItems.map((item) => (
+                  <button
+                    key={item.id}
+                    type="button"
+                    className={`profile-mobile-dropdown-item${activeProfileView === item.id ? ' profile-mobile-dropdown-item-active' : ''}`}
+                    onClick={() => {
+                      onProfileViewChange(item.id);
+                      setShowProfileMenu(false);
+                    }}
+                  >
+                    {item.label}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
         {shouldShowInlineSearch && (
           <div className={searchContainerClassName}>
             <input
