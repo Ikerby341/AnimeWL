@@ -32,6 +32,36 @@
     aspect-ratio: 11 / 15;
 }
 
+@media (max-width: 1400px) {
+    .anime-grid-inline {
+        grid-template-columns: repeat(6, minmax(0, 1fr));
+    }
+
+    .anime-grid-inline > :nth-child(n + 7) {
+        display: none;
+    }
+}
+
+@media (max-width: 1200px) {
+    .anime-grid-inline {
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+    }
+
+    .anime-grid-inline > :nth-child(n + 6) {
+        display: none;
+    }
+}
+
+@media (max-width: 1024px) {
+    .anime-grid-inline {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .anime-grid-inline > :nth-child(n + 5) {
+        display: none;
+    }
+}
+
 .content-mobile {
     width: auto;
     margin-left: 1rem;
@@ -56,6 +86,10 @@
     -ms-overflow-style: auto;
     scrollbar-width: thin;
     scrollbar-color: #209F36 #111111;
+}
+
+.anime-grid-inline-mobile > * {
+    display: block;
 }
 
 .anime-grid-inline-mobile .anime-cover {
