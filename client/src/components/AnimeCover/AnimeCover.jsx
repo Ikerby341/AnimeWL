@@ -26,7 +26,7 @@ export function AnimeCover({
                     {title && <h3 className="overlay-title">{title}</h3>}
                     {/* mostrar el número sólo si es mayor que 0 */}
                     {typeof episodeCount === 'number' && episodeCount > 0 && (
-                        <p className="overlay-episodes">{episodeCount} capítulos</p>
+                        <p className="overlay-episodes">{episodeCount} {episodeCount === 1 ? 'capítulo' : 'capítulos'}</p>
                     )}
                     {synopsis && <p className="overlay-synopsis">{synopsis}</p>}
                     {showStar && (
@@ -45,3 +45,5 @@ export function AnimeCover({
         </div>
     );
 }
+
+

@@ -19,7 +19,7 @@ export function AnimeCarruselCard({
                     {title && <h3 className="carrusel-overlay-title">{title}</h3>}
                     {/* mostrar el número sólo si es mayor que 0 */}
                     {typeof episodeCount === 'number' && episodeCount > 0 && (
-                        <p className="carrusel-overlay-episodes">{episodeCount} capítulos</p>
+                        <p className="carrusel-overlay-episodes">{episodeCount} {episodeCount === 1 ? 'capítulo' : 'capítulos'}</p>
                     )}
                     {synopsis && <p className="carrusel-overlay-synopsis">{synopsis}</p>}
                 </div>
@@ -34,3 +34,4 @@ export function AnimeCarruselCard({
         </div>
     );
 }
+
