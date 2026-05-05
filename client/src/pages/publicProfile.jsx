@@ -65,6 +65,10 @@ export default function PublicProfile() {
     const ownUserId = getUserId(user);
 
     useEffect(() => {
+        window.scrollTo(0, 0);
+    }, [userId]);
+
+    useEffect(() => {
         let cancelled = false;
 
         async function loadPublicProfile() {
