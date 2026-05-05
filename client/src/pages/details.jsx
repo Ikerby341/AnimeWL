@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { useIsLoggedIn } from '../hooks/useAuth';
+import { useAuth } from '../hooks/useAuth';
 import { Navbar } from '../components/NavBar/NavBar.jsx';
 import { AnimeDetails } from '../components/AnimeDetails/AnimeDetails.jsx';
 import Footer from '../components/Footer/Footer.jsx';
@@ -21,7 +21,8 @@ export default function Details() {
   const [progressError, setProgressError] = useState('');
   const [episodeCount, setEpisodeCount] = useState(0);
   const [isFavorite, setIsFavorite] = useState(false);
-  const isLoggedIn = useIsLoggedIn();
+  const { isLoggedIn, user } = useAuth();
+  const currentUserId = user?.id_usuari || user?.id_usuario || user?.id_user || user?.id || null;
 
   useEffect(() => {
     if (!id) return;
@@ -261,6 +262,8 @@ export default function Details() {
           episodeCount={episodeCount}
           onProgressChange={handleProgressChange}
           onCommentAdded={(newComment) => setComments((prevComments) => [newComment, ...prevComments])}
+          onCommentDeleted={(commentId) => setComments((prevComments) => prevComments.filter((comment) => String(comment.id_comentari) !== String(commentId)))}
+          currentUserId={currentUserId}
           isFavorite={isFavorite}
           onAddToFavorites={handleAddToFavorites}
           onRemoveFromFavorites={handleRemoveFromFavorites}

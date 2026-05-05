@@ -2,7 +2,7 @@ import { useState } from 'react';
 import './AnimeDetails.css'
 import { AnimeComments } from '../AnimeComments/AnimeComments.jsx';
 
-export function AnimeDetails({ anime, animeId, comments = [], commentsLoading = true, isLoggedIn = false, onCommentAdded, rating = { average: 0, count: 0 }, userRating = null, ratingLoading = false, ratingError = '', onRate, progress = null, progressLoading = true, progressError = '', episodeCount = 0, onProgressChange, isFavorite = false, onAddToFavorites, onRemoveFromFavorites }) {
+export function AnimeDetails({ anime, animeId, comments = [], commentsLoading = true, isLoggedIn = false, currentUserId = null, onCommentAdded, onCommentDeleted, rating = { average: 0, count: 0 }, userRating = null, ratingLoading = false, ratingError = '', onRate, progress = null, progressLoading = true, progressError = '', episodeCount = 0, onProgressChange, isFavorite = false, onAddToFavorites, onRemoveFromFavorites }) {
     const [selectedStars, setSelectedStars] = useState(null);
     const [hoverStars, setHoverStars] = useState(0);
     const [favoriteLoading, setFavoriteLoading] = useState(false);
@@ -151,7 +151,9 @@ export function AnimeDetails({ anime, animeId, comments = [], commentsLoading = 
                 comments={comments}
                 loading={commentsLoading}
                 isLoggedIn={isLoggedIn}
+                currentUserId={currentUserId}
                 onCommentAdded={onCommentAdded}
+                onCommentDeleted={onCommentDeleted}
             />
         </div>
     );
