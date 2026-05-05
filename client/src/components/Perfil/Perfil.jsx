@@ -1,8 +1,9 @@
-import { useUserInfo, useAuth } from './../../hooks/useAuth';
+﻿import { useUserInfo, useAuth } from './../../hooks/useAuth';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import userIcon from './../../assets/usuari.webp';
 import './Perfil.css';
+import { useToast } from '../../hooks/useToast.js';
 
 const addAnimePlaceholder = 'data:image/svg+xml;utf8,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 120 120%22%3E%3Crect width=%22120%22 height=%22120%22 rx=%2224%22 fill=%22%23111%22/%3E%3Cpath d=%22M60 34a6 6 0 0 1 6 6v14h14a6 6 0 0 1 0 12H66v14a6 6 0 1 1-12 0V66H40a6 6 0 0 1 0-12h14V40a6 6 0 0 1 6-6z%22 fill=%22%23fff%22/%3E%3C/svg%3E';
 
@@ -13,6 +14,7 @@ export function Perfil({ profileUser = null, profileFavorites = [], readOnly = f
     const ownUserInfo = useUserInfo();
     let userInfo = profileUser || ownUserInfo;
     const { checkSession } = useAuth();
+    const { showToast } = useToast();
     const [favoriteAnime, setFavoriteAnime] = useState(null);
     const [recommendedAnime, setRecommendedAnime] = useState(null);
     const [watchingAnime, setWatchingAnime] = useState(null);
@@ -196,7 +198,7 @@ export function Perfil({ profileUser = null, profileFavorites = [], readOnly = f
         if (!searchType) return;
         const normalized = normalizeAnimeResult(anime);
         if (!normalized.id) {
-            alert('No se pudo seleccionar este anime porque falta el identificador.');
+            showToast('No se pudo seleccionar este anime porque falta el identificador.', { type: 'error' });
             return;
         }
 
@@ -214,14 +216,15 @@ export function Perfil({ profileUser = null, profileFavorites = [], readOnly = f
             });
             const data = await response.json();
             if (!data.success) {
-                alert('Error al actualizar el anime: ' + (data.error || 'Error desconocido'));
+                showToast('Error al actualizar el anime: ' + (data.error || 'Error desconocido'), { type: 'error' });
                 return;
             }
+            showToast('Anime actualizado correctamente.', { type: 'success' });
             await checkSession();
             closeSearchModal();
         } catch (error) {
             console.error('Error updating favorite/recommended anime:', error);
-            alert('No se pudo actualizar el anime. Inténtalo de nuevo.');
+            showToast('No se pudo actualizar el anime. Inténtalo de nuevo.', { type: 'error' });
         }
     }
 
@@ -233,7 +236,7 @@ export function Perfil({ profileUser = null, profileFavorites = [], readOnly = f
     function canviarPfp() {
         const newImgUrl = document.querySelector('.edit-pfp-input').value.trim();
         if (!newImgUrl) {
-            alert('La URL no puede estar vacía.');
+            showToast('La URL no puede estar vacía.', { type: 'error' });
             return;
         }
         fetch(`${import.meta.env.VITE_BACKENDURL}/api/update-profile-picture`, {
@@ -249,14 +252,15 @@ export function Perfil({ profileUser = null, profileFavorites = [], readOnly = f
                 if (data.success) {
                     document.querySelector('.edit-pfp-container').style.display = 'none';
                     actualitzarUserInfo();
-                    window.location.reload();
+                    showToast('Foto de perfil actualizada correctamente.', { type: 'success' });
+                    window.setTimeout(() => window.location.reload(), 900);
                 } else {
-                    alert('Error al actualizar la foto de perfil: ' + (data.error || 'Error desconocido'));
+                    showToast('Error al actualizar la foto de perfil: ' + (data.error || 'Error desconocido'), { type: 'error' });
                 }
             })
             .catch(error => {
                 console.error('Error al actualizar la foto de perfil:', error);
-                alert('Error al actualizar la foto de perfil: ' + error.message);
+                showToast('Error al actualizar la foto de perfil: ' + error.message, { type: 'error' });
             })
     }
 
@@ -390,3 +394,5 @@ export function Perfil({ profileUser = null, profileFavorites = [], readOnly = f
 
     )
 }
+
+

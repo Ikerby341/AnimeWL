@@ -1,12 +1,15 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 import "./Configuracion.css";
 import { useUserInfo } from './../../hooks/useAuth';
+import { useToast } from '../../hooks/useToast.js';
+import { PencilIcon } from '../Icons/Icons.jsx';
 
 export function Configuracion() {
     const [showEmailModal, setShowEmailModal] = useState(false);
     const [newEmail, setNewEmail] = useState('');
     const [emailCode, setEmailCode] = useState('');
     const [isSendCodeDisabled, setIsSendCodeDisabled] = useState(false);
+    const { showToast } = useToast();
     let userInfo = useUserInfo();
 
     function changeUsername() {
@@ -14,7 +17,7 @@ export function Configuracion() {
         if (newUsername.trim() == userInfo.nom) {
             return;
         } else if (newUsername.trim() === '') {
-            alert('El nombre de usuario no puede estar vacío');
+            showToast('El nombre de usuario no puede estar vacío', { type: 'error' });
             return;
         }
         fetch(`${import.meta.env.VITE_BACKENDURL}/api/settings/update-username?newUsername=${encodeURIComponent(newUsername)}`, {
@@ -24,7 +27,8 @@ export function Configuracion() {
             .then(async response => {
                 if (response.ok) {
                     acualitzarDadesUsuari();
-                    window.location.reload();
+                    showToast('Nombre de usuario actualizado correctamente.', { type: 'success' });
+                    window.setTimeout(() => window.location.reload(), 900);
                     return;
                 }
 
@@ -40,11 +44,11 @@ export function Configuracion() {
                     console.error('Error parsing error response:', err);
                     errorMessage += ': ' + response.statusText;
                 }
-                alert(errorMessage);
+                showToast(errorMessage, { type: 'error' });
             })
             .catch(error => {
                 console.error('Error:', error);
-                alert('Error al actualizar el nombre de usuario: ' + error.message);
+                showToast('Error al actualizar el nombre de usuario: ' + error.message, { type: 'error' });
             });
     }
 
@@ -63,7 +67,7 @@ export function Configuracion() {
         })
             .then(async response => {
                 if (response.ok) {
-                    alert('Código enviado al correo actual. Comprueba tu bandeja de entrada.');
+                    showToast('Código enviado al correo actual. Comprueba tu bandeja de entrada.', { type: 'success' });
                     return;
                 }
 
@@ -79,17 +83,17 @@ export function Configuracion() {
                     console.error('Error parsing error response:', err);
                     errorMessage += ': ' + response.statusText;
                 }
-                alert(errorMessage);
+                showToast(errorMessage, { type: 'error' });
             })
             .catch(error => {
                 console.error('Error:', error);
-                alert('Error al enviar el código de verificación: ' + error.message);
+                showToast('Error al enviar el código de verificación: ' + error.message, { type: 'error' });
             });
     }
 
     function changeEmail() {
         if (!newEmail || !emailCode) {
-            alert('Rellena el nuevo correo y el código de verificación.');
+            showToast('Rellena el nuevo correo y el código de verificación.', { type: 'error' });
             return;
         }
 
@@ -106,12 +110,12 @@ export function Configuracion() {
         })
             .then(async response => {
                 if (response.ok) {
-                    alert('Correo electrónico actualizado correctamente.');
+                    showToast('Correo electrónico actualizado correctamente.', { type: 'success' });
                     acualitzarDadesUsuari();
                     setShowEmailModal(false);
                     setNewEmail('');
                     setEmailCode('');
-                    window.location.reload();
+                    window.setTimeout(() => window.location.reload(), 900);
                     return;
                 }
 
@@ -127,11 +131,11 @@ export function Configuracion() {
                     console.error('Error parsing error response:', err);
                     errorMessage += ': ' + response.statusText;
                 }
-                alert(errorMessage);
+                showToast(errorMessage, { type: 'error' });
             })
             .catch(error => {
                 console.error('Error:', error);
-                alert('Error al actualizar el correo electrónico: ' + error.message);
+                showToast('Error al actualizar el correo electrónico: ' + error.message, { type: 'error' });
             });
     }
 
@@ -141,15 +145,15 @@ export function Configuracion() {
         const confirmPassword = document.getElementById('confirm-password').value;
 
         if (!currentPassword || !newPassword || !confirmPassword) {
-            alert('Rellena todos los campos de contraseña.');
+            showToast('Rellena todos los campos de contraseña.', { type: 'error' });
             return;
         }
         if (newPassword !== confirmPassword) {
-            alert('La nueva contraseña y la confirmación no coinciden.');
+            showToast('La nueva contraseña y la confirmación no coinciden.', { type: 'error' });
             return;
         }
         if (newPassword.length < 6) {
-            alert('La nueva contraseña debe tener al menos 6 caracteres.');
+            showToast('La nueva contraseña debe tener al menos 6 caracteres.', { type: 'error' });
             return;
         }
 
@@ -167,7 +171,7 @@ export function Configuracion() {
         })
             .then(async response => {
                 if (response.ok) {
-                    alert('Contraseña actualizada correctamente.');
+                    showToast('Contraseña actualizada correctamente.', { type: 'success' });
                     document.getElementById('current-password').value = '';
                     document.getElementById('password').value = '';
                     document.getElementById('confirm-password').value = '';
@@ -186,11 +190,11 @@ export function Configuracion() {
                     console.error('Error parsing error response:', err);
                     errorMessage += ': ' + response.statusText;
                 }
-                alert(errorMessage);
+                showToast(errorMessage, { type: 'error' });
             })
             .catch(error => {
                 console.error('Error:', error);
-                alert('Error al actualizar la contraseña: ' + error.message);
+                showToast('Error al actualizar la contraseña: ' + error.message, { type: 'error' });
             });
     }
 
@@ -218,7 +222,9 @@ export function Configuracion() {
             <label htmlFor="username">Nombre de usuario:</label>
             <br />
             <input className="password-input" type="text" id="username" name="username" placeholder="Tu nombre de usuario" defaultValue={userInfo.nom} maxLength={30} />
-            <button className="save-button" onClick={changeUsername}>✏️</button>
+            <button className="save-button" onClick={changeUsername} aria-label="Editar nombre de usuario" title="Editar nombre de usuario">
+                <PencilIcon />
+            </button>
             <br />
             <label htmlFor="current-email">Correo electrónico actual:</label>
             <br />
@@ -231,13 +237,15 @@ export function Configuracion() {
                 defaultValue={userInfo.email}
                 readOnly
             />
-            <button className="save-button" onClick={() => setShowEmailModal(true)}>✏️</button>
+            <button className="save-button" onClick={() => setShowEmailModal(true)} aria-label="Editar correo electrónico" title="Editar correo electrónico">
+                <PencilIcon />
+            </button>
 
 
             {showEmailModal && (
                 <div className="modal-overlay">
                     <div className="modal-content">
-                        <button className="close-button" onClick={() => setShowEmailModal(false)}>×</button>
+                        <button className="close-button" onClick={() => setShowEmailModal(false)}>x</button>
                         <h2>Cambiar correo electrónico</h2>
                         <label htmlFor="new-email-modal">Nuevo correo electrónico:</label>
                         <br />
@@ -286,3 +294,5 @@ export function Configuracion() {
         </div>
     );
 }
+
+

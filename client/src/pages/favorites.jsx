@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useIsLoggedIn } from '../hooks/useAuth';
 import { Navbar } from '../components/NavBar/NavBar.jsx';
 import Footer from '../components/Footer/Footer.jsx';
+import { TrashIcon } from '../components/Icons/Icons.jsx';
 import '../styles/favorites.css'
 
 export default function Favorites() {
@@ -163,8 +164,9 @@ export default function Favorites() {
                         handleRemoveFavorite(favorite.id_anime);
                       }}
                       title="Eliminar de favoritos"
+                      aria-label="Eliminar de favoritos"
                     >
-                      🗑️
+                      <TrashIcon size={17} />
                     </button>
                   </div>
                 </div>

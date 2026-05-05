@@ -83,12 +83,14 @@
     align-items: center;
     justify-content: center;
     font-size: 0.9rem;
+    color: #ffffff;
     transition: all 0.3s ease;
     z-index: 10;
 }
 
 .favorite-card-delete:hover {
     background-color: rgba(255, 73, 73, 0.9);
+    color: #ffffff;
     transform: scale(1.1);
 }
 

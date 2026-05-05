@@ -36,6 +36,9 @@ input:focus {
     height: 2.6rem;
     margin: 0 0 20px 0.45rem;
     vertical-align: top;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .save-button:hover {
