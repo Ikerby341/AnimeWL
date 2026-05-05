@@ -17,7 +17,7 @@ export function Configuracion() {
             alert('El nombre de usuario no puede estar vacío');
             return;
         }
-        fetch(`${import.meta.env.VITE_BACKENDURL}/api/user/update-username?newUsername=${encodeURIComponent(newUsername)}`, {
+        fetch(`${import.meta.env.VITE_BACKENDURL}/api/settings/update-username?newUsername=${encodeURIComponent(newUsername)}`, {
             method: 'GET',
             credentials: 'include'
         })
