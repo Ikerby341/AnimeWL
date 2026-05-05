@@ -219,8 +219,6 @@ export function Perfil({ profileUser = null, profileFavorites = [], readOnly = f
             }
             await checkSession();
             closeSearchModal();
-            actualitzarUserInfo();
-            window.location.reload();
         } catch (error) {
             console.error('Error updating favorite/recommended anime:', error);
             alert('No se pudo actualizar el anime. Inténtalo de nuevo.');
