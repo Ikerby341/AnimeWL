@@ -1,11 +1,12 @@
-.content {
-    margin-left: 6vw;
-    margin-right: 6vw;
+.home-content {
+    width: min(83rem, calc(100% - 2rem));
+    margin-left: auto;
+    margin-right: auto;
     margin-bottom: 2rem;
     flex: 1;
 }
 
-.content h2 {
+.home-content h2 {
     margin-top: 3vh;
     margin-bottom: 1vh;
     align-self: start;
@@ -15,7 +16,7 @@
     display: grid;
     width: 100%;
     grid-template-columns: repeat(7, minmax(0, 1fr));
-    gap: clamp(0.75rem, 1.25vw, 1.5rem);
+    gap: 1rem;
     justify-content: start;
     box-sizing: border-box;
 }
@@ -31,13 +32,8 @@
     aspect-ratio: 11 / 15;
 }
 
-@media (max-width: 1200px) {
-    .anime-grid-inline {
-        grid-template-columns: repeat(auto-fit, minmax(9.5rem, 1fr));
-    }
-}
-
 .content-mobile {
+    width: auto;
     margin-left: 1rem;
     margin-right: 1rem;
     padding-top: 1rem;

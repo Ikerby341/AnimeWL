@@ -104,7 +104,7 @@ function Home() {
     return () => { cancelled = true; };
   }, []);
 
-  const contentClassName = isMobileViewport ? 'content content-mobile' : 'content';
+  const contentClassName = isMobileViewport ? 'home-content content-mobile' : 'home-content';
   const gridClassName = isMobileViewport ? 'anime-grid-inline anime-grid-inline-mobile' : 'anime-grid-inline';
 
   return (
