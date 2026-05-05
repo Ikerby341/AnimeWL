@@ -69,7 +69,7 @@ export default function Directory() {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
       <Navbar directory={false} />
-      <div className="content directory-content">
+      <div className="directory-content">
         <br />
         <h1>DIRECTORIO DE ANIMES</h1>
         {loading ? (
