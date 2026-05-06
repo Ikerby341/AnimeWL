@@ -48,8 +48,13 @@
     margin: 0 auto;
 }
 
-.register-form img {
-    width: 25%;
+.register-icon {
+    display: block;
+    width: clamp(72px, 25%, 110px);
+    height: auto;
+    aspect-ratio: 1 / 1;
+    object-fit: contain;
+    flex: 0 0 auto;
 }
 
 .form-error {
