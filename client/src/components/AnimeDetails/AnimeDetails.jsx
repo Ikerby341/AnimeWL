@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import './AnimeDetails.css'
 import { AnimeComments } from '../AnimeComments/AnimeComments.jsx';
+import { BookmarkIcon } from '../Icons/Icons.jsx';
 
 export function AnimeDetails({ anime, animeId, comments = [], commentsLoading = true, isLoggedIn = false, currentUserId = null, onCommentAdded, onCommentDeleted, rating = { average: 0, count: 0 }, userRating = null, ratingLoading = false, ratingError = '', onRate, progress = null, progressLoading = true, progressError = '', episodeCount = 0, onProgressChange, isFavorite = false, onAddToFavorites, onRemoveFromFavorites }) {
     const [selectedStars, setSelectedStars] = useState(null);
@@ -88,9 +89,7 @@ export function AnimeDetails({ anime, animeId, comments = [], commentsLoading = 
                                 {favoriteLoading ? (
                                     '...'
                                 ) : (
-                                    <svg width="24" height="24" viewBox="0 0 24 24" fill={isFavorite ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2">
-                                        <path d="M8 4h8c1.1 0 2 .9 2 2v14l-6-4-6 4V6c0-1.1.9-2 2-2z" />
-                                    </svg>
+                                    <BookmarkIcon size={24} filled={isFavorite} />
                                 )}
                             </button>
                         )}

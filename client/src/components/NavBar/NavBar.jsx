@@ -3,10 +3,9 @@ import { useNavigate, Link, useLocation } from 'react-router-dom';
 import logo from './../../assets/LogoSuperior.webp';
 import mobileLogo from './../../assets/LogoAnimeWLCuadrado.webp';
 import userIcon from './../../assets/usuari.webp';
-import favoriteIcon from './../../assets/favorito.webp';
-import directoryIcon from './../../assets/directorio.webp';
 import { ButtonNavBar } from './../ButtonNavBar/ButtonNavBar';
 import { useAuth, useUserInfo } from '../../hooks/useAuth.js';
+import { BookmarkIcon, DiscIcon } from '../Icons/Icons.jsx';
 import './NavBar.css';
 
 const MOBILE_BREAKPOINT = 768;
@@ -153,7 +152,7 @@ export function Navbar({
   const navbarClassName = isMobileViewport ? 'navbar navbar-mobile' : 'navbar';
   const navbarDivClassName = isMobileViewport ? 'navbarDiv navbarDiv-mobile' : 'navbarDiv';
   const searchContainerClassName = isMobileViewport ? 'search-container search-container-mobile' : 'search-container';
-  const mobileActionsClassName = isMobileViewport ? 'navbarDiv navbarDiv-mobile navbar-actions-mobile' : navbarDivClassName;
+  const mobileActionsClassName = isMobileViewport ? 'navbarDiv navbarDiv-mobile navbar-actions-mobile' : 'navbarDiv navbar-actions-desktop';
   const shouldShowInlineSearch = searchBar && !isMobileViewport;
   const shouldShowMobileSearch = searchBar && isMobileViewport && mobileSearchOpen;
   const shouldShowProfileMobileMenu = isProfileMenuViewport && profileMenuItems.length > 0 && onProfileViewChange;
@@ -250,8 +249,8 @@ export function Navbar({
             </svg>
           </button>
         )}
-        {directory && < ButtonNavBar link="/directory" img={directoryIcon} />}
-        {userInfo && favorites && < ButtonNavBar link="/favorites" img={favoriteIcon} />}
+        {directory && <ButtonNavBar link="/directory" icon={<DiscIcon size={24} />} ariaLabel="Directorio" />}
+        {userInfo && favorites && <ButtonNavBar link="/favorites" icon={<BookmarkIcon size={24} />} ariaLabel="Favoritos" />}
         {profile && (
           <div className="user-menu-container" ref={userMenuRef}>
             <button

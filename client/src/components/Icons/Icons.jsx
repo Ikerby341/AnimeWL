@@ -40,3 +40,43 @@ export function TrashIcon({ size = 18, strokeWidth = 2, className = '' }) {
         </svg>
     );
 }
+
+export function BookmarkIcon({ size = 24, strokeWidth = 2, className = '', filled = false }) {
+    return (
+        <svg
+            className={className}
+            width={size}
+            height={size}
+            viewBox="0 0 24 24"
+            fill={filled ? 'currentColor' : 'none'}
+            stroke="currentColor"
+            strokeWidth={strokeWidth}
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            aria-hidden="true"
+        >
+            <path d="M8 4h8c1.1 0 2 .9 2 2v14l-6-4-6 4V6c0-1.1.9-2 2-2z" />
+        </svg>
+    );
+}
+
+export function DiscIcon({ size = 24, strokeWidth = 2, className = '' }) {
+    return (
+        <svg
+            className={className}
+            width={size}
+            height={size}
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth={strokeWidth}
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            aria-hidden="true"
+        >
+            <circle cx="12" cy="12" r="9" />
+            <circle cx="12" cy="12" r="2.5" />
+            <path d="M12 3a9 9 0 0 1 9 9" opacity="0.65" />
+        </svg>
+    );
+}

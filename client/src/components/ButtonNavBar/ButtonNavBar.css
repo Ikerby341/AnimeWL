@@ -3,6 +3,19 @@
   background-color: transparent;
 }
 
+.icon-svg {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+}
+
+.icon-svg svg {
+  width: 2rem;
+  height: 2rem;
+  display: block;
+}
+
 .buttonNavBar {
   background-color: transparent;
   border: none;
@@ -13,4 +26,8 @@
 
 .buttonNavBar:hover .icon {
   filter: brightness(0.8);
+}
+
+.buttonNavBar:hover .icon-svg {
+  color: rgba(255, 255, 255, 0.8);
 }
