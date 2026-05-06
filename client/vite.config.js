@@ -10,6 +10,9 @@ const __dirname = path.dirname(__filename)
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, __dirname)
   const backendUrl = env.VITE_BACKENDURL || 'http://localhost:3000'
+  const clientBackendUrl = mode === 'production'
+    ? (env.VITE_BACKENDURL || '')
+    : backendUrl
 
   return {
     // servir 'public' como root para que index.html pueda estar dentro de /public
@@ -17,6 +20,9 @@ export default defineConfig(({ mode }) => {
     // la carpeta pública dentro de root es la propia carpeta public
     publicDir: '.',
     plugins: [react()],
+    define: {
+      'import.meta.env.VITE_BACKENDURL': JSON.stringify(clientBackendUrl)
+    },
     resolve: {
       alias: {
         // permitir importar desde /src/... cuando root='public'
