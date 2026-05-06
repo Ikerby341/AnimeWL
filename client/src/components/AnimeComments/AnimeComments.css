@@ -94,6 +94,12 @@
     border-color: rgba(32, 159, 54, 0.8);
 }
 
+.comment-character-count {
+    align-self: flex-end;
+    color: #9ca3af;
+    font-size: 0.85rem;
+}
+
 .comment-form-actions {
     display: flex;
     justify-content: flex-end;

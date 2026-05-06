@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom';
 import './AnimeComments.css';
 import userIcon from '../../assets/usuari.webp';
 
+const COMMENT_MAX_LENGTH = 255;
+
 function getCommentUserId(comment) {
     return comment.id_usuari
         || comment.id_usuario
@@ -47,6 +49,10 @@ export function AnimeComments({ animeId, comments, loading, isLoggedIn, currentU
         const trimmedText = commentText.trim();
         if (!trimmedText) {
             setSubmitError('El comentario no puede estar vacío.');
+            return;
+        }
+        if (trimmedText.length > COMMENT_MAX_LENGTH) {
+            setSubmitError(`El comentario no puede superar los ${COMMENT_MAX_LENGTH} caracteres.`);
             return;
         }
         setSubmitLoading(true);
@@ -121,9 +127,13 @@ export function AnimeComments({ animeId, comments, loading, isLoggedIn, currentU
                                 className="comment-textarea"
                                 value={commentText}
                                 onChange={(e) => setCommentText(e.target.value)}
+                                maxLength={COMMENT_MAX_LENGTH}
                                 placeholder="Escribe tu comentario..."
                                 rows={4}
                             />
+                            <div className="comment-character-count">
+                                {commentText.length}/{COMMENT_MAX_LENGTH}
+                            </div>
                             {submitError && <div className="comment-form-error">{submitError}</div>}
                             <div className="comment-form-actions">
                                 <button type="submit" className="comment-submit-button" disabled={submitLoading}>
