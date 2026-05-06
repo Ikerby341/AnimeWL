@@ -32,6 +32,35 @@ export function Carrusel({ items = [], images = [], onItemClick }) {
     };
   }, []);
 
+  useEffect(() => {
+    const handleGlobalKeyDown = (event) => {
+      const target = event.target;
+      const tagName = target?.tagName;
+      const isTypingTarget =
+        target?.isContentEditable ||
+        tagName === 'INPUT' ||
+        tagName === 'TEXTAREA' ||
+        tagName === 'SELECT';
+
+      if (isTypingTarget || slides.length <= 1) {
+        return;
+      }
+
+      if (event.key === 'ArrowLeft') {
+        event.preventDefault();
+        handlePrevious();
+      }
+
+      if (event.key === 'ArrowRight') {
+        event.preventDefault();
+        handleNext();
+      }
+    };
+
+    window.addEventListener('keydown', handleGlobalKeyDown);
+    return () => window.removeEventListener('keydown', handleGlobalKeyDown);
+  }, [slides.length]);
+
   const handleNext = () =>
     setCurrentIndex((prev) => (prev + 1) % slides.length);
 

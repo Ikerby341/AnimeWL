@@ -194,6 +194,13 @@ export function Perfil({ profileUser = null, profileFavorites = [], readOnly = f
         openSearchModal(editableType);
     }
 
+    function handleProfileAnimeKeyDown(event, anime, editableType) {
+        if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            handleProfileAnimeClick(anime, editableType);
+        }
+    }
+
     async function handleSelectSearchResult(anime) {
         if (!searchType) return;
         const normalized = normalizeAnimeResult(anime);
@@ -306,6 +313,10 @@ export function Perfil({ profileUser = null, profileFavorites = [], readOnly = f
                 <div
                     className={readOnly ? (favoriteAnime ? 'anime-card profile-anime-link-card' : 'anime-card') : 'anime-card anime-card-clickable'}
                     onClick={() => handleProfileAnimeClick(favoriteAnime, 'favorite')}
+                    onKeyDown={(event) => handleProfileAnimeKeyDown(event, favoriteAnime, 'favorite')}
+                    tabIndex={0}
+                    role="button"
+                    aria-label={favoriteAnime ? `Abrir anime ${favoriteAnime.titol}` : 'Seleccionar anime favorito'}
                 >
                     <img
                         src={
@@ -323,6 +334,10 @@ export function Perfil({ profileUser = null, profileFavorites = [], readOnly = f
                 <div
                     className={readOnly ? (recommendedAnime ? 'anime-card profile-anime-link-card' : 'anime-card') : 'anime-card anime-card-clickable'}
                     onClick={() => handleProfileAnimeClick(recommendedAnime, 'recommended')}
+                    onKeyDown={(event) => handleProfileAnimeKeyDown(event, recommendedAnime, 'recommended')}
+                    tabIndex={0}
+                    role="button"
+                    aria-label={recommendedAnime ? `Abrir anime ${recommendedAnime.titol}` : 'Seleccionar anime recomendado'}
                 >
                     <img
                         src={
@@ -341,6 +356,10 @@ export function Perfil({ profileUser = null, profileFavorites = [], readOnly = f
                     <div
                         className={readOnly ? 'anime-card profile-anime-link-card' : 'anime-card'}
                         onClick={() => readOnly && handleProfileAnimeClick(watchingAnime)}
+                        onKeyDown={(event) => readOnly && handleProfileAnimeKeyDown(event, watchingAnime)}
+                        tabIndex={readOnly ? 0 : undefined}
+                        role={readOnly ? 'button' : undefined}
+                        aria-label={readOnly ? `Abrir anime ${watchingAnime?.titol || 'Actualmente viendo'}` : undefined}
                     >
                         <img src={watchingAnime?.imatge_portada || addAnimePlaceholder} alt={watchingAnime?.titol || 'Actualmente viendo'} />
                         {readOnly && (

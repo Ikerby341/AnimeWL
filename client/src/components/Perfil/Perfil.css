@@ -62,6 +62,12 @@
     filter: brightness(0.5);
 }
 
+.anime-card-clickable:focus,
+.anime-card-clickable:focus-visible {
+    outline: none;
+    filter: brightness(0.5);
+}
+
 .profile-anime-link-card {
     cursor: pointer;
 }
@@ -81,6 +87,15 @@
 }
 
 .profile-anime-link-card:hover .profile-anime-card-overlay {
+    opacity: 1;
+}
+
+.profile-anime-link-card:focus,
+.profile-anime-link-card:focus-visible {
+    outline: none;
+}
+
+.profile-anime-link-card:focus-visible .profile-anime-card-overlay {
     opacity: 1;
 }
 

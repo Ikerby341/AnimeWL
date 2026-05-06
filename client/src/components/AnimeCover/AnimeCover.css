@@ -58,6 +58,15 @@
     opacity: 1;
 }
 
+.anime-cover:focus,
+.anime-cover:focus-visible {
+    outline: none;
+}
+
+.anime-cover:focus-visible .anime-cover-overlay {
+    opacity: 1;
+}
+
 .overlay-content {
     color: #fff;
     text-align: center;

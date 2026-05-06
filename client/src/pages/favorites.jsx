@@ -96,6 +96,13 @@ export default function Favorites() {
     }
   };
 
+  const handleCardKeyDown = (event, anime) => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      handleSelectAnime(anime);
+    }
+  };
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
       <Navbar favorites={false} />
@@ -127,7 +134,15 @@ export default function Favorites() {
               if (!anime) return null;
 
               return (
-                <div key={`${favorite.id_anime}-${index}`} className="favorite-card" onClick={() => handleSelectAnime(anime)}>
+                <div
+                  key={`${favorite.id_anime}-${index}`}
+                  className="favorite-card"
+                  onClick={() => handleSelectAnime(anime)}
+                  onKeyDown={(event) => handleCardKeyDown(event, anime)}
+                  tabIndex={0}
+                  role="button"
+                  aria-label={`Abrir anime ${anime.titol}`}
+                >
                   <div className="favorite-card-image-container">
                     <img 
                       src={anime.imatge_portada || ''} 

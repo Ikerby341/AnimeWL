@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useLocation } from 'react-router-dom';
 import logo from './../../assets/LogoSuperior.webp';
 import mobileLogo from './../../assets/LogoAnimeWLCuadrado.webp';
 import userIcon from './../../assets/usuari.webp';
@@ -36,6 +36,7 @@ export function Navbar({
   const [isMobileViewport, setIsMobileViewport] = useState(() => getViewportWidth() <= MOBILE_BREAKPOINT);
   const [isProfileMenuViewport, setIsProfileMenuViewport] = useState(() => getViewportWidth() <= PROFILE_MENU_BREAKPOINT);
   const navigate = useNavigate();
+  const location = useLocation();
   const { user, logout } = useAuth();
   const wrapperRef = useRef(null);
   const userMenuRef = useRef(null);
@@ -139,6 +140,13 @@ export function Navbar({
     logout();
   };
 
+  const handleLogoClick = (event) => {
+    if (location.pathname === '/') {
+      event.preventDefault();
+      window.location.reload();
+    }
+  };
+
   const userInfo = useUserInfo();
   const currentLogo = isMobileViewport ? mobileLogo : logo;
   const logoClassName = isMobileViewport ? 'logo logo-mobile' : 'logo';
@@ -153,7 +161,9 @@ export function Navbar({
   return (
     <nav className={navbarClassName} ref={wrapperRef}>
       <div className={navbarDivClassName}>
-        <Link to="/"> <img src={currentLogo} alt="Logo AnimeWL" className={logoClassName} /></Link>
+        <Link to="/" onClick={handleLogoClick}>
+          <img src={currentLogo} alt="Logo AnimeWL" className={logoClassName} />
+        </Link>
         {shouldShowProfileMobileMenu && (
           <div className="profile-mobile-menu-container" ref={profileMenuRef}>
             <button

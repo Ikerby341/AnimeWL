@@ -51,6 +51,15 @@
     opacity: 1;
 }
 
+.anime-carrusel-cover:focus,
+.anime-carrusel-cover:focus-visible {
+    outline: none;
+}
+
+.anime-carrusel-cover:focus-visible .anime-carrusel-overlay {
+    opacity: 1;
+}
+
 .carrusel-overlay-content {
     color: #fff;
     text-align: center;

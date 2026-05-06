@@ -18,8 +18,24 @@ export function AnimeCoverInLine({
         setFavorited((f) => !f);
     }
 
+    function handleKeyDown(event) {
+        if (!onClick) return;
+        if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            onClick();
+        }
+    }
+
     return (
-        <div className="anime-cover" onClick={onClick} style={onClick ? { cursor: 'pointer' } : undefined}>
+        <div
+            className="anime-cover"
+            onClick={onClick}
+            onKeyDown={handleKeyDown}
+            tabIndex={onClick ? 0 : undefined}
+            role={onClick ? 'button' : undefined}
+            aria-label={onClick ? `Abrir anime ${title || altText}` : undefined}
+            style={onClick ? { cursor: 'pointer' } : undefined}
+        >
             {/* overlay con info cuando se hace hover */}
             <div className="anime-cover-overlay">
                 <div className="overlay-content">
