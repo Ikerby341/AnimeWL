@@ -249,8 +249,8 @@ export function Navbar({
             </svg>
           </button>
         )}
-        {directory && <ButtonNavBar link="/directory" icon={<DiscIcon size={24} />} ariaLabel="Directorio" />}
-        {userInfo && favorites && <ButtonNavBar link="/favorites" icon={<BookmarkIcon size={24} />} ariaLabel="Favoritos" />}
+        {directory && <ButtonNavBar link="/directory" icon={<DiscIcon size={24} strokeWidth={1} />} ariaLabel="Directorio" />}
+        {userInfo && favorites && <ButtonNavBar link="/favorites" icon={<BookmarkIcon size={24} strokeWidth={1} />} ariaLabel="Favoritos" />}
         {profile && (
           <div className="user-menu-container" ref={userMenuRef}>
             <button
