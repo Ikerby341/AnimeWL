@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react'
 import { AuthContext } from './AuthContext.js'
+import { clearAuthToken, setAuthToken } from '../utils/authTokenFetch.js'
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null)
   const [loading, setLoading] = useState(true)
 
-  // Verificar sesión al cargar la aplicación
+  // Verificar sesion al cargar la aplicacion
   useEffect(() => {
     checkSession()
   }, [])
@@ -17,21 +18,25 @@ export function AuthProvider({ children }) {
       })
 
       if (response.status === 401) {
-        // 401 es esperado cuando no hay sesión, no es un error
+        clearAuthToken()
         setUser(null)
       } else if (response.ok) {
         const data = await response.json()
-        if (data.success) {
+        if (data.success && data.user) {
+          if (data.token) setAuthToken(data.token)
           setUser(data.user)
         } else {
+          clearAuthToken()
           setUser(null)
         }
       } else {
         console.error('Error checking session:', response.status)
+        clearAuthToken()
         setUser(null)
       }
     } catch (error) {
       console.error('Error checking session:', error)
+      clearAuthToken()
       setUser(null)
     } finally {
       setLoading(false)
@@ -51,7 +56,10 @@ export function AuthProvider({ children }) {
     const data = await response.json()
 
     if (data.success) {
+      if (data.token) setAuthToken(data.token)
       setUser(data.user)
+    } else {
+      clearAuthToken()
     }
 
     return data
@@ -63,9 +71,12 @@ export function AuthProvider({ children }) {
         method: 'POST',
         credentials: 'include'
       })
+      clearAuthToken()
       setUser(null)
     } catch (error) {
       console.error('Error during logout:', error)
+      clearAuthToken()
+      setUser(null)
     }
   }
 
