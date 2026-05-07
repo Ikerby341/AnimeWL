@@ -60,6 +60,25 @@ export function BookmarkIcon({ size = 24, strokeWidth = 2, className = '', fille
     );
 }
 
+export function HeartIcon({ size = 24, strokeWidth = 2, className = '', filled = false }) {
+    return (
+        <svg
+            className={className}
+            width={size}
+            height={size}
+            viewBox="0 0 24 24"
+            fill={filled ? 'currentColor' : 'none'}
+            stroke="currentColor"
+            strokeWidth={strokeWidth}
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            aria-hidden="true"
+        >
+            <path d="M19.84 4.61a5.5 5.5 0 0 0-7.78 0L12 4.67l-.06-.06a5.5 5.5 0 0 0-7.78 7.78l.06.06L12 20.23l7.78-7.78.06-.06a5.5 5.5 0 0 0 0-7.78Z" />
+        </svg>
+    );
+}
+
 export function DiscIcon({ size = 24, strokeWidth = 2, className = '' }) {
     return (
         <svg
