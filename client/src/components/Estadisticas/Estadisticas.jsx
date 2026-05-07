@@ -1,20 +1,6 @@
 import { useState, useEffect } from 'react';
 import './Estadisticas.css';
-
-function formatMinutes(minutes) {
-    if (minutes == null) return '0 min';
-    return `${minutes.toLocaleString('es-ES')} min`;
-}
-
-function formatHours(minutes) {
-    if (minutes == null) return '0h';
-    const hours = minutes / 60;
-    return `${hours.toFixed(1).replace('.0', '')}h`;
-}
-
-function formatValue(value) {
-    return value != null ? value.toLocaleString('es-ES') : '0';
-}
+import { buildPieBackground, buildPieSegments, calculateBarHeight, formatHours, formatMinutes, formatValue } from './statsHelpers.js';
 
 export function Estadisticas() {
     const [stats, setStats] = useState(null);
@@ -57,21 +43,8 @@ export function Estadisticas() {
     const minBarRatio = 0.02;
     const topGenres = stats?.topGenres || [];
     const pieColors = ['#db2f46', '#ff7684', '#14b8a6'];
-    const totalGenreValue = topGenres.reduce((sum, item) => sum + (item.value || 0), 0);
-    const pieSegments = topGenres.map((item, index) => ({
-        color: pieColors[index % pieColors.length],
-        percentage: totalGenreValue ? (item.value / totalGenreValue) * 100 : 0
-    }));
-
-    const pieBackground = pieSegments.length
-        ? `conic-gradient(${pieSegments
-            .map((segment, idx) => {
-                const start = pieSegments.slice(0, idx).reduce((sum, seg) => sum + seg.percentage, 0);
-                const end = start + segment.percentage;
-                return `${segment.color} ${start}% ${end}%`;
-            })
-            .join(', ')})`
-        : 'conic-gradient(#db2f46 0deg 90deg, #ff7684 90deg 160deg, #ff9b9b 160deg 240deg, #d92b42 240deg 360deg)';
+    const pieSegments = buildPieSegments(topGenres, pieColors);
+    const pieBackground = buildPieBackground(pieSegments);
 
     return (
         <div className="estadisticas-page">
@@ -120,7 +93,7 @@ export function Estadisticas() {
                                                 <div
                                                     className="stats-bar-fill"
                                                     style={{
-                                                        height: `${Math.max((item.minutes || 0) / maxMinutes, item.minutes > 0 ? minBarRatio : 0) * 100}%`
+                                                        height: calculateBarHeight(item.minutes || 0, maxMinutes, minBarRatio)
                                                     }}
                                                 />
                                                 <span className="stats-bar-value">{formatHours(item.minutes)}</span>

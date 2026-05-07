@@ -44,6 +44,10 @@ export default defineConfig(({ mode }) => {
         // usar ruta absoluta resuelta al index dentro de public
         input: path.resolve(__dirname, 'public', 'index.html')
       }
+    },
+    test: {
+      environment: 'node',
+      include: ['../src/**/*.{test,spec}.js']
     }
   }
 })
