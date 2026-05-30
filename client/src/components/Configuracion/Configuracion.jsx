@@ -20,9 +20,13 @@ export function Configuracion() {
             showToast('El nombre de usuario no puede estar vacío', { type: 'error' });
             return;
         }
-        fetch(`${import.meta.env.VITE_BACKENDURL}/api/settings/update-username?newUsername=${encodeURIComponent(newUsername)}`, {
-            method: 'GET',
-            credentials: 'include'
+        fetch(`${import.meta.env.VITE_BACKENDURL}/api/settings/update-username`, {
+            method: 'POST',
+            credentials: 'include',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ newUsername })
         })
             .then(async response => {
                 if (response.ok) {
