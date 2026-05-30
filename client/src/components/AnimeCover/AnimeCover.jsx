@@ -4,7 +4,7 @@ import { useState } from 'react';
 export function AnimeCover({
     imageUrl,
     title = '',
-    altText = 'Anime Cover',
+    altText = '',
     synopsis = '',
     episodeCount = null,
     showStar = false,
@@ -12,6 +12,7 @@ export function AnimeCover({
     onClick,
 }) {
     const [favorited, setFavorited] = useState(initialFavorited);
+    const imageAlt = altText || title || 'Anime cover';
 
     function toggleStar(e) {
         e.stopPropagation();
@@ -33,7 +34,7 @@ export function AnimeCover({
             onKeyDown={handleKeyDown}
             tabIndex={onClick ? 0 : undefined}
             role={onClick ? 'button' : undefined}
-            aria-label={onClick ? `Abrir anime ${title || altText}` : undefined}
+            aria-label={onClick ? `Abrir anime ${imageAlt}` : undefined}
             style={onClick ? { cursor: 'pointer' } : undefined}
         >
             {/* overlay con info cuando se hace hover */}
@@ -56,7 +57,7 @@ export function AnimeCover({
                     )}
                 </div>
             </div>
-            <img src={imageUrl} alt={altText} className="anime-cover-image" />
+            <img src={imageUrl} alt={imageAlt} className="anime-cover-image" />
             {title && <div className="anime-cover-title">{title}</div>}
         </div>
     );

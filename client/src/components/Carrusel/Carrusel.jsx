@@ -152,7 +152,7 @@ export function Carrusel({ items = [], images = [], onItemClick }) {
                 synopsis={slide.synopsis || ''}
                 episodeCount={slide.episodeCount || null}
                 showTitle={offset === 0}
-                altText={slide.title || 'Anime cover'}
+                altText={slide.title || ''}
                 onClick={onItemClick ? () => onItemClick(slide) : undefined}
               />
             </div>

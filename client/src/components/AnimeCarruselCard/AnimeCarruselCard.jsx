@@ -4,12 +4,14 @@ export function AnimeCarruselCard({
     imageUrl,
     title = '',
     subtitle = '',
-    altText = 'Anime Cover',
+    altText = '',
     synopsis = '',
     episodeCount = null,
     showTitle = false,
     onClick,
 }) {
+    const imageAlt = altText || title || 'Anime cover';
+
     function handleKeyDown(event) {
         if (!onClick) return;
         if (event.key === 'Enter' || event.key === ' ') {
@@ -25,7 +27,7 @@ export function AnimeCarruselCard({
             onKeyDown={handleKeyDown}
             tabIndex={onClick ? 0 : undefined}
             role={onClick ? 'button' : undefined}
-            aria-label={onClick ? `Abrir anime ${title || altText}` : undefined}
+            aria-label={onClick ? `Abrir anime ${imageAlt}` : undefined}
             style={onClick ? { cursor: 'pointer' } : undefined}
         >
             {/* overlay con info cuando se hace hover */}
@@ -39,7 +41,7 @@ export function AnimeCarruselCard({
                     {synopsis && <p className="carrusel-overlay-synopsis">{synopsis}</p>}
                 </div>
             </div>
-            <img src={imageUrl} alt={altText} className="anime-carrusel-image" />
+            <img src={imageUrl} alt={imageAlt} className="anime-carrusel-image" />
             {showTitle && (
                 <div className="carrusel-bottom-bar">
                     {title && <h4 className="bottom-title">{title}</h4>}
