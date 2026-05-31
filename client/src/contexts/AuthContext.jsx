@@ -88,7 +88,8 @@ export function AuthProvider({ children }) {
       email: user.email ?? '',
       id_anime_preferit: user.id_anime_preferit ?? null,
       id_anime_recomanat: user.id_anime_recomanat ?? null,
-      img_url: user.img_url ?? null
+      img_url: user.img_url ?? null,
+      isAdmin: user.isAdmin === true
     }
   }
 

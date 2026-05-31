@@ -33,7 +33,7 @@ function formatCommentDate(value) {
     });
 }
 
-export function AnimeComments({ animeId, comments, loading, isLoggedIn, currentUserId, onCommentAdded, onCommentDeleted }) {
+export function AnimeComments({ animeId, comments, loading, isLoggedIn, currentUserId, currentUserIsAdmin = false, onCommentAdded, onCommentDeleted }) {
     const [isFormOpen, setIsFormOpen] = useState(false);
     const [commentText, setCommentText] = useState('');
     const [submitError, setSubmitError] = useState('');
@@ -157,6 +157,7 @@ export function AnimeComments({ animeId, comments, loading, isLoggedIn, currentU
                     const avatarSrc = comment.userImg || userIcon;
                     const commentUserId = getCommentUserId(comment);
                     const isOwnComment = currentUserId && commentUserId && String(commentUserId) === String(currentUserId);
+                    const canDeleteComment = isOwnComment || currentUserIsAdmin;
                     const userContent = (
                         <>
                             <img
@@ -186,7 +187,7 @@ export function AnimeComments({ animeId, comments, loading, isLoggedIn, currentU
                                 <p className="comment-date">{formatCommentDate(comment.data_hora)}</p>
                             </div>
                             <p className="comment-text">{comment.contingut}</p>
-                            {isOwnComment && (
+                            {canDeleteComment && (
                                 <div className="comment-delete-row">
                                     <button
                                         type="button"

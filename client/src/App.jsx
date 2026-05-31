@@ -9,6 +9,7 @@ import PublicProfile from './pages/publicProfile.jsx'
 import Details from './pages/details.jsx'
 import ForgotPassword from './pages/ForgotPassword.jsx'
 import ResetPassword from './pages/ResetPassword.jsx'
+import AdminUsers from './pages/adminUsers.jsx'
 import Terms from './pages/Terms.jsx'
 import Privacy from './pages/Privacy.jsx'
 import { AuthProvider } from './contexts/AuthContext.jsx'
@@ -29,6 +30,7 @@ function App() {
           <Route path='/details/:id' element={<Details />} />
           <Route path='/forgot-password' element={<ForgotPassword />} />
           <Route path='/reset-password' element={<ResetPassword />} />
+          <Route path='/admin/users' element={<AdminUsers />} />
           <Route path='/terminos-y-condiciones' element={<Terms />} />
           <Route path='/politica-de-privacidad' element={<Privacy />} />
           <Route path='*' element={<Navigate to="/" replace />} />

@@ -23,6 +23,7 @@ export default function Details() {
   const [isFavorite, setIsFavorite] = useState(false);
   const { isLoggedIn, user } = useAuth();
   const currentUserId = user?.id_usuari || user?.id_usuario || user?.id_user || user?.id || null;
+  const currentUserIsAdmin = user?.isAdmin === true;
 
   useEffect(() => {
     if (!id) return;
@@ -264,6 +265,7 @@ export default function Details() {
           onCommentAdded={(newComment) => setComments((prevComments) => [newComment, ...prevComments])}
           onCommentDeleted={(commentId) => setComments((prevComments) => prevComments.filter((comment) => String(comment.id_comentari) !== String(commentId)))}
           currentUserId={currentUserId}
+          currentUserIsAdmin={currentUserIsAdmin}
           isFavorite={isFavorite}
           onAddToFavorites={handleAddToFavorites}
           onRemoveFromFavorites={handleRemoveFromFavorites}

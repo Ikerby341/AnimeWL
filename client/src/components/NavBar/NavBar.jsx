@@ -134,6 +134,11 @@ export function Navbar({
     navigate('/profile');
   };
 
+  const handleAdminUsersClick = () => {
+    setShowUserMenu(false);
+    navigate('/admin/users');
+  };
+
   const handleLogoutClick = () => {
     setShowUserMenu(false);
     logout();
@@ -270,6 +275,11 @@ export function Navbar({
                     <button onClick={handleProfileClick} className="dropdown-item">
                       Perfil
                     </button>
+                    {user.isAdmin === true && (
+                      <button onClick={handleAdminUsersClick} className="dropdown-item">
+                        Gestión de usuarios
+                      </button>
+                    )}
                     <button onClick={handleLogoutClick} className="dropdown-item logout-item">
                       Cerrar sesión
                     </button>

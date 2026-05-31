@@ -1,0 +1,117 @@
+.admin-users-page {
+  width: min(1180px, calc(100% - 2rem));
+  margin: 2rem auto;
+  flex: 1;
+}
+
+.admin-users-header {
+  margin-bottom: 1.5rem;
+}
+
+.admin-users-header h1 {
+  margin: 0 0 0.5rem;
+  font-size: 2rem;
+}
+
+.admin-users-header p {
+  margin: 0;
+  color: #d2d2d2;
+  line-height: 1.5;
+}
+
+.admin-users-alert {
+  margin-bottom: 1rem;
+  padding: 0.9rem 1rem;
+  border-radius: 8px;
+  font-weight: 600;
+}
+
+.admin-users-alert-error {
+  background: #3a1515;
+  color: #ffb7b7;
+  border: 1px solid #8c2b2b;
+}
+
+.admin-users-alert-success {
+  background: #14351d;
+  color: #b7f5c4;
+  border: 1px solid #2f7f42;
+}
+
+.admin-users-table-wrap {
+  overflow-x: auto;
+  border: 1px solid #3a3a3a;
+  border-radius: 8px;
+  background: #181818;
+}
+
+.admin-users-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 760px;
+}
+
+.admin-users-table th,
+.admin-users-table td {
+  padding: 0.9rem;
+  border-bottom: 1px solid #303030;
+  text-align: left;
+}
+
+.admin-users-table th {
+  background: #101010;
+  color: #ffffff;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+}
+
+.admin-users-table tr:last-child td {
+  border-bottom: 0;
+}
+
+.admin-users-input,
+.admin-users-select {
+  width: 100%;
+  box-sizing: border-box;
+  min-height: 2.5rem;
+  border: 1px solid #444444;
+  border-radius: 8px;
+  background: #0f0f0f;
+  color: #ffffff;
+  padding: 0.55rem 0.75rem;
+  font-size: 0.95rem;
+}
+
+.admin-users-input:focus,
+.admin-users-select:focus {
+  outline: 2px solid #209F36;
+  border-color: #209F36;
+}
+
+.admin-users-input-readonly {
+  color: #cfcfcf;
+  background: #232323;
+}
+
+.admin-users-save-button {
+  min-height: 2.5rem;
+  padding: 0 1rem;
+  border: 0;
+  border-radius: 8px;
+  background: #209F36;
+  color: #ffffff;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.admin-users-save-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+@media (max-width: 760px) {
+  .admin-users-page {
+    width: min(100% - 1rem, 1180px);
+    margin: 1.25rem auto;
+  }
+}
