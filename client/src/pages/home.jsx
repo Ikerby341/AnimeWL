@@ -20,8 +20,10 @@ function Home() {
   const [fantasyAnimes, setFantasyAnimes] = useState([]);
   const [romanceAnimes, setRomanceAnimes] = useState([]);
   const [SportsAnimes, setSportsAnimes] = useState([]);
+  const [airingAnimes, setAiringAnimes] = useState([]);
   const [recentAnimes, setRecentAnimes] = useState([]);
   const [loadingRecent, setLoadingRecent] = useState(true);
+  const [loadingAiring, setLoadingAiring] = useState(true);
   const [loadingAction, setLoadingAction] = useState(true);
   const [loadingFantasy, setLoadingFantasy] = useState(true);
   const [loadingRomance, setLoadingRomance] = useState(true);
@@ -61,6 +63,15 @@ function Home() {
           const recentList = recentBody.anime || [];
           setRecentAnimes(recentList);
           setLoadingRecent(false);
+        }
+
+        const airingRes = await fetch(`${import.meta.env.VITE_BACKENDURL}/api/anime/airing/7`);
+        if (!airingRes.ok) throw new Error('failed to fetch airing animes');
+        const airingBody = await airingRes.json();
+        if (!cancelled) {
+          const list = airingBody.anime || [];
+          setAiringAnimes(list);
+          setLoadingAiring(false);
         }
 
         const res = await fetch(`${import.meta.env.VITE_BACKENDURL}/api/anime/genre/action/7`);
@@ -127,6 +138,26 @@ function Home() {
           }))} onItemClick={handleSelect} />
         )}
         <br />
+        <h2>EN EMISION</h2>
+        {loadingAiring ? (
+                  <div className="loading-container">
+                    <div className="loader"></div>
+                  </div>
+                ) : (
+                  <div className={gridClassName}>
+                    {airingAnimes.map((a) => (
+                      <AnimeCoverInLine
+                        key={a.id_anime || a.id}
+                        imageUrl={a.imatge_portada || a.imageUrl || ''}
+                        title={a.titol || a.title || '---'}
+                        synopsis={a.sinopsi_es || a.sinopsi || ''}
+                        episodeCount={a.episodeCount}
+                        onClick={() => handleSelect(a)}
+                      />
+                    ))}
+                  </div>
+                )}
+                <br />
         <h2>ACCIÓN</h2>
         {loadingAction ? (
                   <div className="loading-container">

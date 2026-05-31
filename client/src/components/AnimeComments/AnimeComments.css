@@ -46,9 +46,9 @@
 .comment-add-button,
 .comment-submit-button,
 .comment-cancel-button {
-    background: #209F36;
+    background: #000000;
     color: #ffffff;
-    border: none;
+    border: 1px solid #209F36;
     border-radius: 12px;
     padding: 10px 16px;
     cursor: pointer;

@@ -56,7 +56,7 @@ El mode de desenvolupament executa primer les proves i després aixeca Vite.
 
 ## Rutes de l'aplicació
 
-- `/`: pàgina d'inici amb carrusels d'animes recents i per gènere.
+- `/`: pàgina d'inici amb carrusel d'animes recents, secció d'animes en emissió i blocs per gènere.
 - `/login`: formulari d'inici de sessió.
 - `/register`: formulari de registre.
 - `/directory`: directori paginat d'animes amb filtres per gènere.
@@ -81,7 +81,7 @@ El mode de desenvolupament executa primer les proves i després aixeca Vite.
 
 ## Pàgines
 
-- `pages/home.jsx`: carrega animes recents i carrusels per gènere.
+- `pages/home.jsx`: carrega animes recents, animes en emissió i blocs per gènere.
 - `pages/directory.jsx`: mostra el catàleg complet amb paginació i filtre de gèneres.
 - `pages/details.jsx`: coordina la càrrega de detall, comentaris, rating, progrés i favorits d'un anime.
 - `pages/favorites.jsx`: mostra i permet actualitzar els animes favorits de l'usuari.
@@ -114,7 +114,7 @@ Els fitxers de `src/styles` defineixen l'estil de pantalles globals com home, lo
 
 ## Connexió amb el servidor
 
-El client consumeix el backend a través de `import.meta.env.VITE_BACKENDURL`. Les crides principals apunten a endpoints com `/api/anime`, `/api/jikan/search`, `/api/login`, `/api/session`, `/api/user/favorites`, `/api/anime/:id/comments`, `/api/anime/:id/rating` i `/api/anime/:id/progress`.
+El client consumeix el backend a través de `import.meta.env.VITE_BACKENDURL`. Les crides principals apunten a endpoints com `/api/anime`, `/api/anime/airing/:limit`, `/api/jikan/search`, `/api/login`, `/api/session`, `/api/user/favorites`, `/api/anime/:id/comments`, `/api/anime/:id/rating` i `/api/anime/:id/progress`.
 
 En desenvolupament, `vite.config.js` també configura un proxy perquè les rutes `/api` es redirigeixin al servidor Express.
 
