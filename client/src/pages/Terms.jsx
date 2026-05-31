@@ -63,18 +63,18 @@ export default function Terms() {
           <div className="legal-section">
             <h2>Disponibilidad del servicio</h2>
             <p>
-              Podemos introducir cambios, mejoras, correcciones o tareas de mantenimiento en cualquier
-              momento. Eso significa que algunas funciones podrian no estar disponibles temporalmente
-              sin que ello genere una obligacion de compensacion.
+              Podemos introducir cambios, mejoras, correcciones o tareas de mantenimiento para mantener
+              la plataforma actualizada. En caso de interrupciones puntuales, trabajaremos para restaurar
+              el servicio con normalidad.
             </p>
           </div>
 
           <div className="legal-section">
             <h2>Limitacion de responsabilidad</h2>
             <p>
-              AnimeWL se ofrece tal y como esta. No asumimos responsabilidad por interrupciones,
-              perdidas de datos derivadas de terceros, ni por decisiones tomadas por el usuario a
-              partir de la informacion publicada en el sitio.
+              AnimeWL se ofrece como una plataforma informativa y de gestion personal. No asumimos
+              responsabilidad por interrupciones, perdidas de datos derivadas de terceros, ni por
+              decisiones tomadas por el usuario a partir de la informacion publicada en el sitio.
             </p>
           </div>
 

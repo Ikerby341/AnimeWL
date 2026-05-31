@@ -27,7 +27,7 @@ export default function ResetPassword() {
         setTokenValid(data.success)
       } catch (err) {
         setTokenValid(false)
-        console.log('Error verificando token:', err)
+        console.error('Error verificando token:', err)
       }
     }
 

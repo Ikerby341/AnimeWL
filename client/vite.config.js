@@ -14,6 +14,8 @@ export default defineConfig(({ mode }) => {
   return {
     // servir 'public' como root para que index.html pueda estar dentro de /public
     root: 'public',
+    envDir: __dirname,
+    cacheDir: path.resolve(__dirname, 'node_modules/.vite'),
     // la carpeta pública dentro de root es la propia carpeta public
     publicDir: '.',
     plugins: [react()],

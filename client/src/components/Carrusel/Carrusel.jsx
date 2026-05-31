@@ -1,5 +1,5 @@
 import './Carrusel.css';
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { AnimeCarruselCard } from '../AnimeCarruselCard/AnimeCarruselCard.jsx';
 
 const MOBILE_BREAKPOINT = 768;
@@ -18,6 +18,14 @@ export function Carrusel({ items = [], images = [], onItemClick }) {
   const touchStartX = useRef(null);
   const touchStartY = useRef(null);
   const touchHandled = useRef(false);
+
+  const handleNext = useCallback(() =>
+    setCurrentIndex((prev) => (prev + 1) % slides.length),
+  [slides.length]);
+
+  const handlePrevious = useCallback(() =>
+    setCurrentIndex((prev) => (prev - 1 + slides.length) % slides.length),
+  [slides.length]);
 
   useEffect(() => {
     const handleResize = () => setViewportWidth(getViewportWidth());
@@ -59,13 +67,7 @@ export function Carrusel({ items = [], images = [], onItemClick }) {
 
     window.addEventListener('keydown', handleGlobalKeyDown);
     return () => window.removeEventListener('keydown', handleGlobalKeyDown);
-  }, [slides.length]);
-
-  const handleNext = () =>
-    setCurrentIndex((prev) => (prev + 1) % slides.length);
-
-  const handlePrevious = () =>
-    setCurrentIndex((prev) => (prev - 1 + slides.length) % slides.length);
+  }, [handleNext, handlePrevious, slides.length]);
 
   const handleDotClick = (index) => setCurrentIndex(index);
 

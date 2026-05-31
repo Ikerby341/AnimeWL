@@ -19,7 +19,7 @@ export function Estadisticas() {
 
                 try {
                     data = JSON.parse(text);
-                } catch (e) {
+                } catch {
                     throw new Error(`Unexpected response from API: ${text.slice(0, 200)}`);
                 }
 
