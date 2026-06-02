@@ -5,7 +5,7 @@ import mobileLogo from './../../assets/LogoAnimeWLCuadrado.webp';
 import userIcon from './../../assets/usuari.webp';
 import { ButtonNavBar } from './../ButtonNavBar/ButtonNavBar';
 import { useAuth, useUserInfo } from '../../hooks/useAuth.js';
-import { HeartIcon, DiscIcon } from '../Icons/Icons.jsx';
+import { HeartIcon, DiscIcon, GamepadIcon } from '../Icons/Icons.jsx';
 import './NavBar.css';
 
 const MOBILE_BREAKPOINT = 768;
@@ -161,6 +161,7 @@ export function Navbar({
   const shouldShowInlineSearch = searchBar && !isMobileViewport;
   const shouldShowMobileSearch = searchBar && isMobileViewport && mobileSearchOpen;
   const shouldShowProfileMobileMenu = isProfileMenuViewport && profileMenuItems.length > 0 && onProfileViewChange;
+  const shouldShowAnimedleButton = userInfo && location.pathname !== '/animedle';
 
   return (
     <nav className={navbarClassName} ref={wrapperRef}>
@@ -254,6 +255,7 @@ export function Navbar({
             </svg>
           </button>
         )}
+        {shouldShowAnimedleButton && <ButtonNavBar link="/animedle" icon={<GamepadIcon size={28} strokeWidth={1} />} ariaLabel="Animedle" />}
         {directory && <ButtonNavBar link="/directory" icon={<DiscIcon size={24} strokeWidth={1} />} ariaLabel="Directorio" />}
         {userInfo && favorites && <ButtonNavBar link="/favorites" icon={<HeartIcon size={24} strokeWidth={1} />} ariaLabel="Favoritos" />}
         {profile && (

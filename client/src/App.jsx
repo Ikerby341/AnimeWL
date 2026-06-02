@@ -4,6 +4,7 @@ import Login from './pages/login.jsx'
 import Register from './pages/register.jsx'
 import Directory from './pages/directory.jsx'
 import Favorites from './pages/favorites.jsx'
+import Animedle from './pages/Animedle.jsx'
 import Profile from './pages/profile.jsx'
 import PublicProfile from './pages/publicProfile.jsx'
 import Details from './pages/details.jsx'
@@ -25,6 +26,7 @@ function App() {
           <Route path='/register' element={<Register />} />
           <Route path='/directory' element={<Directory />} />
           <Route path='/favorites' element={<Favorites />} />
+          <Route path='/animedle' element={<Animedle />} />
           <Route path='/profile' element={<Profile />} />
           <Route path='/profile/:userId' element={<PublicProfile />} />
           <Route path='/details/:id' element={<Details />} />

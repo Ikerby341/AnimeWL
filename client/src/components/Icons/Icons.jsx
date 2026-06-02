@@ -99,3 +99,41 @@ export function DiscIcon({ size = 24, strokeWidth = 2, className = '' }) {
         </svg>
     );
 }
+
+export function GamepadIcon({ size = 24, strokeWidth = 2, className = '' }) {
+    return (
+        <svg
+            className={className}
+            width={size}
+            height={size * 1.15}
+            viewBox="0 0 24 27"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth={strokeWidth}
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            aria-hidden="true"
+        >
+            <path d="M10 7 C10 5.2 14 5.2 14 7" />
+            <path d="M7.5 8
+                C5.2 8 3.5 9.2 3 11
+                L1.2 17.5
+                C0.7 20 2.5 22 4.8 22
+                C6 22 6.8 21.4 7.5 20.5
+                L9.2 18.8
+                H14.8
+                L16.5 20.5
+                C17.2 21.4 18 22 19.2 22
+                C21.5 22 23.3 20 22.8 17.5
+                L21 11
+                C20.5 9.2 18.8 8 16.5 8
+                Z" />
+            <path d="M7.8 12.5 V16.5" />
+            <path d="M5.8 14.5 H9.8" />
+            <circle cx="16.5" cy="12" r="0.9" fill="currentColor" stroke="none" />
+            <circle cx="19" cy="14.5" r="0.9" fill="currentColor" stroke="none" />
+            <circle cx="16.5" cy="17" r="0.9" fill="currentColor" stroke="none" />
+            <circle cx="14" cy="14.5" r="0.9" fill="currentColor" stroke="none" />
+        </svg>
+    );
+}
