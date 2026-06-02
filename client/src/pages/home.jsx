@@ -56,8 +56,8 @@ function Home() {
     let cancelled = false;
     async function load() {
       try {
-        const recentRes = await fetch(`${import.meta.env.VITE_BACKENDURL}/api/anime/recent/5`);
-        if (!recentRes.ok) throw new Error('failed to fetch recent animes');
+        const recentRes = await fetch(`${import.meta.env.VITE_BACKENDURL}/api/anime/recommended-random/5`);
+        if (!recentRes.ok) throw new Error('failed to fetch recommended carousel animes');
         const recentBody = await recentRes.json();
         if (!cancelled) {
           const recentList = recentBody.anime || [];
@@ -130,7 +130,7 @@ function Home() {
           <Carrusel items={recentAnimes.map((a) => ({
             imageUrl: a.imatge_portada || '',
             title: a.titol || '---',
-            subtitle: a.estat || 'Reciente',
+            subtitle: a.estat || 'Recomendado',
             episodeCount: a.episodeCount || 0,
             synopsis: a.sinopsi_es || a.sinopsi || '',
             showStar: true,
