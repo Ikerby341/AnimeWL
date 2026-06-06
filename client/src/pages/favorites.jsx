@@ -191,7 +191,7 @@ export default function Favorites() {
   const renderFilterControls = () => (
     <>
       <label className="directory-filter-label" htmlFor="favorites-genre-select">
-        Genero
+        Género
       </label>
       <select
         id="favorites-genre-select"
