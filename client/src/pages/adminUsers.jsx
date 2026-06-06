@@ -1,12 +1,12 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Navigate } from 'react-router-dom';
-import { Navbar } from '../components/NavBar/NavBar.jsx';
-import Footer from '../components/Footer/Footer.jsx';
-import { useAuth } from '../hooks/useAuth.js';
+import { BarraNavegacio } from '../components/NavBar/NavBar.jsx';
+import PeuPagina from '../components/Footer/Footer.jsx';
+import { useAutenticacio } from '../hooks/useAuth.js';
 import '../styles/adminUsers.css';
 
-export default function AdminUsers() {
-  const { user, loading, checkSession } = useAuth();
+function GestioUsuaris() {
+  const { user, loading, checkSession } = useAutenticacio();
   const [users, setUsers] = useState([]);
   const [drafts, setDrafts] = useState({});
   const [loadingUsers, setLoadingUsers] = useState(true);
@@ -24,7 +24,7 @@ export default function AdminUsers() {
 
     let cancelled = false;
 
-    async function loadUsers() {
+    async function carregarUsuaris() {
       setLoadingUsers(true);
       setError('');
       try {
@@ -42,12 +42,12 @@ export default function AdminUsers() {
           const userList = data.users || [];
           setUsers(userList);
           setDrafts(Object.fromEntries(userList.map((item) => [
-            item.id_usuari,
-            {
-              nom: item.nom || '',
-              isAdmin: item.isAdmin === true
-            }
-          ])));
+          item.id_usuari,
+          {
+            nom: item.nom || '',
+            isAdmin: item.isAdmin === true
+          }]
+          )));
         }
       } catch (err) {
         console.error('load admin users error', err);
@@ -57,7 +57,7 @@ export default function AdminUsers() {
       }
     }
 
-    loadUsers();
+    carregarUsuaris();
 
     return () => {
       cancelled = true;
@@ -68,31 +68,31 @@ export default function AdminUsers() {
     return Object.fromEntries(users.map((item) => {
       const draft = drafts[item.id_usuari] || {};
       return [
-        item.id_usuari,
-        (draft.nom ?? '') !== (item.nom ?? '') || Boolean(draft.isAdmin) !== Boolean(item.isAdmin)
-      ];
+      item.id_usuari,
+      (draft.nom ?? '') !== (item.nom ?? '') || Boolean(draft.isAdmin) !== Boolean(item.isAdmin)];
+
     }));
   }, [drafts, users]);
 
   if (loading) {
     return (
       <div style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
-        <Navbar />
+        <BarraNavegacio />
         <div className="admin-users-page">
           <div className="loading-container">
             <div className="loader"></div>
           </div>
         </div>
-        <Footer />
-      </div>
-    );
+        <PeuPagina />
+      </div>);
+
   }
 
   if (!isAdmin) {
     return <Navigate to="/" replace />;
   }
 
-  function updateDraft(userId, field, value) {
+  function actualitzarEsborrany(userId, field, value) {
     setDrafts((current) => ({
       ...current,
       [userId]: {
@@ -102,7 +102,7 @@ export default function AdminUsers() {
     }));
   }
 
-  async function saveUser(item) {
+  async function desarUsuari(item) {
     const draft = drafts[item.id_usuari];
     if (!draft || !hasChangesByUser[item.id_usuari]) return;
 
@@ -135,11 +135,11 @@ export default function AdminUsers() {
         return;
       }
 
-      setUsers((current) => current.map((userItem) => (
-        userItem.id_usuari === item.id_usuari
-          ? { ...userItem, ...data.user }
-          : userItem
-      )));
+      setUsers((current) => current.map((userItem) =>
+      userItem.id_usuari === item.id_usuari ?
+      { ...userItem, ...data.user } :
+      userItem
+      ));
       setDrafts((current) => ({
         ...current,
         [item.id_usuari]: {
@@ -161,7 +161,7 @@ export default function AdminUsers() {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
-      <Navbar />
+      <BarraNavegacio />
       <main className="admin-users-page">
         <header className="admin-users-header">
           <h1>Gestión de usuarios</h1>
@@ -171,12 +171,12 @@ export default function AdminUsers() {
         {error && <div className="admin-users-alert admin-users-alert-error">{error}</div>}
         {message && <div className="admin-users-alert admin-users-alert-success">{message}</div>}
 
-        {loadingUsers ? (
-          <div className="loading-container">
+        {loadingUsers ?
+        <div className="loading-container">
             <div className="loader"></div>
-          </div>
-        ) : (
-          <div className="admin-users-table-wrap">
+          </div> :
+
+        <div className="admin-users-table-wrap">
             <table className="admin-users-table">
               <thead>
                 <tr>
@@ -188,56 +188,56 @@ export default function AdminUsers() {
               </thead>
               <tbody>
                 {users.map((item) => {
-                  const draft = drafts[item.id_usuari] || { nom: item.nom || '', isAdmin: item.isAdmin === true };
-                  const isSaving = savingUserId === item.id_usuari;
-                  const hasChanges = hasChangesByUser[item.id_usuari];
+                const draft = drafts[item.id_usuari] || { nom: item.nom || '', isAdmin: item.isAdmin === true };
+                const isSaving = savingUserId === item.id_usuari;
+                const hasChanges = hasChangesByUser[item.id_usuari];
 
-                  return (
-                    <tr key={item.id_usuari}>
+                return (
+                  <tr key={item.id_usuari}>
                       <td>
                         <input
-                          className="admin-users-input"
-                          value={draft.nom}
-                          maxLength={30}
-                          onChange={(event) => updateDraft(item.id_usuari, 'nom', event.target.value)}
-                        />
+                        className="admin-users-input"
+                        value={draft.nom}
+                        maxLength={30}
+                        onChange={(event) => actualitzarEsborrany(item.id_usuari, 'nom', event.target.value)} />
+                      
                       </td>
                       <td>
                         <input
-                          className="admin-users-input admin-users-input-readonly"
-                          value={item.email || ''}
-                          readOnly
-                        />
+                        className="admin-users-input admin-users-input-readonly"
+                        value={item.email || ''}
+                        readOnly />
+                      
                       </td>
                       <td>
                         <select
-                          className="admin-users-select"
-                          value={draft.isAdmin ? 'admin' : 'user'}
-                          onChange={(event) => updateDraft(item.id_usuari, 'isAdmin', event.target.value === 'admin')}
-                        >
+                        className="admin-users-select"
+                        value={draft.isAdmin ? 'admin' : 'user'}
+                        onChange={(event) => actualitzarEsborrany(item.id_usuari, 'isAdmin', event.target.value === 'admin')}>
+                        
                           <option value="user">Usuario normal</option>
                           <option value="admin">Administrador</option>
                         </select>
                       </td>
                       <td>
                         <button
-                          type="button"
-                          className="admin-users-save-button"
-                          disabled={!hasChanges || isSaving}
-                          onClick={() => saveUser(item)}
-                        >
+                        type="button"
+                        className="admin-users-save-button"
+                        disabled={!hasChanges || isSaving}
+                        onClick={() => desarUsuari(item)}>
+                        
                           {isSaving ? 'Guardando...' : 'Guardar'}
                         </button>
                       </td>
-                    </tr>
-                  );
-                })}
+                    </tr>);
+
+              })}
               </tbody>
             </table>
           </div>
-        )}
+        }
       </main>
-      <Footer />
-    </div>
-  );
-}
+      <PeuPagina />
+    </div>);
+
+}export { GestioUsuaris as default };

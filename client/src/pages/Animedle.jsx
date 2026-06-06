@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react';
 import { Navigate } from 'react-router-dom';
-import { Navbar } from '../components/NavBar/NavBar.jsx';
-import Footer from '../components/Footer/Footer.jsx';
-import { useAuth } from '../hooks/useAuth.js';
+import { BarraNavegacio } from '../components/NavBar/NavBar.jsx';
+import PeuPagina from '../components/Footer/Footer.jsx';
+import { useAutenticacio } from '../hooks/useAuth.js';
 import '../styles/animedle.css';
 
-export default function Animedle() {
-  const { isLoggedIn, loading: authLoading } = useAuth();
+function JocAnimedle() {
+  const { isLoggedIn, loading: authLoading } = useAutenticacio();
   const [game, setGame] = useState(null);
   const [guess, setGuess] = useState('');
   const [suggestions, setSuggestions] = useState([]);
@@ -129,7 +129,7 @@ export default function Animedle() {
 
   return (
     <div className="animedle-layout">
-      <Navbar />
+      <BarraNavegacio />
       <main className="animedle-page">
         <section className="animedle-header">
           <h1>RETO DIARIO</h1>
@@ -139,23 +139,23 @@ export default function Animedle() {
           </p>
         </section>
 
-        {loading ? (
-          <div className="loading-container">
+        {loading ?
+        <div className="loading-container">
             <div className="loader"></div>
-          </div>
-        ) : (
-          <section className="animedle-game">
+          </div> :
+
+        <section className="animedle-game">
             <div className="animedle-cover-wrap">
-              {game?.imageUrl ? (
-                <img
-                  src={game.imageUrl}
-                  alt="Portada desenfocada del reto"
-                  className="animedle-cover"
-                  style={imageStyle}
-                />
-              ) : (
-                <div className="animedle-cover animedle-cover-empty" />
-              )}
+              {game?.imageUrl ?
+            <img
+              src={game.imageUrl}
+              alt="Portada desenfocada del reto"
+              className="animedle-cover"
+              style={imageStyle} /> :
+
+
+            <div className="animedle-cover animedle-cover-empty" />
+            }
             </div>
 
             <div className="animedle-panel">
@@ -164,70 +164,70 @@ export default function Animedle() {
                 <span>{attemptsLeft} restantes</span>
               </div>
 
-              {game?.finished ? (
-                <div className={`animedle-result ${game.won ? 'animedle-result-win' : 'animedle-result-loss'}`}>
+              {game?.finished ?
+            <div className={`animedle-result ${game.won ? 'animedle-result-win' : 'animedle-result-loss'}`}>
                   {game.won ? 'Has acertado el Animedle de hoy.' : 'Has agotado los intentos de hoy.'}
                   <strong>{game.answer}</strong>
                   <span>Nuevo reto cada dia a las 22:00.</span>
-                </div>
-              ) : (
-                <div className="animedle-form">
+                </div> :
+
+            <div className="animedle-form">
                   <div className="animedle-input-wrap">
                     <input
-                      type="text"
-                      value={guess}
-                      onChange={(event) => setGuess(event.target.value)}
-                      onKeyDown={(event) => {
-                        if (event.key === 'Enter') {
-                          event.preventDefault();
-                        }
-                      }}
-                      placeholder="Busca y selecciona un anime..."
-                      autoComplete="off"
-                      aria-label="Nombre del anime"
-                      disabled={submitting}
-                    />
-                    {suggestions.length > 0 && (
-                      <ul className="animedle-suggestions">
-                        {suggestions.map((suggestion) => (
-                          <li key={suggestion.id_anime}>
+                  type="text"
+                  value={guess}
+                  onChange={(event) => setGuess(event.target.value)}
+                  onKeyDown={(event) => {
+                    if (event.key === 'Enter') {
+                      event.preventDefault();
+                    }
+                  }}
+                  placeholder="Busca y selecciona un anime..."
+                  autoComplete="off"
+                  aria-label="Nombre del anime"
+                  disabled={submitting} />
+                
+                    {suggestions.length > 0 &&
+                <ul className="animedle-suggestions">
+                        {suggestions.map((suggestion) =>
+                  <li key={suggestion.id_anime}>
                             <button
-                              type="button"
-                              disabled={submitting}
-                              onClick={() => submitGuess(suggestion.titol)}
-                            >
+                      type="button"
+                      disabled={submitting}
+                      onClick={() => submitGuess(suggestion.titol)}>
+                      
                               {suggestion.titol}
                             </button>
                           </li>
-                        ))}
+                  )}
                       </ul>
-                    )}
+                }
                   </div>
                   {submitting && <p className="animedle-submitting">Comprobando...</p>}
                 </div>
-              )}
+            }
 
               {error && <p className="animedle-error">{error}</p>}
 
-              {game?.guesses?.length > 0 && (
-                <div className="animedle-guesses">
+              {game?.guesses?.length > 0 &&
+            <div className="animedle-guesses">
                   <h2>Intentos</h2>
-                  {game.guesses.map((item, index) => (
-                    <div
-                      key={`${item.title}-${index}`}
-                      className={`animedle-guess ${item.correct ? 'animedle-guess-correct' : 'animedle-guess-wrong'}`}
-                    >
+                  {game.guesses.map((item, index) =>
+              <div
+                key={`${item.title}-${index}`}
+                className={`animedle-guess ${item.correct ? 'animedle-guess-correct' : 'animedle-guess-wrong'}`}>
+                
                       <span>{item.title}</span>
                       <strong>{item.correct ? 'Correcto' : 'Fallado'}</strong>
                     </div>
-                  ))}
-                </div>
               )}
+                </div>
+            }
             </div>
           </section>
-        )}
+        }
       </main>
-      <Footer />
-    </div>
-  );
-}
+      <PeuPagina />
+    </div>);
+
+}export { JocAnimedle as default };

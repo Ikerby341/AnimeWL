@@ -1,54 +1,53 @@
 import './AnimeCarruselCard.css';
 
-export function AnimeCarruselCard({
-    imageUrl,
-    title = '',
-    subtitle = '',
-    altText = '',
-    synopsis = '',
-    episodeCount = null,
-    showTitle = false,
-    onClick,
+function TargetaAnimeCarrusel({
+  imageUrl,
+  title = '',
+  subtitle = '',
+  altText = '',
+  synopsis = '',
+  episodeCount = null,
+  showTitle = false,
+  onClick
 }) {
-    const imageAlt = altText || title || 'Anime cover';
+  const imageAlt = altText || title || 'Anime cover';
 
-    function handleKeyDown(event) {
-        if (!onClick) return;
-        if (event.key === 'Enter' || event.key === ' ') {
-            event.preventDefault();
-            onClick();
-        }
+  function handleKeyDown(event) {
+    if (!onClick) return;
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      onClick();
     }
+  }
 
-    return (
-        <div
-            className="anime-carrusel-cover"
-            onClick={onClick}
-            onKeyDown={handleKeyDown}
-            tabIndex={onClick ? 0 : undefined}
-            role={onClick ? 'button' : undefined}
-            aria-label={onClick ? `Abrir anime ${imageAlt}` : undefined}
-            style={onClick ? { cursor: 'pointer' } : undefined}
-        >
+  return (
+    <div
+      className="anime-carrusel-cover"
+      onClick={onClick}
+      onKeyDown={handleKeyDown}
+      tabIndex={onClick ? 0 : undefined}
+      role={onClick ? 'button' : undefined}
+      aria-label={onClick ? `Abrir anime ${imageAlt}` : undefined}
+      style={onClick ? { cursor: 'pointer' } : undefined}>
+      
             {/* overlay con info cuando se hace hover */}
             <div className="anime-carrusel-overlay">
                 <div className="carrusel-overlay-content">
                     {title && <h3 className="carrusel-overlay-title">{title}</h3>}
                     {/* mostrar el número sólo si es mayor que 0 */}
-                    {typeof episodeCount === 'number' && episodeCount > 0 && (
-                        <p className="carrusel-overlay-episodes">{episodeCount} {episodeCount === 1 ? 'capítulo' : 'capítulos'}</p>
-                    )}
+                    {typeof episodeCount === 'number' && episodeCount > 0 &&
+          <p className="carrusel-overlay-episodes">{episodeCount} {episodeCount === 1 ? 'capítulo' : 'capítulos'}</p>
+          }
                     {synopsis && <p className="carrusel-overlay-synopsis">{synopsis}</p>}
                 </div>
             </div>
             <img src={imageUrl} alt={imageAlt} className="anime-carrusel-image" />
-            {showTitle && (
-                <div className="carrusel-bottom-bar">
+            {showTitle &&
+      <div className="carrusel-bottom-bar">
                     {title && <h4 className="bottom-title">{title}</h4>}
                     {subtitle && <p className="bottom-subtitle">{subtitle}</p>}
                 </div>
-            )}
-        </div>
-    );
-}
+      }
+        </div>);
 
+}export { TargetaAnimeCarrusel };

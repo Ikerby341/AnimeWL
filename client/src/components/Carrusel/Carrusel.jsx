@@ -1,54 +1,54 @@
 import './Carrusel.css';
 import { useCallback, useEffect, useRef, useState } from "react";
-import { AnimeCarruselCard } from '../AnimeCarruselCard/AnimeCarruselCard.jsx';
+import { TargetaAnimeCarrusel } from '../AnimeCarruselCard/AnimeCarruselCard.jsx';
 
 const MOBILE_BREAKPOINT = 768;
 
-function getViewportWidth() {
+function obtenirAmpladaFinestra() {
   return typeof window !== 'undefined' ? window.innerWidth : MOBILE_BREAKPOINT + 1;
 }
 
 export function Carrusel({ items = [], images = [], onItemClick }) {
-  const slides = items.length > 0
-    ? items
-    : images.map((url) => ({ imageUrl: url }));
+  const slides = items.length > 0 ?
+  items :
+  images.map((url) => ({ imageUrl: url }));
 
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [viewportWidth, setViewportWidth] = useState(() => getViewportWidth());
+  const [viewportWidth, setViewportWidth] = useState(() => obtenirAmpladaFinestra());
   const touchStartX = useRef(null);
   const touchStartY = useRef(null);
   const touchHandled = useRef(false);
 
-  const handleNext = useCallback(() =>
-    setCurrentIndex((prev) => (prev + 1) % slides.length),
+  const anarSeguent = useCallback(() =>
+  setCurrentIndex((prev) => (prev + 1) % slides.length),
   [slides.length]);
 
-  const handlePrevious = useCallback(() =>
-    setCurrentIndex((prev) => (prev - 1 + slides.length) % slides.length),
+  const anarAnterior = useCallback(() =>
+  setCurrentIndex((prev) => (prev - 1 + slides.length) % slides.length),
   [slides.length]);
 
   useEffect(() => {
-    const handleResize = () => setViewportWidth(getViewportWidth());
+    const gestionarRedimensio = () => setViewportWidth(obtenirAmpladaFinestra());
 
-    handleResize();
-    window.addEventListener('resize', handleResize);
-    window.addEventListener('orientationchange', handleResize);
+    gestionarRedimensio();
+    window.addEventListener('resize', gestionarRedimensio);
+    window.addEventListener('orientationchange', gestionarRedimensio);
 
     return () => {
-      window.removeEventListener('resize', handleResize);
-      window.removeEventListener('orientationchange', handleResize);
+      window.removeEventListener('resize', gestionarRedimensio);
+      window.removeEventListener('orientationchange', gestionarRedimensio);
     };
   }, []);
 
   useEffect(() => {
-    const handleGlobalKeyDown = (event) => {
+    const gestionarTeclaGlobal = (event) => {
       const target = event.target;
       const tagName = target?.tagName;
       const isTypingTarget =
-        target?.isContentEditable ||
-        tagName === 'INPUT' ||
-        tagName === 'TEXTAREA' ||
-        tagName === 'SELECT';
+      target?.isContentEditable ||
+      tagName === 'INPUT' ||
+      tagName === 'TEXTAREA' ||
+      tagName === 'SELECT';
 
       if (isTypingTarget || slides.length <= 1) {
         return;
@@ -56,29 +56,29 @@ export function Carrusel({ items = [], images = [], onItemClick }) {
 
       if (event.key === 'ArrowLeft') {
         event.preventDefault();
-        handlePrevious();
+        anarAnterior();
       }
 
       if (event.key === 'ArrowRight') {
         event.preventDefault();
-        handleNext();
+        anarSeguent();
       }
     };
 
-    window.addEventListener('keydown', handleGlobalKeyDown);
-    return () => window.removeEventListener('keydown', handleGlobalKeyDown);
-  }, [handleNext, handlePrevious, slides.length]);
+    window.addEventListener('keydown', gestionarTeclaGlobal);
+    return () => window.removeEventListener('keydown', gestionarTeclaGlobal);
+  }, [anarSeguent, anarAnterior, slides.length]);
 
-  const handleDotClick = (index) => setCurrentIndex(index);
+  const gestionarClicPunt = (index) => setCurrentIndex(index);
 
-  const handleTouchStart = (event) => {
+  const gestionarIniciTactil = (event) => {
     const touch = event.touches[0];
     touchStartX.current = touch.clientX;
     touchStartY.current = touch.clientY;
     touchHandled.current = false;
   };
 
-  const handleTouchMove = (event) => {
+  const gestionarMovimentTactil = (event) => {
     if (touchStartX.current === null || touchStartY.current === null || touchHandled.current) {
       return;
     }
@@ -93,15 +93,15 @@ export function Carrusel({ items = [], images = [], onItemClick }) {
     }
 
     if (diffX < 0) {
-      handleNext();
+      anarSeguent();
     } else {
-      handlePrevious();
+      anarAnterior();
     }
 
     touchHandled.current = true;
   };
 
-  const handleTouchEnd = () => {
+  const gestionarFiTactil = () => {
     touchStartX.current = null;
     touchStartY.current = null;
     touchHandled.current = false;
@@ -111,7 +111,7 @@ export function Carrusel({ items = [], images = [], onItemClick }) {
 
   const getOffset = (idx) => {
     let offset = idx - currentIndex;
-    if (offset > slides.length / 2)  offset -= slides.length;
+    if (offset > slides.length / 2) offset -= slides.length;
     if (offset < -slides.length / 2) offset += slides.length;
     return offset;
   };
@@ -121,12 +121,12 @@ export function Carrusel({ items = [], images = [], onItemClick }) {
   return (
     <div
       className="coverflow-carousel"
-      onTouchStart={handleTouchStart}
-      onTouchMove={handleTouchMove}
-      onTouchEnd={handleTouchEnd}
-      onTouchCancel={handleTouchEnd}
-    >
-      <button className="coverflow-arrow coverflow-arrow--left" onClick={handlePrevious} aria-label="Anterior">
+      onTouchStart={gestionarIniciTactil}
+      onTouchMove={gestionarMovimentTactil}
+      onTouchEnd={gestionarFiTactil}
+      onTouchCancel={gestionarFiTactil}>
+      
+      <button className="coverflow-arrow coverflow-arrow--left" onClick={anarAnterior} aria-label="Anterior">
         <svg xmlns="http://www.w3.org/2000/svg" height="28" viewBox="0 96 960 960" width="28" fill="currentColor" style={{ transform: 'scaleX(-1)' }}>
           <path d="m304 974-56-57 343-343-343-343 56-57 400 400-400 400Z" />
         </svg>
@@ -141,13 +141,13 @@ export function Carrusel({ items = [], images = [], onItemClick }) {
             <div
               key={idx}
               className="coverflow-item"
-              style={getItemStyle(offset, viewportWidth)}
+              style={obtenirEstilElement(offset, viewportWidth)}
               onClick={() => {
                 if (offset !== 0) setCurrentIndex(idx);
                 if (onItemClick) onItemClick(slide);
-              }}
-            >
-              <AnimeCarruselCard
+              }}>
+              
+              <TargetaAnimeCarrusel
                 imageUrl={slide.imageUrl}
                 title={slide.title || ''}
                 subtitle={slide.subtitle || ''}
@@ -155,47 +155,47 @@ export function Carrusel({ items = [], images = [], onItemClick }) {
                 episodeCount={slide.episodeCount || null}
                 showTitle={offset === 0}
                 altText={slide.title || ''}
-                onClick={onItemClick ? () => onItemClick(slide) : undefined}
-              />
-            </div>
-          );
+                onClick={onItemClick ? () => onItemClick(slide) : undefined} />
+              
+            </div>);
+
         })}
       </div>
 
-      <button className="coverflow-arrow coverflow-arrow--right" onClick={handleNext} aria-label="Siguiente">
+      <button className="coverflow-arrow coverflow-arrow--right" onClick={anarSeguent} aria-label="Siguiente">
         <svg xmlns="http://www.w3.org/2000/svg" height="28" viewBox="0 96 960 960" width="28" fill="currentColor">
           <path d="m304 974-56-57 343-343-343-343 56-57 400 400-400 400Z" />
         </svg>
       </button>
 
       <div className="coverflow-dots">
-        {slides.map((_, index) => (
-          <button
-            key={index}
-            className={`coverflow-dot${currentIndex === index ? ' coverflow-dot--active' : ''}`}
-            onClick={() => handleDotClick(index)}
-            aria-label={`Ir a slide ${index + 1}`}
-          />
-        ))}
+        {slides.map((_, index) =>
+        <button
+          key={index}
+          className={`coverflow-dot${currentIndex === index ? ' coverflow-dot--active' : ''}`}
+          onClick={() => gestionarClicPunt(index)}
+          aria-label={`Ir a slide ${index + 1}`} />
+
+        )}
       </div>
-    </div>
-  );
+    </div>);
+
 }
 
-function getItemStyle(offset, viewportWidth) {
+function obtenirEstilElement(offset, viewportWidth) {
   const isMobile = viewportWidth <= MOBILE_BREAKPOINT;
   const configs = isMobile ? {
-    '-2': { translateX: -210, scale: 0.58, rotateY: 28,  opacity: 0.35, brightness: 0.45, zIndex: 1 },
-    '-1': { translateX: -118, scale: 0.76, rotateY: 18,  opacity: 0.72, brightness: 0.65, zIndex: 2 },
-     '0': { translateX:    0, scale: 1.00, rotateY: 0,   opacity: 1.00, brightness: 1.00, zIndex: 5 },
-     '1': { translateX:  118, scale: 0.76, rotateY: -18, opacity: 0.72, brightness: 0.65, zIndex: 2 },
-     '2': { translateX:  210, scale: 0.58, rotateY: -28, opacity: 0.35, brightness: 0.45, zIndex: 1 },
+    '-2': { translateX: -210, scale: 0.58, rotateY: 28, opacity: 0.35, brightness: 0.45, zIndex: 1 },
+    '-1': { translateX: -118, scale: 0.76, rotateY: 18, opacity: 0.72, brightness: 0.65, zIndex: 2 },
+    '0': { translateX: 0, scale: 1.00, rotateY: 0, opacity: 1.00, brightness: 1.00, zIndex: 5 },
+    '1': { translateX: 118, scale: 0.76, rotateY: -18, opacity: 0.72, brightness: 0.65, zIndex: 2 },
+    '2': { translateX: 210, scale: 0.58, rotateY: -28, opacity: 0.35, brightness: 0.45, zIndex: 1 }
   } : {
-    '-2': { translateX: -400, scale: 0.65, rotateY: 35,  opacity: 0.45, brightness: 0.45, zIndex: 1 },
-    '-1': { translateX: -220, scale: 0.82, rotateY: 22,  opacity: 0.75, brightness: 0.65, zIndex: 2 },
-     '0': { translateX:    0, scale: 1.00, rotateY: 0,   opacity: 1.00, brightness: 1.00, zIndex: 5 },
-     '1': { translateX:  220, scale: 0.82, rotateY: -22, opacity: 0.75, brightness: 0.65, zIndex: 2 },
-     '2': { translateX:  400, scale: 0.65, rotateY: -35, opacity: 0.45, brightness: 0.45, zIndex: 1 },
+    '-2': { translateX: -400, scale: 0.65, rotateY: 35, opacity: 0.45, brightness: 0.45, zIndex: 1 },
+    '-1': { translateX: -220, scale: 0.82, rotateY: 22, opacity: 0.75, brightness: 0.65, zIndex: 2 },
+    '0': { translateX: 0, scale: 1.00, rotateY: 0, opacity: 1.00, brightness: 1.00, zIndex: 5 },
+    '1': { translateX: 220, scale: 0.82, rotateY: -22, opacity: 0.75, brightness: 0.65, zIndex: 2 },
+    '2': { translateX: 400, scale: 0.65, rotateY: -35, opacity: 0.45, brightness: 0.45, zIndex: 1 }
   };
 
   const c = configs[String(offset)];
@@ -209,6 +209,6 @@ function getItemStyle(offset, viewportWidth) {
     transform: `translateX(${c.translateX}px) scale(${c.scale}) rotateY(${c.rotateY}deg)`,
     filter: `brightness(${c.brightness})`,
     transition: 'transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity 0.5s ease, filter 0.5s ease',
-    transformStyle: 'preserve-3d',
+    transformStyle: 'preserve-3d'
   };
 }

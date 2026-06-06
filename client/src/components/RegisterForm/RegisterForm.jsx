@@ -1,53 +1,53 @@
-import './RegisterForm.css'
-import loginIcon from './../../assets/LogoAnimeWLCuadrado.webp'
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import './RegisterForm.css';
+import loginIcon from './../../assets/LogoAnimeWLCuadrado.webp';
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
-export function RegisterForm() {
-  const navigate = useNavigate()
+function FormulariRegistre() {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     username: '',
     email: '',
     password: '',
     confirmPassword: ''
-  })
-  const [error, setError] = useState('')
-  const [success, setSuccess] = useState('')
-  const [loading, setLoading] = useState(false)
+  });
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  const handleChange = (event) => {
-    const { name, value } = event.target
-    setFormData((prev) => ({ ...prev, [name]: value }))
-  }
+  const gestionarCanvi = (event) => {
+    const { name, value } = event.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
 
-  const validateEmail = (email) => {
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
-  }
+  const validarCorreuElectronic = (email) => {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  };
 
-  const handleSubmit = async (event) => {
-    event.preventDefault()
-    setError('')
-    setSuccess('')
+  const enviarFormulari = async (event) => {
+    event.preventDefault();
+    setError('');
+    setSuccess('');
 
-    const { username, email, password, confirmPassword } = formData
+    const { username, email, password, confirmPassword } = formData;
     if (!username.trim() || !email.trim() || !password || !confirmPassword) {
-      setError('Por favor completa todos los campos.')
-      return
+      setError('Por favor completa todos los campos.');
+      return;
     }
-    if (!validateEmail(email)) {
-      setError('Ingresa un correo electrónico válido.')
-      return
+    if (!validarCorreuElectronic(email)) {
+      setError('Ingresa un correo electrónico válido.');
+      return;
     }
     if (password.length < 6) {
-      setError('La contraseña debe tener al menos 6 caracteres.')
-      return
+      setError('La contraseña debe tener al menos 6 caracteres.');
+      return;
     }
     if (password !== confirmPassword) {
-      setError('Las contraseñas no coinciden.')
-      return
+      setError('Las contraseñas no coinciden.');
+      return;
     }
 
-    setLoading(true)
+    setLoading(true);
     try {
       const response = await fetch(`${import.meta.env.VITE_BACKENDURL}/api/register`, {
         method: 'POST',
@@ -55,36 +55,36 @@ export function RegisterForm() {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({ nom: username, email, contrasenya: password })
-      })
-      const data = await response.json()
+      });
+      const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || 'Error al registrar el usuario.')
+        throw new Error(data.error || 'Error al registrar el usuario.');
       }
 
-      setFormData({ username: '', email: '', password: '', confirmPassword: '' })
-      navigate('/login', { state: { username, password } })
+      setFormData({ username: '', email: '', password: '', confirmPassword: '' });
+      navigate('/login', { state: { username, password } });
     } catch (err) {
-      setError(err.message)
+      setError(err.message);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   return (
     <div className="register-form">
       <img src={loginIcon} alt="Register Icon" className="register-icon" />
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={enviarFormulari}>
         <label htmlFor="username">Usuario:</label>
         <input
           type="text"
           id="username"
           name="username"
           value={formData.username}
-          onChange={handleChange}
+          onChange={gestionarCanvi}
           required
-          maxLength={30}
-        />
+          maxLength={30} />
+        
 
         <label htmlFor="email">Email:</label>
         <input
@@ -92,9 +92,9 @@ export function RegisterForm() {
           id="email"
           name="email"
           value={formData.email}
-          onChange={handleChange}
-          required
-        />
+          onChange={gestionarCanvi}
+          required />
+        
 
         <label htmlFor="password">Contraseña:</label>
         <input
@@ -102,9 +102,9 @@ export function RegisterForm() {
           id="password"
           name="password"
           value={formData.password}
-          onChange={handleChange}
-          required
-        />
+          onChange={gestionarCanvi}
+          required />
+        
 
         <label htmlFor="confirm-password">Confirmar contraseña:</label>
         <input
@@ -112,9 +112,9 @@ export function RegisterForm() {
           id="confirm-password"
           name="confirmPassword"
           value={formData.confirmPassword}
-          onChange={handleChange}
-          required
-        />
+          onChange={gestionarCanvi}
+          required />
+        
 
         {error && <p className="form-error">{error}</p>}
         {success && <p className="form-success">{success}</p>}
@@ -128,6 +128,6 @@ export function RegisterForm() {
           <a href="/login">Inicia sesión aquí</a>
         </div>
       </form>
-    </div>
-  )
-}
+    </div>);
+
+}export { FormulariRegistre };

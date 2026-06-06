@@ -1,24 +1,24 @@
-import '../styles/ForgotPassword.css'
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import '../styles/ForgotPassword.css';
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
-export default function ForgotPassword() {
-  const [email, setEmail] = useState('')
-  const [error, setError] = useState('')
-  const [success, setSuccess] = useState(false)
-  const [loading, setLoading] = useState(false)
-  const navigate = useNavigate()
+function OblidarContrasenya() {
+  const [email, setEmail] = useState('');
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
-  const handleSubmit = async (event) => {
-    event.preventDefault()
-    setError('')
+  const enviarFormulari = async (event) => {
+    event.preventDefault();
+    setError('');
 
     if (!email.trim()) {
-      setError('Por favor, introduce tu correo electrónico.')
-      return
+      setError('Por favor, introduce tu correo electrónico.');
+      return;
     }
 
-    setLoading(true)
+    setLoading(true);
     try {
       const response = await fetch(`${import.meta.env.VITE_BACKENDURL || ''}/api/forgot-password`, {
         method: 'POST',
@@ -26,21 +26,21 @@ export default function ForgotPassword() {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({ email: email.trim() })
-      })
+      });
 
-      const data = await response.json()
+      const data = await response.json();
 
       if (!data.success) {
-        throw new Error(data.error || 'Error al procesar la solicitud.')
+        throw new Error(data.error || 'Error al procesar la solicitud.');
       }
 
-      setSuccess(true)
+      setSuccess(true);
     } catch (err) {
-      setError(err.message)
+      setError(err.message);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   if (success) {
     return (
@@ -53,8 +53,8 @@ export default function ForgotPassword() {
             Volver al inicio de sesión
           </button>
         </div>
-      </div>
-    )
+      </div>);
+
   }
 
   return (
@@ -63,7 +63,7 @@ export default function ForgotPassword() {
         <h2>¿Has olvidado tu contraseña?</h2>
         <p>Introduce tu correo electrónico y te enviaremos un enlace para restablecer tu contraseña.</p>
 
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={enviarFormulari}>
           <label htmlFor="email">Correo electrónico:</label>
           <input
             type="email"
@@ -72,8 +72,8 @@ export default function ForgotPassword() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="tu@correo.com"
-            required
-          />
+            required />
+          
 
           {error && <p className="form-error">{error}</p>}
 
@@ -86,6 +86,6 @@ export default function ForgotPassword() {
           <a href="/login">← Volver al inicio de sesión</a>
         </div>
       </div>
-    </div>
-  )
-}
+    </div>);
+
+}export { OblidarContrasenya as default };

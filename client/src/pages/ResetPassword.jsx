@@ -1,85 +1,85 @@
-import '../styles/ResetPassword.css'
-import { useState, useEffect } from 'react'
-import { useNavigate, useSearchParams } from 'react-router-dom'
+import '../styles/ResetPassword.css';
+import { useState, useEffect } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 
-export default function ResetPassword() {
-  const [searchParams] = useSearchParams()
-  const token = searchParams.get('token')
-  const navigate = useNavigate()
-  
-  const [password, setPassword] = useState('')
-  const [confirmPassword, setConfirmPassword] = useState('')
-  const [error, setError] = useState('')
-  const [success, setSuccess] = useState(false)
-  const [loading, setLoading] = useState(false)
-  const [tokenValid, setTokenValid] = useState(null)
+function RestablirContrasenya() {
+  const [searchParams] = useSearchParams();
+  const token = searchParams.get('token');
+  const navigate = useNavigate();
+
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [tokenValid, setTokenValid] = useState(null);
 
   useEffect(() => {
-    const verifyToken = async () => {
+    const verificarToken = async () => {
       if (!token) {
-        setTokenValid(false)
-        return
+        setTokenValid(false);
+        return;
       }
 
       try {
-        const response = await fetch(`${import.meta.env.VITE_BACKENDURL || ''}/api/verify-reset-token?token=${token}`)
-        const data = await response.json()
-        setTokenValid(data.success)
+        const response = await fetch(`${import.meta.env.VITE_BACKENDURL || ''}/api/verify-reset-token?token=${token}`);
+        const data = await response.json();
+        setTokenValid(data.success);
       } catch (err) {
-        setTokenValid(false)
-        console.error('Error verificando token:', err)
+        setTokenValid(false);
+        console.error('Error verificando token:', err);
       }
-    }
+    };
 
-    verifyToken()
-  }, [token])
+    verificarToken();
+  }, [token]);
 
-  const handleSubmit = async (event) => {
-    event.preventDefault()
-    setError('')
+  const enviarFormulari = async (event) => {
+    event.preventDefault();
+    setError('');
 
     if (!password || !confirmPassword) {
-      setError('Por favor, completa todos los campos.')
-      return
+      setError('Por favor, completa todos los campos.');
+      return;
     }
 
     if (password !== confirmPassword) {
-      setError('Las contraseñas no coinciden.')
-      return
+      setError('Las contraseñas no coinciden.');
+      return;
     }
 
     if (password.length < 6) {
-      setError('La contraseña debe tener al menos 6 caracteres.')
-      return
+      setError('La contraseña debe tener al menos 6 caracteres.');
+      return;
     }
 
-    setLoading(true)
+    setLoading(true);
     try {
       const response = await fetch(`${import.meta.env.VITE_BACKENDURL || ''}/api/reset-password`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ 
-          token, 
-          newPassword: password, 
-          confirmPassword: confirmPassword 
+        body: JSON.stringify({
+          token,
+          newPassword: password,
+          confirmPassword: confirmPassword
         })
-      })
+      });
 
-      const data = await response.json()
+      const data = await response.json();
 
       if (!data.success) {
-        throw new Error(data.error || 'Error al restablecer la contraseña.')
+        throw new Error(data.error || 'Error al restablecer la contraseña.');
       }
 
-      setSuccess(true)
+      setSuccess(true);
     } catch (err) {
-      setError(err.message)
+      setError(err.message);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   if (tokenValid === null) {
     return (
@@ -87,8 +87,8 @@ export default function ResetPassword() {
         <div className="reset-password-card">
           <p>Verificando token...</p>
         </div>
-      </div>
-    )
+      </div>);
+
   }
 
   if (tokenValid === false) {
@@ -101,8 +101,8 @@ export default function ResetPassword() {
             Solicitar nuevo enlace
           </button>
         </div>
-      </div>
-    )
+      </div>);
+
   }
 
   if (success) {
@@ -115,8 +115,8 @@ export default function ResetPassword() {
             Ir al inicio de sesión
           </button>
         </div>
-      </div>
-    )
+      </div>);
+
   }
 
   return (
@@ -125,7 +125,7 @@ export default function ResetPassword() {
         <h2>Nueva contraseña</h2>
         <p>Introduce tu nueva contraseña.</p>
         
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={enviarFormulari}>
           <label htmlFor="password">Nueva contraseña:</label>
           <input
             type="password"
@@ -134,8 +134,8 @@ export default function ResetPassword() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             placeholder="Mínimo 6 caracteres"
-            required
-          />
+            required />
+          
 
           <label htmlFor="confirmPassword">Confirmar contraseña:</label>
           <input
@@ -145,8 +145,8 @@ export default function ResetPassword() {
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
             placeholder="Repite tu contraseña"
-            required
-          />
+            required />
+          
 
           {error && <p className="form-error">{error}</p>}
 
@@ -159,6 +159,6 @@ export default function ResetPassword() {
           <a href="/login">← Volver al inicio de sesión</a>
         </div>
       </div>
-    </div>
-  )
-}
+    </div>);
+
+}export { RestablirContrasenya as default };

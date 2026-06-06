@@ -1,78 +1,78 @@
-import './LoginForm.css'
-import loginIcon from './../../assets/LogoAnimeWLCuadrado.webp'
-import { useState } from 'react'
-import { useLocation, useNavigate } from 'react-router-dom'
-import { useAuth } from '../../hooks/useAuth.js'
+import './LoginForm.css';
+import loginIcon from './../../assets/LogoAnimeWLCuadrado.webp';
+import { useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { useAutenticacio } from '../../hooks/useAuth.js';
 
-export function LoginForm() {
-  const location = useLocation()
-  const navigate = useNavigate()
-  const { login } = useAuth()
-  const initialState = location.state && typeof location.state === 'object'
-    ? {
-        username: location.state.username || '',
-        password: location.state.password || '',
-        remember: false
-      }
-    : { username: '', password: '', remember: false }
+function FormulariIniciSessio() {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const { login } = useAutenticacio();
+  const initialState = location.state && typeof location.state === 'object' ?
+  {
+    username: location.state.username || '',
+    password: location.state.password || '',
+    remember: false
+  } :
+  { username: '', password: '', remember: false };
 
-  const [formData, setFormData] = useState(initialState)
-  const [error, setError] = useState('')
-  const [loading, setLoading] = useState(false)
+  const [formData, setFormData] = useState(initialState);
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  const handleChange = (event) => {
-    const { name, value } = event.target
-    setFormData((prev) => ({ ...prev, [name]: value }))
-  }
+  const gestionarCanvi = (event) => {
+    const { name, value } = event.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
 
-  const handleSubmit = async (event) => {
-    event.preventDefault()
-    setError('')
+  const enviarFormulari = async (event) => {
+    event.preventDefault();
+    setError('');
 
-    const { username, password, remember } = formData
+    const { username, password, remember } = formData;
     if (!username.trim() || !password) {
-      setError('Por favor completa todos los campos.')
-      return
+      setError('Por favor completa todos los campos.');
+      return;
     }
 
-    setLoading(true)
+    setLoading(true);
     try {
-      const data = await login(username, password, remember)
+      const data = await login(username, password, remember);
 
       if (!data.success) {
-        throw new Error(data.error || 'Error al iniciar sesión.')
+        throw new Error(data.error || 'Error al iniciar sesión.');
       }
 
-      navigate('/')
+      navigate('/');
     } catch (err) {
-      setError(err.message)
+      setError(err.message);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   return (
     <div className="login-form">
         <img src={loginIcon} alt="Login Icon" className="login-icon" />
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={enviarFormulari}>
         <label htmlFor="username">Usuario:</label>
         <input
           type="text"
           id="username"
           name="username"
           value={formData.username}
-          onChange={handleChange}
-          required
-        />
+          onChange={gestionarCanvi}
+          required />
+        
         <label htmlFor="password">Contraseña:</label>
         <input
           type="password"
           id="password"
           name="password"
           value={formData.password}
-          onChange={handleChange}
-          required
-        />
+          onChange={gestionarCanvi}
+          required />
+        
 
         {error && <p className="form-error">{error}</p>}
 
@@ -83,9 +83,9 @@ export function LoginForm() {
               id="remember"
               name="remember"
               checked={formData.remember}
-              onChange={handleChange}
-              className="login-checkbox"
-            />
+              onChange={gestionarCanvi}
+              className="login-checkbox" />
+            
             <label htmlFor="remember">Recuérdame</label>
           </div>
           <a href="/forgot-password" className="forgot-password">¿Has olvidado tu contraseña?</a>
@@ -98,6 +98,6 @@ export function LoginForm() {
           <a href="/register">Regístrate aquí</a>
         </div>
        </form>
-    </div>
-    )
-}
+    </div>);
+
+}export { FormulariIniciSessio };

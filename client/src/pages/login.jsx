@@ -1,12 +1,12 @@
 import { Navigate } from 'react-router-dom';
-import { Navbar } from '../components/NavBar/NavBar.jsx';
-import { LoginForm } from '../components/LoginForm/LoginForm.jsx';
-import Footer from '../components/Footer/Footer.jsx';
-import { useAuth } from '../hooks/useAuth.js';
-import '../styles/login.css'
+import { BarraNavegacio } from '../components/NavBar/NavBar.jsx';
+import { FormulariIniciSessio } from '../components/LoginForm/LoginForm.jsx';
+import PeuPagina from '../components/Footer/Footer.jsx';
+import { useAutenticacio } from '../hooks/useAuth.js';
+import '../styles/login.css';
 
-export default function Login() {
-  const { isLoggedIn, loading } = useAuth();
+function IniciSessio() {
+  const { isLoggedIn, loading } = useAutenticacio();
 
   if (loading) {
     return null;
@@ -18,13 +18,13 @@ export default function Login() {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
-      <Navbar profile={false} searchBar={false} favorites={false} directory={false} />
+      <BarraNavegacio profile={false} searchBar={false} favorites={false} directory={false} />
       <div className="content">
         <br />
         <h1 className="title">INICIAR SESIÓN</h1>
-        <LoginForm />
+        <FormulariIniciSessio />
       </div>
-      <Footer />
-    </div>
-  )
-}
+      <PeuPagina />
+    </div>);
+
+}export { IniciSessio as default };

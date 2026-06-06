@@ -1,16 +1,16 @@
 import { useEffect } from 'react';
-import { Navbar } from '../components/NavBar/NavBar.jsx';
-import Footer from '../components/Footer/Footer.jsx';
+import { BarraNavegacio } from '../components/NavBar/NavBar.jsx';
+import PeuPagina from '../components/Footer/Footer.jsx';
 import '../styles/legal.css';
 
-export default function Privacy() {
+function Privadesa() {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
 
   return (
     <div className="legal-page">
-      <Navbar profile={false} searchBar={false} favorites={false} directory={false} />
+      <BarraNavegacio profile={false} searchBar={false} favorites={false} directory={false} />
       <main className="legal-wrapper">
         <section className="legal-card">
           <p className="legal-eyebrow">AnimeWL</p>
@@ -77,7 +77,7 @@ export default function Privacy() {
           </div>
         </section>
       </main>
-      <Footer />
-    </div>
-  );
-}
+      <PeuPagina />
+    </div>);
+
+}export { Privadesa as default };

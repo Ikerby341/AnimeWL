@@ -1,49 +1,49 @@
-import { useState, useEffect } from 'react'
-import { AuthContext } from './AuthContext.js'
-import { clearAuthToken, setAuthToken } from '../utils/authTokenFetch.js'
+import { useState, useEffect } from 'react';
+import { AuthContext } from './AuthContext.js';
+import { netejarTokenAutenticacio, definirTokenAutenticacio } from '../utils/authTokenFetch.js';
 
-export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null)
-  const [loading, setLoading] = useState(true)
+function ProveidorAutenticacio({ children }) {
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   // Verificar sesion al cargar la aplicacion
   useEffect(() => {
-    checkSession()
-  }, [])
+    comprovarSessio();
+  }, []);
 
-  const checkSession = async () => {
+  const comprovarSessio = async () => {
     try {
       const response = await fetch(`${import.meta.env.VITE_BACKENDURL}/api/session`, {
         credentials: 'include'
-      })
+      });
 
       if (response.status === 401) {
-        clearAuthToken()
-        setUser(null)
+        netejarTokenAutenticacio();
+        setUser(null);
       } else if (response.ok) {
-        const data = await response.json()
+        const data = await response.json();
         if (data.success && data.user) {
-          if (data.token) setAuthToken(data.token)
-          setUser(data.user)
+          if (data.token) definirTokenAutenticacio(data.token);
+          setUser(data.user);
         } else {
-          clearAuthToken()
-          setUser(null)
+          netejarTokenAutenticacio();
+          setUser(null);
         }
       } else {
-        console.error('Error checking session:', response.status)
-        clearAuthToken()
-        setUser(null)
+        console.error('Error checking session:', response.status);
+        netejarTokenAutenticacio();
+        setUser(null);
       }
     } catch (error) {
-      console.error('Error checking session:', error)
-      clearAuthToken()
-      setUser(null)
+      console.error('Error checking session:', error);
+      netejarTokenAutenticacio();
+      setUser(null);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
-  const login = async (username, password, remember = false) => {
+  const iniciarSessio = async (username, password, remember = false) => {
     const response = await fetch(`${import.meta.env.VITE_BACKENDURL}/api/login`, {
       method: 'POST',
       headers: {
@@ -51,37 +51,37 @@ export function AuthProvider({ children }) {
       },
       credentials: 'include',
       body: JSON.stringify({ username, password, remember })
-    })
+    });
 
-    const data = await response.json()
+    const data = await response.json();
 
     if (data.success) {
-      if (data.token) setAuthToken(data.token)
-      setUser(data.user)
+      if (data.token) definirTokenAutenticacio(data.token);
+      setUser(data.user);
     } else {
-      clearAuthToken()
+      netejarTokenAutenticacio();
     }
 
-    return data
-  }
+    return data;
+  };
 
-  const logout = async () => {
+  const tancarSessio = async () => {
     try {
       await fetch(`${import.meta.env.VITE_BACKENDURL}/api/logout`, {
         method: 'POST',
         credentials: 'include'
-      })
-      clearAuthToken()
-      setUser(null)
+      });
+      netejarTokenAutenticacio();
+      setUser(null);
     } catch (error) {
-      console.error('Error during logout:', error)
-      clearAuthToken()
-      setUser(null)
+      console.error('Error during logout:', error);
+      netejarTokenAutenticacio();
+      setUser(null);
     }
-  }
+  };
 
-  const getUserInfo = () => {
-    if (!user) return null
+  const obtenirDadesUsuari = () => {
+    if (!user) return null;
 
     return {
       nom: user.nom ?? '',
@@ -90,24 +90,24 @@ export function AuthProvider({ children }) {
       id_anime_recomanat: user.id_anime_recomanat ?? null,
       img_url: user.img_url ?? null,
       isAdmin: user.isAdmin === true
-    }
-  }
+    };
+  };
 
-  const isLoggedIn = Boolean(user)
+  const isLoggedIn = Boolean(user);
 
   const value = {
     user,
     loading,
-    login,
-    logout,
-    checkSession,
+    login: iniciarSessio,
+    logout: tancarSessio,
+    checkSession: comprovarSessio,
     isLoggedIn,
-    getUserInfo
-  }
+    getUserInfo: obtenirDadesUsuari
+  };
 
   return (
     <AuthContext.Provider value={value}>
       {children}
-    </AuthContext.Provider>
-  )
-}
+    </AuthContext.Provider>);
+
+}export { ProveidorAutenticacio };

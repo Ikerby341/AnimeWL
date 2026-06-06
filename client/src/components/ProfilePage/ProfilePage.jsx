@@ -1,49 +1,49 @@
 import './ProfilePage.css';
-import { Perfil } from '../Perfil/Perfil.jsx';
-import { Configuracion } from '../Configuracion/Configuracion.jsx';
-import { Estadisticas } from '../Estadisticas/Estadisticas.jsx';
+import Perfil from '../Perfil/Perfil.jsx';
+import { Configuracio } from '../Configuracion/Configuracion.jsx';
+import { Estadistiques } from '../Estadisticas/Estadisticas.jsx';
 import { useEffect, useState } from 'react';
 
-export function ProfilePage({ activeView = 'Perfil', onViewChange = () => {} }) {
-    const [favoritos, setFavoritos] = useState([]);
+function PaginaPerfil({ activeView = 'Perfil', onViewChange = () => {} }) {
+  const [favoritos, setFavoritos] = useState([]);
 
-    useEffect(() => {
-        const loadFavoritos = async () => {
-            try {
-                const response = await fetch(`${import.meta.env.VITE_BACKENDURL}/api/user/favorites`, {
-                    credentials: 'include'
-                });
-                const data = await response.json();
-                if (data.success && data.favorites) {
-                    setFavoritos(data.favorites);
-                }
-            } catch (err) {
-                console.error('Error loading favorites for profile:', err);
-            }
-        };
+  useEffect(() => {
+    const carregarFavorits = async () => {
+      try {
+        const response = await fetch(`${import.meta.env.VITE_BACKENDURL}/api/user/favorites`, {
+          credentials: 'include'
+        });
+        const data = await response.json();
+        if (data.success && data.favorites) {
+          setFavoritos(data.favorites);
+        }
+      } catch (err) {
+        console.error('Error loading favorites for profile:', err);
+      }
+    };
 
-        loadFavoritos();
-    }, []);
+    carregarFavorits();
+  }, []);
 
-    return (
-        <div className="profile-page">
+  return (
+    <div className="profile-page">
             <div className="profile-options">
                 <button
-                    className={activeView === 'Perfil' ? 'selected-page' : 'not-selected-page'}
-                    onClick={() => onViewChange('Perfil')}
-                >
+          className={activeView === 'Perfil' ? 'selected-page' : 'not-selected-page'}
+          onClick={() => onViewChange('Perfil')}>
+          
                     Perfil
                 </button>
                 <button
-                    className={activeView === 'Estadisticas' ? 'selected-page' : 'not-selected-page'}
-                    onClick={() => onViewChange('Estadisticas')}
-                >
+          className={activeView === 'Estadisticas' ? 'selected-page' : 'not-selected-page'}
+          onClick={() => onViewChange('Estadisticas')}>
+          
                     Estadísticas
                 </button>
                 <button
-                    className={activeView === 'Configuracion' ? 'selected-page' : 'not-selected-page'}
-                    onClick={() => onViewChange('Configuracion')}
-                >
+          className={activeView === 'Configuracion' ? 'selected-page' : 'not-selected-page'}
+          onClick={() => onViewChange('Configuracion')}>
+          
                     Configuración
                 </button>
             </div>
@@ -51,10 +51,10 @@ export function ProfilePage({ activeView = 'Perfil', onViewChange = () => {} }) 
             <div className="profile-content">
                 {activeView === 'Perfil' && <Perfil profileFavorites={favoritos} />}
 
-                {activeView === 'Estadisticas' && <Estadisticas />}
+                {activeView === 'Estadisticas' && <Estadistiques />}
 
-                {activeView === 'Configuracion' && <Configuracion />}
+                {activeView === 'Configuracion' && <Configuracio />}
             </div>
-        </div>
-    );
-}
+        </div>);
+
+}export { PaginaPerfil };

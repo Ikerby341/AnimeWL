@@ -1,62 +1,62 @@
-const AUTH_TOKEN_KEY = 'animewl_auth_token'
+const AUTH_TOKEN_KEY = 'animewl_auth_token';
 
-function getBackendUrl() {
-  return import.meta.env.VITE_BACKENDURL || ''
+function obtenirUrlBackend() {
+  return import.meta.env.VITE_BACKENDURL || '';
 }
 
-function isApiRequest(input) {
-  const url = typeof input === 'string'
-    ? input
-    : input instanceof URL
-      ? input.toString()
-      : input?.url || ''
+function esPeticioApi(input) {
+  const url = typeof input === 'string' ?
+  input :
+  input instanceof URL ?
+  input.toString() :
+  input?.url || '';
 
-  const backendUrl = getBackendUrl()
-  return url.startsWith('/api') || (backendUrl && url.startsWith(`${backendUrl}/api`))
+  const backendUrl = obtenirUrlBackend();
+  return url.startsWith('/api') || backendUrl && url.startsWith(`${backendUrl}/api`);
 }
 
-export function getAuthToken() {
-  return localStorage.getItem(AUTH_TOKEN_KEY)
-}
+function obtenirTokenAutenticacio() {
+  return localStorage.getItem(AUTH_TOKEN_KEY);
+}export { obtenirTokenAutenticacio };
 
-export function setAuthToken(token) {
+function definirTokenAutenticacio(token) {
   if (token) {
-    localStorage.setItem(AUTH_TOKEN_KEY, token)
+    localStorage.setItem(AUTH_TOKEN_KEY, token);
   }
-}
+}export { definirTokenAutenticacio };
 
-export function clearAuthToken() {
-  localStorage.removeItem(AUTH_TOKEN_KEY)
-}
+function netejarTokenAutenticacio() {
+  localStorage.removeItem(AUTH_TOKEN_KEY);
+}export { netejarTokenAutenticacio };
 
-export function installAuthTokenFetch() {
-  const originalFetch = window.fetch.bind(window)
+function configurarFetchTokenAutenticacio() {
+  const originalFetch = window.fetch.bind(window);
 
   window.fetch = async (input, init = {}) => {
-    const options = { ...init }
+    const options = { ...init };
 
-    if (isApiRequest(input)) {
-      const token = getAuthToken()
-      const headers = new Headers(options.headers || {})
+    if (esPeticioApi(input)) {
+      const token = obtenirTokenAutenticacio();
+      const headers = new Headers(options.headers || {});
 
       if (token && !headers.has('Authorization')) {
-        headers.set('Authorization', `Bearer ${token}`)
+        headers.set('Authorization', `Bearer ${token}`);
       }
 
-      options.headers = headers
+      options.headers = headers;
     }
 
-    const response = await originalFetch(input, options)
+    const response = await originalFetch(input, options);
 
-    if (isApiRequest(input)) {
-      response.clone().json()
-        .then((data) => {
-          if (data?.token) setAuthToken(data.token)
-          if (response.status === 401) clearAuthToken()
-        })
-        .catch(() => {})
+    if (esPeticioApi(input)) {
+      response.clone().json().
+      then((data) => {
+        if (data?.token) definirTokenAutenticacio(data.token);
+        if (response.status === 401) netejarTokenAutenticacio();
+      }).
+      catch(() => {});
     }
 
-    return response
-  }
-}
+    return response;
+  };
+}export { configurarFetchTokenAutenticacio };

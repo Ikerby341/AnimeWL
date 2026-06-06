@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import './Footer.css';
 
-export default function Footer() {
+function PeuPagina() {
   return (
     <footer className="footer">
       <div className="footer-content">
@@ -22,6 +22,6 @@ export default function Footer() {
           </Link>
         </div>
       </div>
-    </footer>
-  );
-}
+    </footer>);
+
+}export { PeuPagina as default };

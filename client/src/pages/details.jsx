@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { useAuth } from '../hooks/useAuth';
-import { Navbar } from '../components/NavBar/NavBar.jsx';
-import { AnimeDetails } from '../components/AnimeDetails/AnimeDetails.jsx';
-import Footer from '../components/Footer/Footer.jsx';
+import { useAutenticacio } from '../hooks/useAuth';
+import { BarraNavegacio } from '../components/NavBar/NavBar.jsx';
+import { DetallsAnime } from '../components/AnimeDetails/AnimeDetails.jsx';
+import PeuPagina from '../components/Footer/Footer.jsx';
 
-export default function Details() {
+function Detalls() {
   const { id } = useParams();
   const [anime, setAnime] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -21,14 +21,14 @@ export default function Details() {
   const [progressError, setProgressError] = useState('');
   const [episodeCount, setEpisodeCount] = useState(0);
   const [isFavorite, setIsFavorite] = useState(false);
-  const { isLoggedIn, user } = useAuth();
+  const { isLoggedIn, user } = useAutenticacio();
   const currentUserId = user?.id_usuari || user?.id_usuario || user?.id_user || user?.id || null;
   const currentUserIsAdmin = user?.isAdmin === true;
 
   useEffect(() => {
     if (!id) return;
 
-    const load = async () => {
+    const carregarDades = async () => {
       setLoading(true);
       setError('');
       try {
@@ -47,13 +47,13 @@ export default function Details() {
       }
     };
 
-    load();
+    carregarDades();
   }, [id]);
 
   useEffect(() => {
     if (!id) return;
 
-    const loadComments = async () => {
+    const carregarComentaris = async () => {
       setCommentsLoading(true);
       try {
         const r = await fetch(`${import.meta.env.VITE_BACKENDURL}/api/anime/${id}/comments`);
@@ -72,13 +72,13 @@ export default function Details() {
       }
     };
 
-    loadComments();
+    carregarComentaris();
   }, [id]);
 
   useEffect(() => {
     if (!id) return;
 
-    const loadRating = async () => {
+    const carregarValoracio = async () => {
       setRatingLoading(true);
       setRatingError('');
       try {
@@ -98,13 +98,13 @@ export default function Details() {
       }
     };
 
-    loadRating();
+    carregarValoracio();
   }, [id, isLoggedIn]);
 
   useEffect(() => {
     if (!id) return;
 
-    const loadProgress = async () => {
+    const carregarProgres = async () => {
       setProgressLoading(true);
       setProgressError('');
       try {
@@ -124,7 +124,7 @@ export default function Details() {
       }
     };
 
-    loadProgress();
+    carregarProgres();
   }, [id, isLoggedIn]);
 
   // Cargar si el anime está en favoritos
@@ -134,12 +134,12 @@ export default function Details() {
       return;
     }
 
-    const checkFavorite = async () => {
+    const comprovarFavorit = async () => {
       try {
         const r = await fetch(`${import.meta.env.VITE_BACKENDURL}/api/user/favorites`, { credentials: 'include' });
         const data = await r.json();
         if (data && data.success && data.favorites) {
-          const isFav = data.favorites.some(fav => String(fav.id_anime) === String(id));
+          const isFav = data.favorites.some((fav) => String(fav.id_anime) === String(id));
           setIsFavorite(isFav);
         }
       } catch (err) {
@@ -147,10 +147,10 @@ export default function Details() {
       }
     };
 
-    checkFavorite();
+    comprovarFavorit();
   }, [id, isLoggedIn]);
 
-  const handleAddToFavorites = async () => {
+  const afegirAFavorits = async () => {
     try {
       const response = await fetch(`${import.meta.env.VITE_BACKENDURL}/api/user/favorites/${id}`, {
         method: 'POST',
@@ -170,7 +170,7 @@ export default function Details() {
     }
   };
 
-  const handleRemoveFromFavorites = async () => {
+  const eliminarDeFavorits = async () => {
     try {
       const response = await fetch(`${import.meta.env.VITE_BACKENDURL}/api/user/favorites/${id}`, {
         method: 'DELETE',
@@ -190,7 +190,7 @@ export default function Details() {
     }
   };
 
-  const handleRate = async (value) => {
+  const valorarAnime = async (value) => {
     try {
       const response = await fetch(`${import.meta.env.VITE_BACKENDURL}/api/anime/${id}/rating`, {
         method: 'POST',
@@ -212,7 +212,7 @@ export default function Details() {
     }
   };
 
-  const handleProgressChange = async (value) => {
+  const actualitzarProgres = async (value) => {
     try {
       const response = await fetch(`${import.meta.env.VITE_BACKENDURL}/api/anime/${id}/progress`, {
         method: 'POST',
@@ -238,40 +238,40 @@ export default function Details() {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
-      <Navbar />
-      {loading && (
-        <div className="loading-container">
+      <BarraNavegacio />
+      {loading &&
+      <div className="loading-container">
           <div className="loader"></div>
         </div>
-      )}
+      }
       {!loading && error && <p className="error-message">{error}</p>}
-      {!loading && anime && (
-        <AnimeDetails
-          anime={anime}
-          animeId={anime.id_anime}
-          comments={comments}
-          commentsLoading={commentsLoading}
-          isLoggedIn={isLoggedIn}
-          rating={ratingData}
-          userRating={userRating}
-          ratingLoading={ratingLoading}
-          ratingError={ratingError}
-          onRate={handleRate}
-          progress={progress}
-          progressLoading={progressLoading}
-          progressError={progressError}
-          episodeCount={episodeCount}
-          onProgressChange={handleProgressChange}
-          onCommentAdded={(newComment) => setComments((prevComments) => [newComment, ...prevComments])}
-          onCommentDeleted={(commentId) => setComments((prevComments) => prevComments.filter((comment) => String(comment.id_comentari) !== String(commentId)))}
-          currentUserId={currentUserId}
-          currentUserIsAdmin={currentUserIsAdmin}
-          isFavorite={isFavorite}
-          onAddToFavorites={handleAddToFavorites}
-          onRemoveFromFavorites={handleRemoveFromFavorites}
-        />
-      )}
-      <Footer />
-    </div>
-  );
-}
+      {!loading && anime &&
+      <DetallsAnime
+        anime={anime}
+        animeId={anime.id_anime}
+        comments={comments}
+        commentsLoading={commentsLoading}
+        isLoggedIn={isLoggedIn}
+        rating={ratingData}
+        userRating={userRating}
+        ratingLoading={ratingLoading}
+        ratingError={ratingError}
+        onRate={valorarAnime}
+        progress={progress}
+        progressLoading={progressLoading}
+        progressError={progressError}
+        episodeCount={episodeCount}
+        onProgressChange={actualitzarProgres}
+        onCommentAdded={(newComment) => setComments((prevComments) => [newComment, ...prevComments])}
+        onCommentDeleted={(commentId) => setComments((prevComments) => prevComments.filter((comment) => String(comment.id_comentari) !== String(commentId)))}
+        currentUserId={currentUserId}
+        currentUserIsAdmin={currentUserIsAdmin}
+        isFavorite={isFavorite}
+        onAddToFavorites={afegirAFavorits}
+        onRemoveFromFavorites={eliminarDeFavorits} />
+
+      }
+      <PeuPagina />
+    </div>);
+
+}export { Detalls as default };
