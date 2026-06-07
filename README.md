@@ -59,7 +59,7 @@ El mode de desenvolupament executa primer les proves i després aixeca Vite.
 - `/`: pàgina d'inici amb carrusel d'animes recents, secció d'animes en emissió i blocs per gènere.
 - `/login`: formulari d'inici de sessió.
 - `/register`: formulari de registre.
-- `/directory`: directori paginat d'animes amb filtres per gènere i valoració, amb el panell de filtres plegable en mòbil.
+- `/directory`: directori paginat d'animes amb filtres per gènere, estado de l'anime i valoració, amb el panell de filtres plegable en mòbil.
 - `/favorites`: llista personal de favorits i estat de seguiment.
 - `/animedle`: joc diari autenticat per endevinar un anime a partir de la portada desenfocada.
 - `/profile`: zona privada de perfil, configuració i estadístiques.
@@ -116,7 +116,7 @@ Els fitxers de `src/styles` defineixen l'estil de pantalles globals com home, lo
 
 ## Connexió amb el servidor
 
-El client consumeix el backend a través de `import.meta.env.VITE_BACKENDURL`. Les crides principals apunten a endpoints com `/api/anime` amb paràmetres `genre`, `minRating` i `maxRating`, `/api/anime/airing/:limit`, `/api/animedle`, `/api/animedle/suggestions`, `/api/jikan/search`, `/api/login`, `/api/session`, `/api/user/favorites`, `/api/anime/:id/comments`, `/api/anime/:id/rating` i `/api/anime/:id/progress`.
+El client consumeix el backend a través de `import.meta.env.VITE_BACKENDURL`. Les crides principals apunten a endpoints com `/api/anime` amb paràmetres `genre`, `status`, `minRating` i `maxRating`, `/api/anime/airing/:limit`, `/api/animedle`, `/api/animedle/suggestions`, `/api/jikan/search`, `/api/login`, `/api/session`, `/api/user/favorites`, `/api/anime/:id/comments`, `/api/anime/:id/rating` i `/api/anime/:id/progress`.
 
 En desenvolupament, `vite.config.js` també configura un proxy perquè les rutes `/api` es redirigeixin al servidor Express.
 

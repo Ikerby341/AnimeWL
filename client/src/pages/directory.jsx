@@ -38,6 +38,7 @@ function Directori() {
   const [animes, setAnimes] = useState([]);
   const [genres, setGenres] = useState([]);
   const [selectedGenre, setSelectedGenre] = useState('');
+  const [selectedStatus, setSelectedStatus] = useState('');
   const [minRating, setMinRating] = useState(MIN_STARS);
   const [maxRating, setMaxRating] = useState(MAX_STARS);
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
@@ -56,6 +57,7 @@ function Directori() {
   const carregarAnimes = useCallback(async (
   offset = 0,
   genre = selectedGenre,
+  status = selectedStatus,
   ratingMin = minRating,
   ratingMax = maxRating) =>
   {
@@ -70,9 +72,10 @@ function Directori() {
     try {
       setError('');
       const genreQuery = genre ? `&genre=${encodeURIComponent(genre)}` : '';
+      const statusQuery = status ? `&status=${encodeURIComponent(status)}` : '';
       const ratingQuery = `&minRating=${ratingMin}&maxRating=${ratingMax}`;
       const res = await fetch(
-        `${import.meta.env.VITE_BACKENDURL}/api/anime?limit=${PAGE_SIZE}&offset=${offset}${genreQuery}${ratingQuery}`
+        `${import.meta.env.VITE_BACKENDURL}/api/anime?limit=${PAGE_SIZE}&offset=${offset}${genreQuery}${statusQuery}${ratingQuery}`
       );
 
       if (!res.ok) {
@@ -93,7 +96,7 @@ function Directori() {
       setLoading(false);
       setLoadingMore(false);
     }
-  }, [maxRating, minRating, selectedGenre]);
+  }, [maxRating, minRating, selectedGenre, selectedStatus]);
 
   useEffect(() => {
     let cancelled = false;
@@ -124,8 +127,8 @@ function Directori() {
   useEffect(() => {
     setAnimes([]);
     setHasMore(true);
-    carregarAnimes(0, selectedGenre, minRating, maxRating);
-  }, [carregarAnimes, maxRating, minRating, selectedGenre]);
+    carregarAnimes(0, selectedGenre, selectedStatus, minRating, maxRating);
+  }, [carregarAnimes, maxRating, minRating, selectedGenre, selectedStatus]);
 
   const referenciaUltimAnime = useCallback((node) => {
     if (loading || loadingMore) {
@@ -138,14 +141,14 @@ function Directori() {
 
     observerRef.current = new IntersectionObserver((entries) => {
       if (entries[0].isIntersecting && hasMore) {
-        carregarAnimes(animes.length, selectedGenre, minRating, maxRating);
+        carregarAnimes(animes.length, selectedGenre, selectedStatus, minRating, maxRating);
       }
     }, { rootMargin: '300px' });
 
     if (node) {
       observerRef.current.observe(node);
     }
-  }, [animes.length, hasMore, carregarAnimes, loading, loadingMore, maxRating, minRating, selectedGenre]);
+  }, [animes.length, hasMore, carregarAnimes, loading, loadingMore, maxRating, minRating, selectedGenre, selectedStatus]);
 
   const canviarPuntuacioMinima = (event) => {
     const nextMin = Number(event.target.value);
@@ -175,6 +178,23 @@ function Directori() {
               {genre.nom}
             </option>
         )}
+        </select>
+      </div>
+
+      <div className="directory-filter-field">
+        <label className="directory-filter-label" htmlFor={`${idPrefix}-status-select`}>
+          Estado
+        </label>
+        <select
+        id={`${idPrefix}-status-select`}
+        className="directory-filter-select"
+        value={selectedStatus}
+        onChange={(event) => setSelectedStatus(event.target.value)}>
+        
+          <option value="">Todos</option>
+          <option value="Currently Airing">En emisión</option>
+          <option value="Finished Airing">Finalizado</option>
+          <option value="Not yet aired">Próximamente</option>
         </select>
       </div>
 
