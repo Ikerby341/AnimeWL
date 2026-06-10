@@ -27,6 +27,28 @@ function trobarIdGenere(genres, candidates) {
   return found?.id_genere || null;
 }
 
+function traduirEstatAnime(estat) {
+  const value = String(estat || '').trim().toLowerCase();
+
+  if (!value) {
+    return '';
+  }
+
+  if (value === 'finished airing' || value === 'finished' || value === 'finalizado') {
+    return 'Finalizado';
+  }
+
+  if (value === 'airing' || value === 'currently airing' || value === 'en emision' || value === 'en emisión') {
+    return 'En emisión';
+  }
+
+  if (value === 'upcoming' || value === 'not yet aired' || value === 'proximamente' || value === 'próximamente') {
+    return 'Próximamente';
+  }
+
+  return estat;
+}
+
 async function carregarAnimePerGenere(genreId, limit = 7) {
   const response = await fetch(
     `${import.meta.env.VITE_BACKENDURL}/api/anime?limit=${limit}&offset=0&genre=${encodeURIComponent(genreId)}&minRating=0&maxRating=5`
@@ -166,7 +188,7 @@ function Inici() {
         <Carrusel items={recentAnimes.map((a) => ({
           imageUrl: a.imatge_portada || '',
           title: a.titol || '---',
-          subtitle: a.estat || 'Recomendado',
+          subtitle: traduirEstatAnime(a.estat) || 'Recomendado',
           episodeCount: a.episodeCount || 0,
           synopsis: a.sinopsi_es || a.sinopsi || '',
           showStar: true,
